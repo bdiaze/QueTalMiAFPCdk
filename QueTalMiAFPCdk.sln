@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36127.28 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueTalMiAFPCdk", "QueTalMiAFPCdk\QueTalMiAFPCdk.csproj", "{25202315-D42D-4B5D-BBE2-2E1F61745711}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{25202315-D42D-4B5D-BBE2-2E1F61745711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25202315-D42D-4B5D-BBE2-2E1F61745711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25202315-D42D-4B5D-BBE2-2E1F61745711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25202315-D42D-4B5D-BBE2-2E1F61745711}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B9F9047B-EAFD-4CFB-852D-DE847E59BFB4}
+	EndGlobalSection
+EndGlobal
