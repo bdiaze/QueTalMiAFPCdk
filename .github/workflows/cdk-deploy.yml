@@ -83,6 +83,7 @@ jobs:
                     sudo systemctl reload nginx 
                     
                     sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
+                    sudo systemctl reload nginx 
                 '
                 
             - name: Configure AWS Credentials
