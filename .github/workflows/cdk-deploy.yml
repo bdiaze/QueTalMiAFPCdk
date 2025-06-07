@@ -16,7 +16,6 @@ jobs:
             APP_NAME: ${{ vars.APP_NAME }}
             ACCOUNT_AWS: ${{ vars.ACCOUNT_AWS }}
             REGION_AWS: ${{ vars.REGION_AWS }}
-            PUBLISH_ZIP: ${{ vars.PUBLISH_ZIP }}
                         
         steps:
             - name: Checkout Repositorio
@@ -38,12 +37,16 @@ jobs:
             - name: Publish .NET Application
               run: dotnet publish /p:PublishDir=../publish /p:PublishReadyToRun=true -r linux-arm64 --self-contained true 
               
-            - name: Compress Publish Directory .NET API
-              working-directory: ./publish
-              run: zip -r -q -T ./publish.zip ./*
-      
-            - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-              with:
-                  aws-region: ${{ vars.REGION_AWS }}
-                  role-to-assume: ${{ vars.ARN_GITHUB_ROLE }}
+            - name: Copy files to EC2
+              env:
+                  EC2_HOST: ${{ vars.EC2_HOST }}
+                  EC2_USERNAME: ${{ vars.EC2_USERNAME }}
+                  EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+              run: |
+                mkdir -p ~/.ssh
+                ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+                
+                echo "$EC2_SSH_KEY" > ssh_key.pem
+                chmod 600 ssh_key.pem
+                
+                scp -i ssh_key.pem -r ./publish/* EC2_USERNAME:~/$APP_NAME
