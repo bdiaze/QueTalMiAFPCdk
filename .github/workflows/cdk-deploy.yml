@@ -44,6 +44,7 @@ jobs:
                   EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
                   WEBAPP_DIRECTORY: ${{ vars.WEBAPP_DIRECTORY }}
                   WEBAPP_SERVICE: ${{ vars.WEBAPP_SERVICE }}
+                  WEBAPP_EXECSTART: ${{ vars.WEBAPP_EXECSTART }}
               run: |
                 mkdir -p ~/.ssh
                 ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
@@ -51,10 +52,23 @@ jobs:
                 echo "$EC2_SSH_KEY" > ssh_key.pem
                 chmod 600 ssh_key.pem
                 
-                # En caso de que ya se haya desplegado alguna vez la aplicación, se detiene y se eliminan los archivos...
+                # En caso de que ya se haya desplegado alguna vez la aplicación, se detiene y se eliminan los archivos antiguos...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY" '
-                sudo systemctl stop $WEBAPP_SERVICE || true
-                rm -rf ~/$WEBAPP_DIRECTORY/*
+                    sudo systemctl stop $WEBAPP_SERVICE || true
+                    rm -rf ~/$WEBAPP_DIRECTORY/*
                 '
                 
+                # Se copian las piezas publicadas en directorio remoto de instancia EC2...
                 scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY
+                
+                # Se copia el archivo service...
+                scp -i ssh_key.pem ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
+                
+                # Se inicializa el web service...
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART" '
+                    sudo mv ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/
+                    sudo chmod +x ~/$WEBAPP_DIRECTORY/$WEBAPP_EXECSTART
+                    sudo systemctl daemon-reload
+                    sudo systemctl enable $WEBAPP_SERVICE
+                    sudo systemctl restart $WEBAPP_SERVICE
+                '
