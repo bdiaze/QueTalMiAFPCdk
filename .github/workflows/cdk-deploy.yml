@@ -42,6 +42,8 @@ jobs:
                   EC2_HOST: ${{ vars.EC2_HOST }}
                   EC2_USERNAME: ${{ vars.EC2_USERNAME }}
                   EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+                  WEBAPP_DIRECTORY: ${{ vars.WEBAPP_DIRECTORY }}
+                  WEBAPP_SERVICE: ${{ vars.WEBAPP_SERVICE }}
               run: |
                 mkdir -p ~/.ssh
                 ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
@@ -49,4 +51,10 @@ jobs:
                 echo "$EC2_SSH_KEY" > ssh_key.pem
                 chmod 600 ssh_key.pem
                 
-                scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$APP_NAME
+                # En caso de que ya se haya desplegado alguna vez la aplicación, se detiene y se eliminan los archivos...
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY" '
+                sudo systemctl stop $WEBAPP_SERVICE || true
+                rm -rf ~/$WEBAPP_DIRECTORY/*
+                '
+                
+                scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY
