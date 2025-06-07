@@ -19,6 +19,7 @@ jobs:
             DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
             SUBDOMAIN_NAME: ${{ vars.SUBDOMAIN_NAME }}
             EC2_HOST: ${{ vars.EC2_HOST }}
+            CERTBOT_EMAIL: ${{ vars.CERTBOT_EMAIL }}
                         
         steps:
             - name: Checkout Repositorio
@@ -71,7 +72,7 @@ jobs:
                 scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
                 # Se inicializa el web service...
-                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART" '
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART SUBDOMAIN_NAME=$SUBDOMAIN_NAME CERTBOT_EMAIL=$CERTBOT_EMAIL" '
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/
                     sudo chmod +x ~/$WEBAPP_DIRECTORY/$WEBAPP_EXECSTART
                     sudo systemctl daemon-reload
@@ -79,7 +80,9 @@ jobs:
                     sudo systemctl restart $WEBAPP_SERVICE
                     
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
-                    sudo systemctl restart nginx 
+                    sudo systemctl reload nginx 
+                    
+                    sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
                 '
                 
             - name: Configure AWS Credentials
