@@ -66,7 +66,7 @@ jobs:
                 
                 # Se inicializa el web service...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART" '
-                    sudo mv ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/
+                    sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/
                     sudo chmod +x ~/$WEBAPP_DIRECTORY/$WEBAPP_EXECSTART
                     sudo systemctl daemon-reload
                     sudo systemctl enable $WEBAPP_SERVICE
