@@ -64,6 +64,9 @@ jobs:
                 # Se copia el archivo service...
                 scp -i ssh_key.pem ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
+                # Se copia el archivo service...
+                scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
+                
                 # Se inicializa el web service...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART" '
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/
@@ -71,4 +74,7 @@ jobs:
                     sudo systemctl daemon-reload
                     sudo systemctl enable $WEBAPP_SERVICE
                     sudo systemctl restart $WEBAPP_SERVICE
+                    
+                    sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
+                    sudo systemctl restart nginx 
                 '
