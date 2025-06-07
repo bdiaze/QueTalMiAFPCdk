@@ -16,6 +16,9 @@ jobs:
             APP_NAME: ${{ vars.APP_NAME }}
             ACCOUNT_AWS: ${{ vars.ACCOUNT_AWS }}
             REGION_AWS: ${{ vars.REGION_AWS }}
+            DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+            SUBDOMAIN_NAME: ${{ vars.SUBDOMAIN_NAME }}
+            EC2_HOST: ${{ vars.EC2_HOST }}
                         
         steps:
             - name: Checkout Repositorio
@@ -78,3 +81,21 @@ jobs:
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
                     sudo systemctl restart nginx 
                 '
+                
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+              with:
+                  aws-region: ${{ vars.REGION_AWS }}
+                  role-to-assume: ${{ vars.ARN_GITHUB_ROLE }}
+                
+            - name: CDK Synth
+              working-directory: ${{ vars.DIRECTORIO_CDK }}
+              run: cdk synth
+              
+            - name: CDK Diff
+              working-directory: ${{ vars.DIRECTORIO_CDK }}
+              run: cdk --app cdk.out diff
+              
+            - name: CDK Deploy
+              working-directory: ${{ vars.DIRECTORIO_CDK }}
+              run: cdk --app cdk.out deploy --require-approval never
