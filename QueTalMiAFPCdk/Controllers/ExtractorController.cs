@@ -60,7 +60,7 @@ namespace QueTalMiAFP.Controllers {
 			Array.Copy(hash, 0, hashBytes, 16, 20);
 			string strLlaveExtraccion = Convert.ToBase64String(hashBytes);
 
-			Extractor extractor = new Extractor();
+			Extractor extractor = new Extractor(_configuration);
 
 			if (strLlaveExtraccion != hashedLlave) {
 				extractor.RegistrarLog("Error, no se efectúa la extracción debido a que la llave ingresada no es correcta.", 1);
