@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using QueTalMiAFPCdk.Models;
+using QueTalMiAFPCdk.Models.ViewModels;
 
 namespace QueTalMiAFPCdk.Controllers
 {
