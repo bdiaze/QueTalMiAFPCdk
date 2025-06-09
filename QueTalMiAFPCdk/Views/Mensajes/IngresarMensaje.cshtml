@@ -1,0 +1,43 @@
+﻿@using QueTalMiAFP.Models.Entities
+@model MensajeUsuario
+@{
+    ViewData["Title"] = "¡Mensaje Recibido!";
+}
+
+@section Head {
+    <meta name="robots" content="noindex">
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="mt-3">
+    Hemos recibido tu mensaje, te agredecemos de gran manera tus comentarios, alguien de nuestro equipo lo revisará a la brevedad.
+</p>
+
+<hr />
+
+<table class="table table-bordered" style="margin-top: 20px; margin-bottom: 1rem; width:100%;">
+    <tr class="table-secondary" style="text-align:center;">
+        <th colspan="2">Información del Mensaje Nº @Model.IdMensaje</th>
+    </tr>
+    <tr>
+        <td style="width:175px;"><b>Fecha Ingreso</b></td>
+        <td>@Model.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss")</td>
+    </tr>
+    <tr>
+        <td><b>Nombre</b></td>
+        <td>@Model.Nombre</td>
+    </tr>
+    <tr>
+        <td><b>Correo</b></td>
+        <td>@Model.Correo</td>
+    </tr>
+    <tr>
+        <td><b>Me gustaría</b></td>
+        <td>@Model.TipoMensaje.DescripcionLarga</td>
+    </tr>
+    <tr>
+        <td><b>Mensaje</b></td>
+        <td>@Model.Mensaje</td>
+    </tr>
+</table>

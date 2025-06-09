@@ -1,0 +1,390 @@
+﻿@model bool
+
+@{
+    ViewData["Title"] = "Acceder a Valores Cuota";
+}
+
+@section Head {
+    <meta name="description" content="Aquí podrás descargar o consultar los valores cuotas que se encuentran registrados en nuestro sistema." />
+}
+
+@section Scripts {
+    <script src="~/js/AccederCuotas.js" asp-append-version="true"></script>
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>
+    Aquí podrás descargar o consultar los valores cuotas que se encuentran registrados en nuestro sistema.
+</p>
+<h6>A continuación podrás descargar la información en un archivo CSV:</h6>
+<table class="table table-bordered sinBordeInterno" style="margin-top: 20px; margin-bottom: 1rem; table-layout:fixed; width:100%; text-align:center;">
+    <tr>
+        <th style="text-align:center; width:50%;">AFP</th>
+        <th style="text-align:center; width:50%;">FONDO</th>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CAPITAL" id="afpCapital" checked>
+                <label class="form-check-label em6" for="afpCapital">
+                    AFP Capital
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="A" id="fondoA" checked>
+                <label class="form-check-label em5" for="fondoA">
+                    Fondo A
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CUPRUM" id="afpCuprum" checked>
+                <label class="form-check-label em6" for="afpCuprum">
+                    AFP Cuprum
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="B" id="fondoB" checked>
+                <label class="form-check-label em5" for="fondoB">
+                    Fondo B
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="HABITAT" id="afpHabitat" checked>
+                <label class="form-check-label em6" for="afpHabitat">
+                    AFP Habitat
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="C" id="fondoC" checked>
+                <label class="form-check-label em5" for="fondoC">
+                    Fondo C
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="MODELO" id="afpModelo" checked>
+                <label class="form-check-label em6" for="afpModelo">
+                    AFP Modelo
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="D" id="fondoD" checked>
+                <label class="form-check-label em5" for="fondoD">
+                    Fondo D
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PLANVITAL" id="afpPlanvital" checked>
+                <label class="form-check-label em6" for="afpPlanvital">
+                    AFP PlanVital
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="E" id="fondoE" checked>
+                <label class="form-check-label em5" for="fondoE">
+                    Fondo E
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PROVIDA" id="afpProvida" checked>
+                <label class="form-check-label em6" for="afpProvida">
+                    AFP ProVida
+                </label>
+            </div>
+        </td>
+        <td rowspan="2"></td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="UNO" id="afpUno" checked>
+                <label class="form-check-label em6" for="afpUno">
+                    AFP Uno
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align:center;">RANGO DE FECHAS</th>
+    </tr>
+    <tr>
+        <td colspan="2" class="pl-3 pr-3 pt-2 pb-2">
+            <div style="width:100%;">
+                <div class="input-group input-daterange">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaInicio" />
+                    <div class="input-group-append input-group-prepend">
+                        <span class="input-group-text">
+                            <label style="margin-bottom:0px;">al</label>
+                        </span>
+                    </div>
+
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaFinal" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="alertaDescargarCSV" style="display: none; height: 54px;" class="alert alert-danger alert-dismissible">
+    <p class="mb-0 mt-1"></p>
+    <button type="button" class="close" aria-label="Cerrar" onclick="$(this).parent('div').fadeOut('fast');">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<button id="btnDescargarCSV" type="button" style="width:33%;" class="btn btn-primary pl-5 pr-5 pb-2 pt-2 mb-1">Descargar</button>
+
+<hr />
+
+<h6>
+    Si lo que requieres no es un archivo sino acceso a una API de consulta, puedes utilizar la siguiente
+    configuración:
+</h6>
+<table class="table table-bordered mt-3 mb-3">
+    <tr>
+        <th style="text-align: center; min-width: 9em;">URL API</th>
+        @if (Model) {
+            <td id="urlAPI">https://localhost:44360/api/Cuota/ObtenerCuotas</td>
+        } else {
+            <td id="urlAPI">https://www.quetalmiafp.cl/api/Cuota/ObtenerCuotas</td>
+        }
+    </tr>
+    <tr>
+        <th style="text-align: center;">Método HTTP</th>
+        <td>GET</td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align: center;">Parámetros</th>
+    </tr>
+    <tr>
+        <th style="text-align: center;">listaAFPs</th>
+        <td>
+            Lista de los nombres de las AFPs que se desean consultar separados por coma ",". Ejemplo: CAPITAL,CUPRUM,HABITAT
+        </td>
+    </tr>
+    <tr>
+        <th style="text-align: center;">listaFondos</th>
+        <td>
+            Lista de los fondos que se desean consultar separados por coma ",". Ejemplo: A,B,C
+        </td>
+    </tr>
+    <tr>
+        <th style="text-align: center;">fechaInicial</th>
+        <td>
+            Fecha con formato dd/mm/aaaa para indicar el rango inicial de la consulta. Ejemplo: 01/01/2020
+        </td>
+    </tr>
+    <tr>
+        <th style="text-align: center;">fechaFinal</th>
+        <td>
+            Fecha con formato dd/mm/aaaa para indicar el rango final de la consulta. Ejemplo: 31/12/2020
+        </td>
+    </tr>
+</table>
+<h6>
+    Ejemplo de parámetros a utilizar:
+</h6>
+<table class="table table-bordered sinBordeInterno" style="margin-top: 20px; margin-bottom: 20px; table-layout:fixed; width:100%; text-align:center;">
+    <tr>
+        <th style="text-align:center; width:50%;">AFP</th>
+        <th style="text-align:center; width:50%;">FONDO</th>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CAPITAL" id="afpCapitalEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em6" for="afpCapital">
+                    AFP Capital
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="A" id="fondoAEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em5" for="fondoA">
+                    Fondo A
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CUPRUM" id="afpCuprumEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em6" for="afpCuprum">
+                    AFP Cuprum
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="B" id="fondoBEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em5" for="fondoB">
+                    Fondo B
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="HABITAT" id="afpHabitatEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em6" for="afpHabitat">
+                    AFP Habitat
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="C" id="fondoCEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em5" for="fondoC">
+                    Fondo C
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="MODELO" id="afpModeloEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpModelo">
+                    AFP Modelo
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="D" id="fondoDEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em5" for="fondoD">
+                    Fondo D
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PLANVITAL" id="afpPlanvitalEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpPlanvital">
+                    AFP PlanVital
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="E" id="fondoEEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em5" for="fondoE">
+                    Fondo E
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PROVIDA" id="afpProvidaEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpProvida">
+                    AFP ProVida
+                </label>
+            </div>
+        </td>
+        <td rowspan="2"></td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="UNO" id="afpUnoEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpUno">
+                    AFP Uno
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align:center;">RANGO DE FECHAS</th>
+    </tr>
+    <tr>
+        <td colspan="2" class="pl-3 pr-3 pt-2 pb-2">
+            <div style="width:100%;">
+                <div class="input-group input-daterange">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaInicioEjemplo" onchange="actualizarUrlEjemplo()" />
+                    <div class="input-group-append input-group-prepend">
+                        <span class="input-group-text">
+                            <label style="margin-bottom:0px;">al</label>
+                        </span>
+                    </div>
+
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaFinalEjemplo" onchange="actualizarUrlEjemplo()" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="input-group mt-3">
+    <div class="input-group-prepend">
+        <span class="input-group-text" style="width: 9em;">URL Resultante</span>
+    </div>
+    <textarea style="word-break:break-all; resize:none; background-color:#fff;" class="form-control" id="urlResultanteEjemplo" readonly rows="4"></textarea>
+</div>
+
+<button id="btnConsultaAPIEjemplo" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2 mt-3" onclick="consultaAPIEjemplo()">
+    <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    <div style="display:inline-block;">Probar Consulta</div>
+</button>
+
+<div class="input-group mt-3" style="display: none;">
+    <div class="input-group-prepend">
+        <span class="input-group-text" style="width: 9em;">JSON Resultado</span>
+    </div>
+    <textarea style="word-break:break-all; resize:none; background-color:#fff;" class="form-control" id="resultadoEjemplo" readonly rows="20"></textarea>
+</div>

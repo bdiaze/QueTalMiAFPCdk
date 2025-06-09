@@ -1,0 +1,166 @@
+﻿@using QueTalMiAFP.Models.ViewModels
+@{
+    ViewData["Title"] = "Simulador de Ganancias";
+}
+
+@section Head {
+    <meta name="description" content="Aquí podrás simular las ganancias en pesos que pudiste obtener
+          según las rentabilidades resultantes de cada AFP en cierto periodo de tiempo,
+          descontando los costos de comisión por administración correspondiente a dicho
+          periodo." />
+}
+
+@section Scripts {
+    <script src="~/js/Simulador.js" asp-append-version="true"></script>
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="mt-3">
+    Aquí podrás simular las ganancias en pesos que pudiste obtener
+    según las rentabilidades resultantes de cada AFP en cierto periodo de tiempo,
+    descontando los costos de comisión por administración correspondiente a dicho
+    periodo.
+</p>
+
+<hr />
+
+<h6>
+    Para obtener las ganancias o pérdidas que pudiste generar en tu
+    cuenta de capitalización individual de cotizaciones obligatorias, favor ingresa
+    a continuación tu sueldo mensual imponible, el día aproximado en que tu empleador
+    paga tus cotizaciones y el rango de fechas que se utilizará para determinar la
+    rentabilidad final:
+</h6>
+
+<div class="w-100 mt-3">
+    <table class="w-100">
+        <tr>
+            <td>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" for="sueldoMensual">Sueldo Imp.:</span>
+                    </div>
+                    <input value="@ViewBag.SueldoImponible" type="text" class="form-control" id="sueldoMensual" style="width: 5rem;">
+                </div>
+            </td>
+            <td>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" for="diaPagoCotiz">Día Pago Cotiz.:</span>
+                    </div>
+                    <select class="custom-select" id="diaPagoCotiz" style="width: 1rem;">
+                        @for (int i = 1; i <= 31; i++) {
+                            @if (i != ViewBag.DiaCotizacion) {
+                                <option value="@i">@i</option>
+
+                            } else {
+                                <option value="@i" selected>@i</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="input-group input-daterange">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+
+                    <input value="@ViewBag.UltimaFechaTodosValoresCuota.AddYears(-1).ToString("dd/MM/yyyy")" type="text" class="form-control inputFiltrarRent" name="fechaInicio" id="fechaInicio" />
+                    <div class="input-group-append input-group-prepend">
+                        <span class="input-group-text">
+                            <label style="margin-bottom:0px;">al</label>
+                        </span>
+                    </div>
+
+                    <input value="@ViewBag.UltimaFechaTodosValoresCuota.ToString("dd/MM/yyyy")" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                    <button id="btnFiltrarFechas" type="button" style="width:20%;" class="btn btn-primary pb-1 pt-1 ml-3" onclick="btnFiltrarGanancias()">
+                        <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <div style="display:inline-block;">Filtrar</div>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="card mb-3 mt-2 ml-1 mr-1">
+    <div class="card-header pt-0 pb-0" id="headingGPFiltrosAvanzados">
+        <button style="font-size: 0.8rem" class="btn btn-block text-left btnNoShadow p-1" type="button" data-toggle="collapse" data-target="#collapseGPFiltrosAvanzados" aria-expanded="false" aria-controls="collapseGPFiltrosAvanzados">
+            Filtros Avanzados
+            <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
+            <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
+        </button>
+    </div>
+    <div id="collapseGPFiltrosAvanzados" class="collapse">
+        <div class="card-body p-1">
+            <table class="w-100">
+                <tr>
+                    <td class="w-50">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" for="ahorroInicialMaximo">Ahorro Inicial Máximo:</span>
+                            </div>
+                            <input value="@ViewBag.AhorroInicialMaximo" type="text" class="form-control" id="ahorroInicialMaximo" style="width: 5rem;">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" for="efectuarSimulacionCada">Efectuar Simulación Cada:</span>
+                            </div>
+                            <input value="@ViewBag.EfectuarSimulacionCada" type="text" class="form-control" id="efectuarSimulacionCada" style="width: 5rem;">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
+    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
+        <div class="card-header" id="headingGPFondo@(fondo)">
+            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseGPFondo@(fondo)" aria-expanded="false" aria-controls="collapseGPFondo@(fondo)">
+                CUENTA DE COTIZACIONES OBLIGATORIAS - FONDO @(fondo)
+                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
+                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
+            </button>
+        </div>
+        <div id="collapseGPFondo@(fondo)" class="collapse">
+            <div class="card-body pt-0">
+                <div class="chartSimulacion" id="chartGananPesos@(fondo)"></div>
+            </div>
+        </div>
+    </div>
+}
+
+<!--
+<hr />
+@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
+    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
+        <div class="card-header" id="headingCAVFondo@(fondo)">
+            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseCAVFondo@(fondo)" aria-expanded="false" aria-controls="collapseCAVFondo@(fondo)">
+                CUENTA DE AHORRO VOLUNTARIO - CUENTA 2 - FONDO @(fondo)
+                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
+                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
+            </button>
+        </div>
+        <div id="collapseCAVFondo@(fondo)" class="collapse">
+            <div class="card-body pt-0">
+                <div class="chartSimulacion" id="chartCAV@(fondo)"></div>
+            </div>
+        </div>
+    </div>
+}
+-->
