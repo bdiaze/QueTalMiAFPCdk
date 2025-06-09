@@ -1,4 +1,4 @@
-namespace QueTalMiAFPCdk.Models
+namespace QueTalMiAFPCdk.Models.ViewModels
 {
     public class ErrorViewModel
     {
