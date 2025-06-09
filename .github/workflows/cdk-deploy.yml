@@ -41,6 +41,11 @@ jobs:
             - name: Publish .NET Application
               run: dotnet publish /p:PublishDir=../publish /p:PublishReadyToRun=true -r linux-arm64 --self-contained true 
               
+            - name: Creación appsettings.json
+              env:
+                  APPSETTINGS: ${{ secrets.APPSETTINGS }}
+              run: echo "$APPSETTINGS" > ./publish/appsettings.json
+              
             - name: Copy files to EC2
               env:
                   EC2_HOST: ${{ vars.EC2_HOST }}
