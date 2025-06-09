@@ -1,0 +1,4 @@
+﻿Sitemap: https://www.quetalmiafp.cl/sitemap.xml
+
+User-agent: *
+Disallow: /Extractor/
