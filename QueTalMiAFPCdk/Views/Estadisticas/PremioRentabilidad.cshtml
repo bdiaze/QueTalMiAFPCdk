@@ -1,0 +1,29 @@
+﻿@using QueTalMiAFP.Models.Others
+@model IEnumerable<RentabilidadReal>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Premio a la Rentabilidad - ¿Qué tal mi AFP?</title>
+    <meta name="robots" content="noindex">
+    <meta name="description" content="Y el premio a la mejor rentabilidad promedio en el último año es para..." />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div style="width: 700px; text-align: center;">
+        <h2 class="mt-0 font-weight-bold">¡Premio a la Mejor Rentabilidad!</h2>
+        <h6 style="text-align: center; font-size: .8rem">*según rentabilidad promedio del último año</h6>
+        @if (ViewBag.UrlImagenPrimerLugar != null) {
+            <img style="position: absolute; top: 80px; left: 250px; width: 200px; z-index: 20;" src="@ViewBag.UrlImagenPrimerLugar" />
+        }
+        @if (ViewBag.UrlImagenSegundoLugar != null) {
+            <img style="position: absolute; top: 145px; left: 490px; width: 200px; z-index: 15; " src="@ViewBag.UrlImagenSegundoLugar" />
+        }
+        @if (ViewBag.UrlImagenTercerLugar != null) {
+            <img style="position: absolute; top: 185px; left: 15px; width: 200px; z-index: 10; " src="@ViewBag.UrlImagenTercerLugar" />
+        }
+        <img style="position: absolute; top: 150px; left: 100px; width: 500px;" src="~/images/podium.png" />
+    </div>
+</body>
+</html>
