@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QueTalMiAFP.Models.Entities;
 using QueTalMiAFP.Models.Others;
+using QueTalMiAFP.Services;
 using QueTalMiAFP.Services.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 
-namespace QueTalMiAFP.Services {
-	public class Extractor {
+namespace QueTalMiAFPCdk.Services {
+	public class Extractor(IConfiguration configuration) {
 		public const string NOMBRE_CAPITAL = "CAPITAL";
 		public const string NOMBRE_CUPRUM = "CUPRUM";
 		public const string NOMBRE_HABITAT = "HABITAT";
@@ -24,60 +25,43 @@ namespace QueTalMiAFP.Services {
 		public const string NOMBRE_PROVIDA = "PROVIDA";
 		public const string NOMBRE_UNO = "UNO";
 
-		public static HashSet<string> AFPs = new HashSet<string>() {
+		public static readonly HashSet<string> AFPs = [
 			NOMBRE_CAPITAL, NOMBRE_CUPRUM, NOMBRE_HABITAT,
 			NOMBRE_MODELO, NOMBRE_PLANVITAL, NOMBRE_PROVIDA,
-			NOMBRE_UNO };
+			NOMBRE_UNO ];
 
-		public List<Log> Logs = new List<Log>();
+		public List<Log> Logs = [];
 
-		public readonly List<Uf> UFS_NO_ENCONTRADAS = new List<Uf>() {
+		public readonly List<Uf> UFS_NO_ENCONTRADAS = [
 			new Uf() { Fecha = new DateTime(2015, 12, 12), Valor = 25629.09M },
 			new Uf() { Fecha = new DateTime(2015, 12, 31), Valor = 25629.09M }
-		};
+		];
 
-		public readonly List<Uf> UFS_ERRONEAS = new List<Uf>() {
+		public readonly List<Uf> UFS_ERRONEAS = [
 			new Uf() { Fecha = new DateTime(2014, 12, 29), Valor = 24627.10M },
 			new Uf() { Fecha = new DateTime(2014, 12, 30), Valor = 24627.10M }
-		};
+		];
 
-		private readonly string _afpModeloUrlApiBase;
-        private readonly string _afpModeloV2UrlApiBase;
-        private readonly string _afpModeloV3UrlApiBase;
-        private readonly string _afpModeloV3Base64Key;
-		private readonly string _afpModeloV3Base64IV;
-        private readonly string _afpCuprumUrlApiBase;
-        private readonly string _afpCapitalUrlApiBase;
-        private readonly string _afpHabitatUrlApiBase;
-        private readonly string _afpPlanvitalUrlApiBase;
-        private readonly string _afpProvidaUrlApiBase;
-        private readonly string _afpUnoUrlApiBase;
-        private readonly string _valoresUfUrlApiBase;
-        private readonly string _comisionesUrlApiBase;
-        private readonly string _comisionesCavUrlApiBase;
+		private readonly string _afpModeloUrlApiBase = configuration.GetValue<string>("Extractor:AFPModelo:UrlApiBase")!;
+        private readonly string _afpModeloV2UrlApiBase = configuration.GetValue<string>("Extractor:AFPModeloV2:UrlApiBase")!;
+        private readonly string _afpModeloV3UrlApiBase = configuration.GetValue<string>("Extractor:AFPModeloV3:UrlApiBase")!;
+        private readonly string _afpModeloV3Base64Key = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64Key")!;
+		private readonly string _afpModeloV3Base64IV = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64IV")!;
+        private readonly string _afpCuprumUrlApiBase = configuration.GetValue<string>("Extractor:AFPCuprum:UrlApiBase")!;
+        private readonly string _afpCapitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPCapital:UrlApiBase")!;
+        private readonly string _afpHabitatUrlApiBase = configuration.GetValue<string>("Extractor:AFPHabitat:UrlApiBase")!;
+        private readonly string _afpPlanvitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPPlanvital:UrlApiBase")!;
+        private readonly string _afpProvidaUrlApiBase = configuration.GetValue<string>("Extractor:AFPProvida:UrlApiBase")!;
+        private readonly string _afpUnoUrlApiBase = configuration.GetValue<string>("Extractor:AFPUno:UrlApiBase")!;
+        private readonly string _valoresUfUrlApiBase = configuration.GetValue<string>("Extractor:ValoresUf:UrlApiBase")!;
+        private readonly string _comisionesUrlApiBase = configuration.GetValue<string>("Extractor:Comisiones:UrlApiBase")!;
+        private readonly string _comisionesCavUrlApiBase = configuration.GetValue<string>("Extractor:ComisionesCav:UrlApiBase")!;
 
-        public Extractor(IConfiguration configuration) {
-			_afpModeloUrlApiBase = configuration.GetValue<string>("Extractor:AFPModelo:UrlApiBase")!;
-			_afpModeloV2UrlApiBase = configuration.GetValue<string>("Extractor:AFPModeloV2:UrlApiBase")!;
-			_afpModeloV3UrlApiBase = configuration.GetValue<string>("Extractor:AFPModeloV3:UrlApiBase")!;
-            _afpModeloV3Base64Key = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64Key")!;
-            _afpModeloV3Base64IV = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64IV")!;
-            _afpCuprumUrlApiBase = configuration.GetValue<string>("Extractor:AFPCuprum:UrlApiBase")!;
-            _afpCapitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPCapital:UrlApiBase")!;
-            _afpHabitatUrlApiBase = configuration.GetValue<string>("Extractor:AFPHabitat:UrlApiBase")!;
-            _afpPlanvitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPPlanvital:UrlApiBase")!;
-            _afpProvidaUrlApiBase = configuration.GetValue<string>("Extractor:AFPProvida:UrlApiBase")!;
-            _afpUnoUrlApiBase = configuration.GetValue<string>("Extractor:AFPUno:UrlApiBase")!;
-            _valoresUfUrlApiBase = configuration.GetValue<string>("Extractor:ValoresUf:UrlApiBase")!;
-            _comisionesUrlApiBase = configuration.GetValue<string>("Extractor:Comisiones:UrlApiBase")!;
-            _comisionesCavUrlApiBase = configuration.GetValue<string>("Extractor:ComisionesCav:UrlApiBase")!;
-        }
-
-        public async Task<List<Cuota>> obtenerCuotasModelo(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        public async Task<List<Cuota>> ObtenerCuotasModelo(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_MODELO,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
@@ -93,39 +77,36 @@ namespace QueTalMiAFP.Services {
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api);
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							JArray arreglo = JArray.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JArray arreglo = JArray.Parse(contenido);
 
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (JObject nodoFondo in arreglo) {
-								string tipoFondo = nodoFondo["name"]!.Value<string>()!.Replace("Fondo ", "").Trim();
-								foreach (JArray valorCuota in nodoFondo["data"]!) {
-									DateTime fecha = DateTimeOffset.FromUnixTimeMilliseconds((long)valorCuota[0].Value<decimal>()).UtcDateTime;
-									decimal valor = valorCuota[1].Value<decimal>();
-									retorno.Add(new Cuota() {
-										Afp = NOMBRE_MODELO,
-										Fecha = fecha,
-										Fondo = tipoFondo,
-										Valor = valor
-									});
-								}
-							}
+                List<Cuota> retorno = [];
+                foreach (JObject nodoFondo in arreglo.Cast<JObject>()) {
+                    string tipoFondo = nodoFondo["name"]!.Value<string>()!.Replace("Fondo ", "").Trim();
+                    foreach (JArray valorCuota in nodoFondo["data"]!.Cast<JArray>()) {
+                        DateTime fecha = DateTimeOffset.FromUnixTimeMilliseconds((long)valorCuota[0].Value<decimal>()).UtcDateTime;
+                        decimal valor = valorCuota[1].Value<decimal>();
+                        retorno.Add(new Cuota() {
+                            Afp = NOMBRE_MODELO,
+                            Fecha = fecha,
+                            Fondo = tipoFondo,
+                            Valor = valor
+                        });
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-								NOMBRE_MODELO,
-								fondo != null ? fondo : "*",
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                    NOMBRE_MODELO,
+                    fondo ?? "*",
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_MODELO,
 					FechaInicio = fechaInicio,
@@ -135,11 +116,11 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> obtenerCuotasModeloV2(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		public async Task<List<Cuota>> ObtenerCuotasModeloV2(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
             try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_MODELO,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
@@ -156,51 +137,48 @@ namespace QueTalMiAFP.Services {
 				byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
 				request.ContentLength = byteArray.Length;
 				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray, 0, byteArray.Length);
+					await dataStream.WriteAsync(byteArray);
                 }
 
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-                            JObject json = JObject.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JObject json = JObject.Parse(contenido);
 
-                            List<string> listaFondos;
-							if (fondo != null) {
-								listaFondos = new List<string>() { fondo };
-							} else {
-								listaFondos = new List<string>() { "A", "B", "C", "D", "E" };
-							}
-
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (string tipoFondo in listaFondos) {
-								foreach (JObject fechaValor in json["wmValoresCuotaAFPResponse"]!["wmValoresCuotaAFPResult"]!["diffgram"]!["NewDataSet"]!["TABLA_VALORES_CUOTA_AFP"]!) {
-                                    DateTime fecha = fechaValor["FECHA"]!.Value<DateTime>().ToUniversalTime().Date;
-                                    if (fechaInicio <= fecha && fecha <= fechaFinal) {
-										decimal valor = decimal.Parse(fechaValor["FONDO_" + tipoFondo]!.Value<string>()!.Replace(",", "."), CultureInfo.InvariantCulture);
-										retorno.Add(new Cuota() {
-											Afp = NOMBRE_MODELO,
-											Fecha = fecha,
-											Fondo = tipoFondo,
-											Valor = valor
-										});
-									}
-								}
-							}
-
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-								NOMBRE_MODELO,
-								fondo != null ? fondo : "*",
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
-
-							return retorno;
-						}
-					}
+                List<string> listaFondos;
+                if (fondo != null) {
+                    listaFondos = [fondo];
+                } else {
+                    listaFondos = ["A", "B", "C", "D", "E"];
                 }
 
-			} catch (Exception ex) {
+                List<Cuota> retorno = [];
+                foreach (string tipoFondo in listaFondos) {
+                    foreach (JObject fechaValor in json["wmValoresCuotaAFPResponse"]!["wmValoresCuotaAFPResult"]!["diffgram"]!["NewDataSet"]!["TABLA_VALORES_CUOTA_AFP"]!.Cast<JObject>()) {
+                        DateTime fecha = fechaValor["FECHA"]!.Value<DateTime>().ToUniversalTime().Date;
+                        if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                            decimal valor = decimal.Parse(fechaValor["FONDO_" + tipoFondo]!.Value<string>()!.Replace(",", "."), CultureInfo.InvariantCulture);
+                            retorno.Add(new Cuota() {
+                                Afp = NOMBRE_MODELO,
+                                Fecha = fecha,
+                                Fondo = tipoFondo,
+                                Valor = valor
+                            });
+                        }
+                    }
+                }
+
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                    NOMBRE_MODELO,
+                    fondo ?? "*",
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
+
+                return retorno;
+
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_MODELO,
 					FechaInicio = fechaInicio,
@@ -210,11 +188,11 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-        public async Task<List<Cuota>> obtenerCuotasModeloV3(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        public async Task<List<Cuota>> ObtenerCuotasModeloV3(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
             try {
                 RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
                     NOMBRE_MODELO,
-                    fondo != null ? fondo : "*",
+                    fondo ?? "*",
                     fechaInicio.ToString("dd/MM/yyyy"),
                     fechaFinal.ToString("dd/MM/yyyy")));
 
@@ -235,53 +213,50 @@ namespace QueTalMiAFP.Services {
                 byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
                 request.ContentLength = byteArray.Length;
                 using (Stream dataStream = await request.GetRequestStreamAsync()) {
-                    await dataStream.WriteAsync(byteArray, 0, byteArray.Length);
+                    await dataStream.WriteAsync(byteArray);
                 }
 
-                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-                    using (Stream stream = response.GetResponseStream()) {
-                        using (StreamReader reader = new StreamReader(stream)) {
-                            string contenido = await reader.ReadToEndAsync();
-                            JObject json = JObject.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JObject json = JObject.Parse(contenido);
 
-							string respuestaEncriptada = json["respuesta"]!.Value<string>()!;
-							string respuesta = Aes256Cbc.Desencriptar(respuestaEncriptada, base64Key, base64IV);
-							json = JObject.Parse(respuesta);
+                string respuestaEncriptada = json["respuesta"]!.Value<string>()!;
+                string respuesta = Aes256Cbc.Desencriptar(respuestaEncriptada, base64Key, base64IV);
+                json = JObject.Parse(respuesta);
 
-                            List<string> listaFondos;
-                            if (fondo != null) {
-                                listaFondos = new List<string>() { fondo };
-                            } else {
-                                listaFondos = new List<string>() { "A", "B", "C", "D", "E" };
-                            }
+                List<string> listaFondos;
+                if (fondo != null) {
+                    listaFondos = [fondo];
+                } else {
+                    listaFondos = ["A", "B", "C", "D", "E"];
+                }
 
-                            List<Cuota> retorno = new List<Cuota>();
-                            foreach (string tipoFondo in listaFondos) {
-                                foreach (JObject fechaValor in json["wmValoresCuotaAFPResponse"]!["wmValoresCuotaAFPResult"]!["diffgram"]!["NewDataSet"]!["TABLA_VALORES_CUOTA_AFP"]!) {
-                                    DateTime fecha = fechaValor["FECHA"]!.Value<DateTime>().ToUniversalTime().Date;
-                                    if (fechaInicio <= fecha && fecha <= fechaFinal) {
-                                        decimal valor = decimal.Parse(fechaValor["FONDO_" + tipoFondo]!.Value<string>()!.Replace(",", "."), CultureInfo.InvariantCulture);
-                                        retorno.Add(new Cuota() {
-                                            Afp = NOMBRE_MODELO,
-                                            Fecha = fecha,
-                                            Fondo = tipoFondo,
-                                            Valor = valor
-                                        });
-                                    }
-                                }
-                            }
-
-                            RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-                                NOMBRE_MODELO,
-                                fondo != null ? fondo : "*",
-                                fechaInicio.ToString("dd/MM/yyyy"),
-                                fechaFinal.ToString("dd/MM/yyyy"),
-                                retorno.Count));
-
-                            return retorno;
+                List<Cuota> retorno = [];
+                foreach (string tipoFondo in listaFondos) {
+                    foreach (JObject fechaValor in json["wmValoresCuotaAFPResponse"]!["wmValoresCuotaAFPResult"]!["diffgram"]!["NewDataSet"]!["TABLA_VALORES_CUOTA_AFP"]!.Cast<JObject>()) {
+                        DateTime fecha = fechaValor["FECHA"]!.Value<DateTime>().ToUniversalTime().Date;
+                        if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                            decimal valor = decimal.Parse(fechaValor["FONDO_" + tipoFondo]!.Value<string>()!.Replace(",", "."), CultureInfo.InvariantCulture);
+                            retorno.Add(new Cuota() {
+                                Afp = NOMBRE_MODELO,
+                                Fecha = fecha,
+                                Fondo = tipoFondo,
+                                Valor = valor
+                            });
                         }
                     }
                 }
+
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                    NOMBRE_MODELO,
+                    fondo ?? "*",
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
+
+                return retorno;
 
             } catch (Exception ex) {
                 throw new ExcepcionValorCuota(ex) {
@@ -293,59 +268,56 @@ namespace QueTalMiAFP.Services {
             }
         }
 
-        public async Task<List<Cuota>> obtenerCuotasCuprum(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        public async Task<List<Cuota>> ObtenerCuotasCuprum(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_CUPRUM,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
 				string url_api_base = _afpCuprumUrlApiBase;
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-                request.UserAgent = getRandomUserAgent();
+                request.UserAgent = GetRandomUserAgent();
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							JObject json = JObject.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JObject json = JObject.Parse(contenido);
 
-							List<string> listaFondos;
-							if (fondo != null) {
-								listaFondos = new List<string>() { fondo };
-							} else {
-								listaFondos = new List<string>() { "A", "B", "C", "D", "E" };
-							}
+                List<string> listaFondos;
+                if (fondo != null) {
+                    listaFondos = [fondo];
+                } else {
+                    listaFondos = ["A", "B", "C", "D", "E"];
+                }
 
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (string tipoFondo in listaFondos) {
-								foreach (JArray fechaValor in json[tipoFondo]!) {
-									DateTime fecha = DateTimeOffset.FromUnixTimeMilliseconds((long)fechaValor[0].Value<decimal>()).UtcDateTime;
-									if (fechaInicio <= fecha && fecha <= fechaFinal) {
-										retorno.Add(new Cuota() {
-											Afp = NOMBRE_CUPRUM,
-											Fecha = fecha,
-											Fondo = tipoFondo,
-											Valor = fechaValor[1].Value<decimal>()
-										});
-									}
-								}
-							}
+                List<Cuota> retorno = [];
+                foreach (string tipoFondo in listaFondos) {
+                    foreach (JArray fechaValor in json[tipoFondo]!.Cast<JArray>()) {
+                        DateTime fecha = DateTimeOffset.FromUnixTimeMilliseconds((long)fechaValor[0].Value<decimal>()).UtcDateTime;
+                        if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                            retorno.Add(new Cuota() {
+                                Afp = NOMBRE_CUPRUM,
+                                Fecha = fecha,
+                                Fondo = tipoFondo,
+                                Valor = fechaValor[1].Value<decimal>()
+                            });
+                        }
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-								NOMBRE_CUPRUM,
-								fondo != null ? fondo : "*",
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                    NOMBRE_CUPRUM,
+                    fondo ?? "*",
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_CUPRUM,
 					FechaInicio = fechaInicio,
@@ -355,68 +327,65 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> obtenerCuotasCapital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		public async Task<List<Cuota>> ObtenerCuotasCapital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_CAPITAL,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
 				string url_api_base = _afpCapitalUrlApiBase;
 				string url_api = string.Format(url_api_base,
-					HttpUtility.UrlEncode(fondo != null ? fondo : "A;B;C;D;E"),
+					HttpUtility.UrlEncode(fondo ?? "A;B;C;D;E"),
 					HttpUtility.UrlEncode(fechaInicio.ToString("dd/MM/yyyy")),
 					HttpUtility.UrlEncode(fechaFinal.ToString("dd/MM/yyyy")));
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api);
 				request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							contenido = contenido.Replace("\\\"", "\"");
-							contenido = contenido.Substring(1, contenido.Length - 2);
-							JObject json = JObject.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                contenido = contenido.Replace("\\\"", "\"");
+                contenido = contenido[1..^1];
+                JObject json = JObject.Parse(contenido);
 
-							List<string> tipoFondos;
-							if (fondo == null) {
-								tipoFondos = new List<string>() { "A", "B", "C", "D", "E" };
-							} else {
-								tipoFondos = new List<string>() { fondo };
-							}
+                List<string> tipoFondos;
+                if (fondo == null) {
+                    tipoFondos = ["A", "B", "C", "D", "E"];
+                } else {
+                    tipoFondos = [fondo];
+                }
 
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (string tipoFondo in tipoFondos) {
-								foreach(JObject nodoFondo in json["fondo" + tipoFondo]!) {
-									string fondoAux = nodoFondo["Serie"]!.Value<string>()!;
-									DateTime fecha = DateTimeOffset.FromUnixTimeMilliseconds(
-										long.Parse(nodoFondo["Dia"]!.Value<string>()!.Replace("\\/Date(", "").Replace(")\\/", ""))
-										).UtcDateTime;
-									fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
-									decimal valor = nodoFondo["ValorCuota"]!.Value<decimal>();
-									retorno.Add(new Cuota() {
-										Afp = NOMBRE_CAPITAL,
-										Fecha = fecha,
-										Fondo = fondoAux,
-										Valor = valor
-									});
-								}
-							}
+                List<Cuota> retorno = [];
+                foreach (string tipoFondo in tipoFondos) {
+                    foreach (JObject nodoFondo in json["fondo" + tipoFondo]!.Cast<JObject>()) {
+                        string fondoAux = nodoFondo["Serie"]!.Value<string>()!;
+                        DateTime fecha = DateTimeOffset.FromUnixTimeMilliseconds(
+                            long.Parse(nodoFondo["Dia"]!.Value<string>()!.Replace("\\/Date(", "").Replace(")\\/", ""))
+                            ).UtcDateTime;
+                        fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
+                        decimal valor = nodoFondo["ValorCuota"]!.Value<decimal>();
+                        retorno.Add(new Cuota() {
+                            Afp = NOMBRE_CAPITAL,
+                            Fecha = fecha,
+                            Fondo = fondoAux,
+                            Valor = valor
+                        });
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-								NOMBRE_CAPITAL,
-								fondo,
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                    NOMBRE_CAPITAL,
+                    fondo,
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_CAPITAL,
 					FechaInicio = fechaInicio,
@@ -426,11 +395,11 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> obtenerCuotasHabitat(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		public async Task<List<Cuota>> ObtenerCuotasHabitat(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_HABITAT,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
@@ -453,85 +422,82 @@ namespace QueTalMiAFP.Services {
 				byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
 				request.ContentLength = byteArray.Length;
 				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray, 0, byteArray.Length);
+					await dataStream.WriteAsync(byteArray);
 				}
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							
-							JArray arreglo;
-							try {
-								arreglo = JArray.Parse(contenido);
-							} catch(JsonReaderException) {
-								JObject objeto = JObject.Parse(contenido);
-								if (objeto["6"] != null) {
-									string mensajeError = objeto["6"]!.Value<string>()!;
-									string[] mensajeSeparado = mensajeError.Split("-");
-									if (mensajeSeparado.Length >= 2 && mensajeSeparado[0].Length >= 2) {
-										int ultimoDia = int.Parse(mensajeSeparado[0].Substring(mensajeSeparado[0].Length - 2));
-										int ultimoMes = int.Parse(mensajeSeparado[1]);
-										
-										DateTime ultimaFecha = new DateTime(
-											fechaFinal.Year,
-											ultimoMes,
-											ultimoDia
-										);
-										while (ultimaFecha > fechaFinal) {
-											ultimaFecha = ultimaFecha.AddYears(-1);
-										}
-										if (fechaInicio > ultimaFecha) {
-											fechaInicio = ultimaFecha;
-										}
-										return await obtenerCuotasHabitat(fechaInicio, ultimaFecha, fondo);
-									}
-								}
-								throw;
-							}
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
 
-							List<Cuota> retorno = new List<Cuota>();
-							int contFondo = 0;
-							for (int indFondo = 0; indFondo < 5; indFondo++) {
-								if (arreglo[indFondo] != null) {
-									JArray infoFondo = arreglo[indFondo].ToObject<JArray>()!;
-									string tipoFondo = infoFondo[0].Value<string>()!.Replace("FONDO ", "");
-									JArray valoresFondo = infoFondo;
-									valoresFondo.RemoveAt(0);
-									if (tipoFondo == fondo || fondo == null) {
-										JArray listaFechas = arreglo[6][contFondo]!.ToObject<JArray>()!;
-										for (int indValor = 0; indValor < valoresFondo.Count; indValor++) {
-											decimal valor = decimal.Parse(valoresFondo[indValor].Value<string>()!, CultureInfo.InvariantCulture);
-											string[] diaMesAnno = listaFechas[indValor].Value<string>()!.Split("-");
-											DateTime fecha = new DateTime(
-												int.Parse(diaMesAnno[2]),
-												int.Parse(diaMesAnno[1]),
-												int.Parse(diaMesAnno[0]));
-											if (fechaInicio <= fecha && fecha <= fechaFinal) {
-												retorno.Add(new Cuota() {
-													Afp = NOMBRE_HABITAT,
-													Fecha = fecha,
-													Fondo = tipoFondo,
-													Valor = valor
-												});
-											}
-										}
-									}
-									contFondo++;
-								}
-							}
+                JArray arreglo;
+                try {
+                    arreglo = JArray.Parse(contenido);
+                } catch (JsonReaderException) {
+                    JObject objeto = JObject.Parse(contenido);
+                    if (objeto["6"] != null) {
+                        string mensajeError = objeto["6"]!.Value<string>()!;
+                        string[] mensajeSeparado = mensajeError.Split("-");
+                        if (mensajeSeparado.Length >= 2 && mensajeSeparado[0].Length >= 2) {
+                            int ultimoDia = int.Parse(mensajeSeparado[0][^2..]);
+                            int ultimoMes = int.Parse(mensajeSeparado[1]);
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-									NOMBRE_HABITAT,
-									fondo != null ? fondo : "*",
-									fechaInicio.ToString("dd/MM/yyyy"),
-									fechaFinal.ToString("dd/MM/yyyy"),
-									retorno.Count));
+                            DateTime ultimaFecha = new(
+                                fechaFinal.Year,
+                                ultimoMes,
+                                ultimoDia
+                            );
+                            while (ultimaFecha > fechaFinal) {
+                                ultimaFecha = ultimaFecha.AddYears(-1);
+                            }
+                            if (fechaInicio > ultimaFecha) {
+                                fechaInicio = ultimaFecha;
+                            }
+                            return await ObtenerCuotasHabitat(fechaInicio, ultimaFecha, fondo);
+                        }
+                    }
+                    throw;
+                }
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                List<Cuota> retorno = [];
+                int contFondo = 0;
+                for (int indFondo = 0; indFondo < 5; indFondo++) {
+                    if (arreglo[indFondo] != null) {
+                        JArray infoFondo = arreglo[indFondo].ToObject<JArray>()!;
+                        string tipoFondo = infoFondo[0].Value<string>()!.Replace("FONDO ", "");
+                        JArray valoresFondo = infoFondo;
+                        valoresFondo.RemoveAt(0);
+                        if (tipoFondo == fondo || fondo == null) {
+                            JArray listaFechas = arreglo[6][contFondo]!.ToObject<JArray>()!;
+                            for (int indValor = 0; indValor < valoresFondo.Count; indValor++) {
+                                decimal valor = decimal.Parse(valoresFondo[indValor].Value<string>()!, CultureInfo.InvariantCulture);
+                                string[] diaMesAnno = listaFechas[indValor].Value<string>()!.Split("-");
+                                DateTime fecha = new(
+                                    int.Parse(diaMesAnno[2]),
+                                    int.Parse(diaMesAnno[1]),
+                                    int.Parse(diaMesAnno[0]));
+                                if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                                    retorno.Add(new Cuota() {
+                                        Afp = NOMBRE_HABITAT,
+                                        Fecha = fecha,
+                                        Fondo = tipoFondo,
+                                        Valor = valor
+                                    });
+                                }
+                            }
+                        }
+                        contFondo++;
+                    }
+                }
+
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                        NOMBRE_HABITAT,
+                        fondo ?? "*",
+                        fechaInicio.ToString("dd/MM/yyyy"),
+                        fechaFinal.ToString("dd/MM/yyyy"),
+                        retorno.Count));
+
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_HABITAT,
 					FechaInicio = fechaInicio,
@@ -541,11 +507,11 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> obtenerCuotasPlanvital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		public async Task<List<Cuota>> ObtenerCuotasPlanvital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}", 
 					NOMBRE_PLANVITAL,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
@@ -556,46 +522,43 @@ namespace QueTalMiAFP.Services {
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api);
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							JObject json = JObject.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JObject json = JObject.Parse(contenido);
 
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (JObject valoresFecha in json["quotaValues"]!) {
-								DateTime fecha = valoresFecha["date"]!.Value<DateTime>().ToUniversalTime();
-								fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
-								List<string> tipoFondos;
-								if (fondo == null) {
-									tipoFondos = new List<string>() { "A", "B", "C", "D", "E" };
-								} else {
-									tipoFondos = new List<string>() { fondo };
-								}
+                List<Cuota> retorno = [];
+                foreach (JObject valoresFecha in json["quotaValues"]!.Cast<JObject>()) {
+                    DateTime fecha = valoresFecha["date"]!.Value<DateTime>().ToUniversalTime();
+                    fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
+                    List<string> tipoFondos;
+                    if (fondo == null) {
+                        tipoFondos = ["A", "B", "C", "D", "E"];
+                    } else {
+                        tipoFondos = [fondo];
+                    }
 
-								foreach (string tipoFondo in tipoFondos) {
-									decimal valor = valoresFecha["fund" + tipoFondo]!.Value<decimal>();
-									retorno.Add(new Cuota() {
-										Afp = NOMBRE_PLANVITAL,
-										Fecha = fecha,
-										Fondo = tipoFondo,
-										Valor = valor
-									});
-								}
-							}
+                    foreach (string tipoFondo in tipoFondos) {
+                        decimal valor = valoresFecha["fund" + tipoFondo]!.Value<decimal>();
+                        retorno.Add(new Cuota() {
+                            Afp = NOMBRE_PLANVITAL,
+                            Fecha = fecha,
+                            Fondo = tipoFondo,
+                            Valor = valor
+                        });
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-									NOMBRE_PLANVITAL,
-									fondo != null ? fondo : "*",
-									fechaInicio.ToString("dd/MM/yyyy"),
-									fechaFinal.ToString("dd/MM/yyyy"),
-									retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                        NOMBRE_PLANVITAL,
+                        fondo ?? "*",
+                        fechaInicio.ToString("dd/MM/yyyy"),
+                        fechaFinal.ToString("dd/MM/yyyy"),
+                        retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_PLANVITAL,
 					FechaInicio = fechaInicio,
@@ -605,11 +568,11 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> obtenerCuotasProvida(DateTime mesAnno, DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		public async Task<List<Cuota>> ObtenerCuotasProvida(DateTime mesAnno, DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Mes/Año {2} - Fecha Inicio {3} - Fecha Final {4}",
 					NOMBRE_PROVIDA,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					mesAnno.ToString("MM/yyyy"),
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
@@ -637,58 +600,55 @@ namespace QueTalMiAFP.Services {
 				byte[] byteArray = Encoding.UTF8.GetBytes(body);
 				request.ContentLength = byteArray.Length;
 				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray, 0, byteArray.Length);
+					await dataStream.WriteAsync(byteArray);
 				}
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							XmlDocument xml = new XmlDocument();
-							xml.LoadXml(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                XmlDocument xml = new();
+                xml.LoadXml(contenido);
 
-							XmlNamespaceManager nsmgr = new XmlNamespaceManager(xml.NameTable);
-							nsmgr.AddNamespace("soap", "http://schemas.xmlsoap.org/soap/envelope/");
-							nsmgr.AddNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-							nsmgr.AddNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
+                XmlNamespaceManager nsmgr = new(xml.NameTable);
+                nsmgr.AddNamespace("soap", "http://schemas.xmlsoap.org/soap/envelope/");
+                nsmgr.AddNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+                nsmgr.AddNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
 
-							string strXmlData = xml.SelectSingleNode(".", nsmgr)!.InnerText;
-							XmlDocument xmlData = new XmlDocument();
-							xmlData.LoadXml(strXmlData);
+                string strXmlData = xml.SelectSingleNode(".", nsmgr)!.InnerText;
+                XmlDocument xmlData = new();
+                xmlData.LoadXml(strXmlData);
 
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (XmlNode nodoFund in xmlData.SelectNodes("//resp/data/fund")!) {
-								string[] diaMesAnno = nodoFund.SelectSingleNode("@date")!.InnerText.Split("-");
-								DateTime fecha = new DateTime(
-									int.Parse(diaMesAnno[2]),
-									int.Parse(diaMesAnno[1]),
-									int.Parse(diaMesAnno[0]));
-								string tipoFondo = nodoFund.SelectSingleNode("@type")!.InnerText.ToUpper();
-								decimal valor = decimal.Parse(nodoFund.SelectSingleNode("value")!.InnerText.Replace(".", "").Replace(",", "."), CultureInfo.InvariantCulture);
-								if (tipoFondo == fondo || fondo == null) {
-									if (fechaInicio <= fecha && fecha <= fechaFinal) {
-										retorno.Add(new Cuota() {
-											Afp = NOMBRE_PROVIDA,
-											Fecha = fecha,
-											Fondo = tipoFondo,
-											Valor = valor
-										});
-									}
-								}
-							}
+                List<Cuota> retorno = [];
+                foreach (XmlNode nodoFund in xmlData.SelectNodes("//resp/data/fund")!) {
+                    string[] diaMesAnno = nodoFund.SelectSingleNode("@date")!.InnerText.Split("-");
+                    DateTime fecha = new(
+                        int.Parse(diaMesAnno[2]),
+                        int.Parse(diaMesAnno[1]),
+                        int.Parse(diaMesAnno[0]));
+                    string tipoFondo = nodoFund.SelectSingleNode("@type")!.InnerText.ToUpper();
+                    decimal valor = decimal.Parse(nodoFund.SelectSingleNode("value")!.InnerText.Replace(".", "").Replace(",", "."), CultureInfo.InvariantCulture);
+                    if (tipoFondo == fondo || fondo == null) {
+                        if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                            retorno.Add(new Cuota() {
+                                Afp = NOMBRE_PROVIDA,
+                                Fecha = fecha,
+                                Fondo = tipoFondo,
+                                Valor = valor
+                            });
+                        }
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Mes/Año {2} - Fecha Inicio {3} - Fecha Final {4} - {5} Valores Cuota",
-								NOMBRE_PROVIDA,
-								fondo != null ? fondo : "*",
-								mesAnno.ToString("MM/yyyy"),
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Mes/Año {2} - Fecha Inicio {3} - Fecha Final {4} - {5} Valores Cuota",
+                    NOMBRE_PROVIDA,
+                    fondo ?? "*",
+                    mesAnno.ToString("MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_PROVIDA,
 					FechaInicio = fechaInicio,
@@ -698,11 +658,11 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> obtenerCuotasUno(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		public async Task<List<Cuota>> ObtenerCuotasUno(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_UNO,
-					fondo != null ? fondo : "*",
+                    fondo ?? "*",
 					fechaInicio.ToString("dd/MM/yyyy"),
 					fechaFinal.ToString("dd/MM/yyyy")));
 
@@ -712,55 +672,52 @@ namespace QueTalMiAFP.Services {
 					fechaFinal.AddDays(7).ToString("yyyy-MM-dd"));
 				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
 				request.Method = "POST";
-				request.UserAgent = getRandomUserAgent();
+				request.UserAgent = GetRandomUserAgent();
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
 				request.ContentType = "application/json;charset=UTF-8";
 				byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
 				request.ContentLength = byteArray.Length;
 				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray, 0, byteArray.Length);
+					await dataStream.WriteAsync(byteArray);
 				}
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							JObject json = JObject.Parse(contenido);
-							List<string> tiposFondo;
-							if (fondo == null) {
-								tiposFondo = new List<string>() { "A", "B", "C", "D", "E"};
-							} else {
-								tiposFondo = new List<string>() { fondo };
-							}
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JObject json = JObject.Parse(contenido);
+                List<string> tiposFondo;
+                if (fondo == null) {
+                    tiposFondo = ["A", "B", "C", "D", "E"];
+                } else {
+                    tiposFondo = [fondo];
+                }
 
-							List<Cuota> retorno = new List<Cuota>();
-							foreach (JObject fondoCuota in json["data"]!) {
-								DateTime fecha = fondoCuota["FECHA"]!.Value<DateTime>().ToUniversalTime();
-								fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
-								if (fechaInicio <= fecha && fecha <= fechaFinal) {
-									foreach (string tipoFondo in tiposFondo) {
-										decimal valor = decimal.Parse(fondoCuota["FONDO_" + tipoFondo]!.Value<string>()!.Replace(",", "."), CultureInfo.InvariantCulture);
-										retorno.Add(new Cuota() {
-											Afp = NOMBRE_UNO,
-											Fecha = fecha,
-											Fondo = tipoFondo,
-											Valor = valor
-										});
-									}
-								}
-							}
+                List<Cuota> retorno = [];
+                foreach (JObject fondoCuota in json["data"]!.Cast<JObject>()) {
+                    DateTime fecha = fondoCuota["FECHA"]!.Value<DateTime>().ToUniversalTime();
+                    fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
+                    if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                        foreach (string tipoFondo in tiposFondo) {
+                            decimal valor = decimal.Parse(fondoCuota["FONDO_" + tipoFondo]!.Value<string>()!.Replace(",", "."), CultureInfo.InvariantCulture);
+                            retorno.Add(new Cuota() {
+                                Afp = NOMBRE_UNO,
+                                Fecha = fecha,
+                                Fondo = tipoFondo,
+                                Valor = valor
+                            });
+                        }
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
-								NOMBRE_UNO,
-								fondo != null ? fondo : "*",
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                    NOMBRE_UNO,
+                    fondo ?? "*",
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionValorCuota(ex) {
 					Afp = NOMBRE_UNO,
 					FechaInicio = fechaInicio,
@@ -770,7 +727,7 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<HashSet<Uf>> obtenerValoresUF(DateTime anno, DateTime fechaInicio, DateTime fechaFinal) {			
+		public async Task<HashSet<Uf>> ObtenerValoresUF(DateTime anno, DateTime fechaInicio, DateTime fechaFinal) {			
 			try {
 				RegistrarLog(string.Format("Extrayendo valores UF de Mindicador - Año: {0} - Fecha Inicio {1} - Fecha Final {2}",
 					anno.Year,
@@ -782,49 +739,46 @@ namespace QueTalMiAFP.Services {
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api);
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync()) {
-					using (Stream stream = response.GetResponseStream()) {
-						using (StreamReader reader = new StreamReader(stream)) {
-							string contenido = await reader.ReadToEndAsync();
-							JObject json = JObject.Parse(contenido);
+                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+                JObject json = JObject.Parse(contenido);
 
-							HashSet<Uf> retorno = new HashSet<Uf>();
-							foreach(JObject valorUf in json["serie"]!) {
-								DateTime fecha = valorUf["fecha"]!.Value<DateTime>().ToUniversalTime();
-								fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
-								decimal valor = valorUf["valor"]!.Value<decimal>();
+                HashSet<Uf> retorno = [];
+                foreach (JObject valorUf in json["serie"]!.Cast<JObject>()) {
+                    DateTime fecha = valorUf["fecha"]!.Value<DateTime>().ToUniversalTime();
+                    fecha = new DateTime(fecha.Year, fecha.Month, fecha.Day);
+                    decimal valor = valorUf["valor"]!.Value<decimal>();
 
-								foreach (Uf uf in UFS_ERRONEAS) {
-									if (fecha == uf.Fecha) {
-										valor = uf.Valor;
-									}
-								}
+                    foreach (Uf uf in UFS_ERRONEAS) {
+                        if (fecha == uf.Fecha) {
+                            valor = uf.Valor;
+                        }
+                    }
 
-								if (fechaInicio <= fecha && fecha <= fechaFinal) {
-									retorno.Add(new Uf() {
-										Fecha = fecha,
-										Valor = valor
-									});
-								}
-							}
+                    if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                        retorno.Add(new Uf() {
+                            Fecha = fecha,
+                            Valor = valor
+                        });
+                    }
+                }
 
-							foreach(Uf uf in UFS_NO_ENCONTRADAS) {
-								if (fechaInicio <= uf.Fecha && uf.Fecha <= fechaFinal) {
-									retorno.Add(uf);
-								}
-							}
+                foreach (Uf uf in UFS_NO_ENCONTRADAS) {
+                    if (fechaInicio <= uf.Fecha && uf.Fecha <= fechaFinal) {
+                        retorno.Add(uf);
+                    }
+                }
 
-							RegistrarLog(string.Format("Terminó extracción de Mindicador - Año {0} - Fecha Inicio {1} - Fecha Final {2} - {3} Valores UF",
-								anno.Year,
-								fechaInicio.ToString("dd/MM/yyyy"),
-								fechaFinal.ToString("dd/MM/yyyy"),
-								retorno.Count));
+                RegistrarLog(string.Format("Terminó extracción de Mindicador - Año {0} - Fecha Inicio {1} - Fecha Final {2} - {3} Valores UF",
+                    anno.Year,
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy"),
+                    retorno.Count));
 
-							return retorno;
-						}
-					}
-				}
-			} catch (Exception ex) {
+                return retorno;
+            } catch (Exception ex) {
 				throw new ExcepcionUf(ex) {
 					FechaInicio = fechaInicio,
 					FechaFinal = fechaFinal
@@ -832,20 +786,20 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Comision>> obtenerComisiones(string? Afp, DateTime mesAnno) {
+		public async Task<List<Comision>> ObtenerComisiones(string? Afp, DateTime mesAnno) {
 			try {
 				RegistrarLog(string.Format("Extrayendo comisiones de SPensiones - {0} - Mes/Año {1}",
 						Afp ?? "Todas las AFPs",
 						mesAnno.ToString("MM/yyyy")));
 
-				await randomWait();
+				await RandomWait();
 
 				string url_api_base = _comisionesUrlApiBase; // 20210201
 				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMMdd"));
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api);
-				request.UserAgent = getRandomUserAgent();
-				request.Referer = getRandomReferer(1);
+				request.UserAgent = GetRandomUserAgent();
+				request.Referer = GetRandomReferer(1);
 				request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
 				request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
 				request.Headers.Add("Accept-Language", "es-MX,es;q=0.9,es-419;q=0.8,en;q=0.7");
@@ -854,14 +808,14 @@ namespace QueTalMiAFP.Services {
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
 				using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
 				using Stream stream = response.GetResponseStream();
-				using StreamReader reader = new StreamReader(stream);
+				using StreamReader reader = new(stream);
 				string contenido = await reader.ReadToEndAsync();
-				HtmlDocument htmlDoc = new HtmlDocument();
+				HtmlDocument htmlDoc = new();
 				htmlDoc.LoadHtml(contenido);
 
-				List<Comision> retorno = new List<Comision>();
+				List<Comision> retorno = [];
 				foreach (HtmlNode tabla in htmlDoc.DocumentNode.SelectNodes("//table")!) {
-					if (tabla.InnerHtml.ToLower().Contains("dep&oacute;sito")) {
+					if (tabla.InnerHtml.Contains("dep&oacute;sito", StringComparison.CurrentCultureIgnoreCase)) {
 						HtmlNodeCollection filas = tabla.SelectNodes("./tr")!;
 						if (filas.Count == 0) {
 							filas = tabla.SelectNodes("./tbody/tr")!;
@@ -907,20 +861,20 @@ namespace QueTalMiAFP.Services {
 			}
 		}
 
-		public async Task<List<Comision>> obtenerComisionesCAV(string? Afp, DateTime mesAnno) {
+		public async Task<List<Comision>> ObtenerComisionesCAV(string? Afp, DateTime mesAnno) {
 			try {
 				RegistrarLog(string.Format("Extrayendo comisiones CAV de SPensiones - {0} - Mes/Año {1}",
 						Afp ?? "Todas las AFPs",
 						mesAnno.ToString("MM/yyyy")));
 
-				await randomWait();
+				await RandomWait();
 
 				string url_api_base = _comisionesCavUrlApiBase; // 202102
 				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMM"));
 
 				HttpWebRequest request = WebRequest.CreateHttp(url_api);
-				request.UserAgent = getRandomUserAgent();
-				request.Referer = getRandomReferer(2);
+				request.UserAgent = GetRandomUserAgent();
+				request.Referer = GetRandomReferer(2);
 				request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
 				request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
 				request.Headers.Add("Accept-Language", "es-MX,es;q=0.9,es-419;q=0.8,en;q=0.7");
@@ -929,14 +883,14 @@ namespace QueTalMiAFP.Services {
 				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
 				using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
 				using Stream stream = response.GetResponseStream();
-				using StreamReader reader = new StreamReader(stream);
+				using StreamReader reader = new(stream);
 				string contenido = await reader.ReadToEndAsync();
-				HtmlDocument htmlDoc = new HtmlDocument();
+				HtmlDocument htmlDoc = new();
 				htmlDoc.LoadHtml(contenido);
 
-				List<Comision> retorno = new List<Comision>();
+				List<Comision> retorno = [];
 				foreach (HtmlNode tabla in htmlDoc.DocumentNode.SelectNodes("//table")!) {
-					if (tabla.InnerHtml.ToLower().Contains("comisiones de la cuenta de ahorro voluntario")) {
+					if (tabla.InnerHtml.Contains("comisiones de la cuenta de ahorro voluntario", StringComparison.CurrentCultureIgnoreCase)) {
 						HtmlNodeCollection filas = tabla.SelectNodes("./tr")!;
 						if (filas.Count == 0) {
 							filas = tabla.SelectNodes("./tbody/tr")!;
@@ -995,11 +949,11 @@ namespace QueTalMiAFP.Services {
 			});
 		}
 
-		private string getRandomReferer(int i = 1) {
-			List<string> list = new List<string> {
+		private static string GetRandomReferer(int i = 1) {
+			List<string> list = [
 				"https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-9847.html",
 				"https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-9598.html"
-			};
+			];
 
 			if (i == 1) {
 				list.Add("https://www.spensiones.cl/apps/estcom/estcom.php");
@@ -1017,13 +971,13 @@ namespace QueTalMiAFP.Services {
 				list.Add("https://www.spensiones.cl/apps/comisiones/getComisAPV.php?fecha=202101");
 			}
 
-			Random random = new Random(Guid.NewGuid().GetHashCode());
+			Random random = new(Guid.NewGuid().GetHashCode());
 			int index = random.Next(list.Count);
 			return list[index];
 		}
 
-		private string getRandomUserAgent() {
-			List<string> list = new List<string> {
+		private static string GetRandomUserAgent() {
+			List<string> list = [
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246",
@@ -1051,15 +1005,15 @@ namespace QueTalMiAFP.Services {
 				"Mozilla/5.0 (Linux; Android 6.0.1; E6653 Build/32.2.A.0.253) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.98 Mobile Safari/537.36",
 				"Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36",
 				"Mozilla/5.0 (Linux; Android 6.0; HTC One M9 Build/MRA58K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.98 Mobile Safari/537.3"
-			};
+			];
 
-			Random random = new Random(Guid.NewGuid().GetHashCode());
+			Random random = new(Guid.NewGuid().GetHashCode());
 			int index = random.Next(list.Count);
 			return list[index];
 		}
 
-		private Task randomWait() {
-			Random random = new Random(Guid.NewGuid().GetHashCode());
+		private static Task RandomWait() {
+			Random random = new(Guid.NewGuid().GetHashCode());
 			int milliseconds = random.Next(5000);
 			return Task.Delay(milliseconds);
 		}

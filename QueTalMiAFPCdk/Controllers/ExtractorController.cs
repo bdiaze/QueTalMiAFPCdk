@@ -7,6 +7,7 @@ using QueTalMiAFP.Models;
 using QueTalMiAFP.Models.Entities;
 using QueTalMiAFP.Models.Others;
 using QueTalMiAFP.Services;
+using QueTalMiAFPCdk.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,7 +100,7 @@ namespace QueTalMiAFP.Controllers {
 					anno < fechaFinal.Year ? 12 : fechaFinal.Month,
 					anno < fechaFinal.Year ? 31 : fechaFinal.Day);
 
-				tasksUf.Add(extractor.obtenerValoresUF(fechaInicioParc, fechaInicioParc, fechaFinalParc));
+				tasksUf.Add(extractor.ObtenerValoresUF(fechaInicioParc, fechaInicioParc, fechaFinalParc));
 			}
 
 			extractor.RegistrarLog("Se inicia proceso de extracción de las comisiones de todas las AFPs.");
@@ -119,10 +120,10 @@ namespace QueTalMiAFP.Controllers {
 					fechaInicioParc.Month,
 					1);
 				while (fechaMesAnno <= fechaFinalParc) {
-					tasksComisiones.Add(extractor.obtenerComisiones(null, fechaMesAnno));
+					tasksComisiones.Add(extractor.ObtenerComisiones(null, fechaMesAnno));
 
 					if (fechaMesAnno >= new DateTime(2008, 10, 1)) {
-						tasksComisiones.Add(extractor.obtenerComisionesCAV(null, fechaMesAnno));
+						tasksComisiones.Add(extractor.ObtenerComisionesCAV(null, fechaMesAnno));
 					}
 
 					fechaMesAnno = fechaMesAnno.AddMonths(1);
@@ -140,18 +141,18 @@ namespace QueTalMiAFP.Controllers {
 					anno,
 					anno < fechaFinal.Year ? 12 : fechaFinal.Month,
 					anno < fechaFinal.Year ? 31 : fechaFinal.Day);
-				tasksCuotas.Add(extractor.obtenerCuotasCapital(fechaInicioParc, fechaFinalParc, null));
-				tasksCuotas.Add(extractor.obtenerCuotasHabitat(fechaInicioParc, fechaFinalParc, null));
-				tasksCuotas.Add(extractor.obtenerCuotasPlanvital(fechaInicioParc, fechaFinalParc, null));
+				tasksCuotas.Add(extractor.ObtenerCuotasCapital(fechaInicioParc, fechaFinalParc, null));
+				tasksCuotas.Add(extractor.ObtenerCuotasHabitat(fechaInicioParc, fechaFinalParc, null));
+				tasksCuotas.Add(extractor.ObtenerCuotasPlanvital(fechaInicioParc, fechaFinalParc, null));
 
 				if (anno >= 2010) {
 					DateTime fechaInicioParcModelo = fechaInicioParc >= new DateTime(2010, 9, 1) ? fechaInicioParc : new DateTime(2010, 9, 1);
-					tasksCuotas.Add(extractor.obtenerCuotasModeloV3(fechaInicioParcModelo, fechaFinalParc, null));
+					tasksCuotas.Add(extractor.ObtenerCuotasModeloV3(fechaInicioParcModelo, fechaFinalParc, null));
 				}
 
 				if (anno >= 2019) {
 					DateTime fechaInicioParcUno = fechaInicioParc >= new DateTime(2019, 10, 1) ? fechaInicioParc : new DateTime(2019, 10, 1);
-					tasksCuotas.Add(extractor.obtenerCuotasUno(fechaInicioParcUno, fechaFinalParc, null));
+					tasksCuotas.Add(extractor.ObtenerCuotasUno(fechaInicioParcUno, fechaFinalParc, null));
 				}
 
 				DateTime fechaInicioParcProvida = new DateTime(
@@ -159,11 +160,11 @@ namespace QueTalMiAFP.Controllers {
 					fechaInicioParc.Month,
 					1);
 				while (fechaInicioParcProvida <= fechaFinalParc) {
-					tasksCuotas.Add(extractor.obtenerCuotasProvida(fechaInicioParcProvida, fechaInicioParc, fechaFinalParc, null));
+					tasksCuotas.Add(extractor.ObtenerCuotasProvida(fechaInicioParcProvida, fechaInicioParc, fechaFinalParc, null));
 					fechaInicioParcProvida = fechaInicioParcProvida.AddMonths(1);
 				}
 			}
-			tasksCuotas.Add(extractor.obtenerCuotasCuprum(fechaInicio, fechaFinal, null));
+			tasksCuotas.Add(extractor.ObtenerCuotasCuprum(fechaInicio, fechaFinal, null));
 
 			int cantUfsExtraidas = 0;
 			int cantUfsInsertadas = 0;
