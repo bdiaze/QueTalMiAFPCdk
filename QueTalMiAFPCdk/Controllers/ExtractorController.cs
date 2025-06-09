@@ -30,8 +30,8 @@ namespace QueTalMiAFP.Controllers {
 			_logger = logger;
 			_configuration = configuration;
 
-			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url");
-			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key");
+			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
+			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
 		}
 
 		public IActionResult Index() {
@@ -48,7 +48,7 @@ namespace QueTalMiAFP.Controllers {
 		[HttpPost]
 		[Route("api/[controller]/[action]")]
 		public async Task<List<Log>> ExtraerValores(int tipoExtraccion, string llaveExtraccion) {
-			string hashedLlave = _configuration.GetValue<string>("AccesoExtraccion:Llave");
+			string hashedLlave = _configuration.GetValue<string>("AccesoExtraccion:Llave")!;
 			byte[] hashedLlaveBytes = Convert.FromBase64String(hashedLlave);
 			byte[] salt = new byte[16];
 			Array.Copy(hashedLlaveBytes, 0, salt, 0, 16);
@@ -183,9 +183,9 @@ namespace QueTalMiAFP.Controllers {
 						var response = await client.PostAsync(_baseUrl + "Uf/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivUf), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
 						JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-						SalActualizacionMasivaUf salActMasivUf = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaUf>(responseStream, options);
-						cantUfsInsertadas += salActMasivUf.CantUfsInsertadas;
-						cantUfsActualizadas += salActMasivUf.CantUfsActualizadas;
+						SalActualizacionMasivaUf? salActMasivUf = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaUf>(responseStream, options);
+						cantUfsInsertadas += salActMasivUf!.CantUfsInsertadas;
+						cantUfsActualizadas += salActMasivUf!.CantUfsActualizadas;
 					}
 				} catch (Exception ex) {
 					extractor.RegistrarLog($"{ ex }", 1);
@@ -210,9 +210,9 @@ namespace QueTalMiAFP.Controllers {
 						var response = await client.PostAsync(_baseUrl + "Comision/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivComision), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
 						JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-						SalActualizacionMasivaComision salActMasivComision = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaComision>(responseStream, options);
-						cantComisionesInsertadas += salActMasivComision.CantComisionesInsertadas;
-						cantComisionesActualizadas += salActMasivComision.CantComisionesActualizadas;
+						SalActualizacionMasivaComision? salActMasivComision = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaComision>(responseStream, options);
+						cantComisionesInsertadas += salActMasivComision!.CantComisionesInsertadas;
+						cantComisionesActualizadas += salActMasivComision!.CantComisionesActualizadas;
 					}
 				} catch (Exception ex) {
 					extractor.RegistrarLog($"{ ex }", 1);
@@ -237,9 +237,9 @@ namespace QueTalMiAFP.Controllers {
 						var response = await client.PostAsync(_baseUrl + "Cuota/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivCuota), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
 						JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-						SalActualizacionMasivaCuota salActMasivCuota = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaCuota>(responseStream, options);
-						cantCuotasInsertadas += salActMasivCuota.CantCuotasInsertadas;
-						cantCuotasActualizadas += salActMasivCuota.CantCuotasActualizadas;
+						SalActualizacionMasivaCuota? salActMasivCuota = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaCuota>(responseStream, options);
+						cantCuotasInsertadas += salActMasivCuota!.CantCuotasInsertadas;
+						cantCuotasActualizadas += salActMasivCuota!.CantCuotasActualizadas;
 					}
 				} catch (Exception ex) {
 					extractor.RegistrarLog($"{ ex }", 1);

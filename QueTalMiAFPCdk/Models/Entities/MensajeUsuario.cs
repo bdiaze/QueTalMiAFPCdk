@@ -8,12 +8,12 @@ namespace QueTalMiAFP.Models.Entities {
 
 		public DateTime FechaIngreso { get; set; }
 
-		public string Nombre { get; set; }
+		public required string Nombre { get; set; }
 
-		public string Correo { get; set; }
+		public required string Correo { get; set; }
 
-		public string Mensaje { get; set; }
+		public required string Mensaje { get; set; }
 
-		public TipoMensaje TipoMensaje { get; set; }
+		public TipoMensaje? TipoMensaje { get; set; }
 	}
 }

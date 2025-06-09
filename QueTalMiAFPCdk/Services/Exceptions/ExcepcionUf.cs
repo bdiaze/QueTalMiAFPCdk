@@ -12,7 +12,7 @@ namespace QueTalMiAFP.Services.Exceptions {
 			return string.Format("Error al extraer valores UF - Fecha Inicio {0} - Fecha Final {1}:\n{2}",
 				FechaInicio.ToString("dd/MM/yyyy"),
 				FechaFinal.ToString("dd/MM/yyyy"),
-				InnerException.Message);
+				InnerException!.Message);
 		}
 	}
 }

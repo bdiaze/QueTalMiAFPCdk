@@ -12,14 +12,14 @@ namespace QueTalMiAFP.Models.ValidationAttributes {
 			foreach (byte byteError in bytesError) {
 				binaryStrError += Convert.ToString(byteError, 2).PadLeft(8, '0');
 			}
-			Lazy<ValidationResult> errorResult = new Lazy<ValidationResult>(() => new ValidationResult(binaryStrError, new string[] { validationContext.MemberName }));
-			if (value == null || string.IsNullOrWhiteSpace(value.ToString())) {
+			Lazy<ValidationResult> errorResult = new Lazy<ValidationResult>(() => new ValidationResult(binaryStrError, new string[] { validationContext.MemberName! }));
+			if (value == null || string.IsNullOrWhiteSpace(value?.ToString())) {
 				return errorResult.Value;
 			}
 
-			IConfiguration configuration = (IConfiguration)validationContext.GetService(typeof(IConfiguration));
-			string reCaptchaResponse = value.ToString();
-			string reCaptchaSecret = configuration.GetValue<string>("GoogleReCaptcha:SecretKey");
+			IConfiguration configuration = (IConfiguration)validationContext!.GetService(typeof(IConfiguration))!;
+			string reCaptchaResponse = value!.ToString()!;
+			string reCaptchaSecret = configuration!.GetValue<string>("GoogleReCaptcha:SecretKey")!;
 
 			HttpClient httpClient = new HttpClient();
 			HttpResponseMessage httpResponse = httpClient.GetAsync($"https://www.google.com/recaptcha/api/siteverify?secret={reCaptchaSecret}&response={reCaptchaResponse}").Result;
@@ -34,7 +34,7 @@ namespace QueTalMiAFP.Models.ValidationAttributes {
 			}
 
 
-			return ValidationResult.Success;
+			return ValidationResult.Success!;
 		}
 	}
 }

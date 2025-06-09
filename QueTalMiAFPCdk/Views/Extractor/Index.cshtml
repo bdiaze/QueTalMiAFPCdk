@@ -120,7 +120,7 @@
             <table style="table-layout:fixed; width:100%;" class="table table-bordered m-0">
                 @for (int i = 0; i < Model.Count(); i++) {
                     Log log = Model.ElementAt(i);
-                    Log logSiguiente = null;
+                    Log? logSiguiente = null;
                     if (i + 1 < Model.Count()) {
                         logSiguiente = Model.ElementAt(i + 1);
                     }

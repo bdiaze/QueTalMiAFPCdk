@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace QueTalMiAFP.Models.Others {
 	public class EntActualizacionMasivaCuota {
-		public List<Cuota> Cuotas { get; set; }
+		public required List<Cuota> Cuotas { get; set; }
 	}
 }

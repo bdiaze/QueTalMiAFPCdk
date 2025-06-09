@@ -12,7 +12,7 @@ namespace QueTalMiAFP.Models.Entities {
 
 		public long Id { get; set; }
 
-		public string Afp { get; set; }
+		public string? Afp { get; set; }
 
 		public DateTime Fecha { get; set; }
 

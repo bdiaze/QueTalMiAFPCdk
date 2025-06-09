@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace QueTalMiAFP.Models.Others {
 	public class RentabilidadReal {
-		public string Afp { get; set; }
-		public string Fondo { get; set; }
+		public required string Afp { get; set; }
+		public required string Fondo { get; set; }
 		public decimal ValorCuotaInicial { get; set; }
 		public decimal ValorUfInicial { get; set; }
 		public decimal ValorCuotaFinal { get; set; }

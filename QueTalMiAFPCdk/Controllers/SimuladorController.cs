@@ -26,25 +26,25 @@ namespace QueTalMiAFP.Controllers {
             _configuration = configuration;
             _cuotaUfComisionDAO = cuotaUfComisionDAO;
 
-            _baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url");
-            _xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key");
+            _baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
+            _xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
         }
 
 		public async Task<IActionResult> Index() {
             ViewBag.UltimaFechaTodosValoresCuota = await _cuotaUfComisionDAO.UltimaFechaTodas();
-            string sueldoImponible = Request.Cookies["SueldoImponible"];
+            string? sueldoImponible = Request.Cookies["SueldoImponible"];
             sueldoImponible ??= "$600.000";
             ViewBag.SueldoImponible = sueldoImponible;
 
-            string diaCotizacion = Request.Cookies["DiaCotizacion"];
+            string? diaCotizacion = Request.Cookies["DiaCotizacion"];
             diaCotizacion ??= "5";
             ViewBag.DiaCotizacion = Convert.ToInt32(diaCotizacion);
 
-            string ahorroInicialMaximo = Request.Cookies["AhorroInicialMaximo"];
+            string? ahorroInicialMaximo = Request.Cookies["AhorroInicialMaximo"];
             ahorroInicialMaximo ??= "$50.000.000";
             ViewBag.AhorroInicialMaximo = ahorroInicialMaximo;
 
-            string efectuarSimulacionCada = Request.Cookies["EfectuarSimulacionCada"];
+            string? efectuarSimulacionCada = Request.Cookies["EfectuarSimulacionCada"];
             efectuarSimulacionCada ??= "$500.000";
             ViewBag.EfectuarSimulacionCada = efectuarSimulacionCada;
 

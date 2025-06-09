@@ -29,9 +29,9 @@ namespace QueTalMiAFP.Repositories {
 		public CuotaUfComisionDAO(IConfiguration configuration) {
 			_configuration = configuration;
 
-			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url");
-			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key");
-			_milisegForzarTimeout = _configuration.GetValue<int>("AWSGatewayAPIKey:milisegundosForzarTimeout");
+			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
+			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
+			_milisegForzarTimeout = _configuration.GetValue<int>("AWSGatewayAPIKey:milisegundosForzarTimeout")!;
 
 		}
 
@@ -68,9 +68,9 @@ namespace QueTalMiAFP.Repositories {
 				string responseString = await response.Content.ReadAsStringAsync();
 				responseString = responseString.Replace("\"", "");
 				return DateTime.ParseExact(responseString, "s", CultureInfo.InvariantCulture);
-			} catch (TaskCanceledException ex) {
+			} catch (TaskCanceledException) {
 				if (!cts.Token.IsCancellationRequested) {
-					throw ex;
+					throw;
 				}
 			}
 
@@ -81,7 +81,7 @@ namespace QueTalMiAFP.Repositories {
 			using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
-			Dictionary<string, string> parameters = new Dictionary<string, string>() {
+			Dictionary<string, string?> parameters = new Dictionary<string, string?>() {
 				{ "listaAFPs", listaAFPs },
 				{ "listaFondos", listaFondos },
 				{ "fechaInicial", fechaInicial.ToString("s", CultureInfo.InvariantCulture) },
@@ -92,7 +92,7 @@ namespace QueTalMiAFP.Repositories {
 			HttpResponseMessage response = await client.GetAsync(requestUri);
 			using Stream responseStream = await response.Content.ReadAsStreamAsync();
 			JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-			return await JsonSerializer.DeserializeAsync<List<RentabilidadReal>>(responseStream, options);
+			return (await JsonSerializer.DeserializeAsync<List<RentabilidadReal>>(responseStream, options))!;
 		}
 	}
 }

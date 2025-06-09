@@ -24,8 +24,8 @@ namespace QueTalMiAFP.Controllers {
             _configuration = configuration;
             _cuotaUfComisionDAO = cuotaUfComisionDAO;
 
-            _baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url");
-            _xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key");
+            _baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
+            _xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
         }
 
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
@@ -97,7 +97,7 @@ namespace QueTalMiAFP.Controllers {
                 return ValidationProblem();
             }
 
-            Dictionary<string, string> parameters = new Dictionary<string, string>() {
+            Dictionary<string, string?> parameters = new Dictionary<string, string?>() {
                 { "listaAFPs", listaAFPs },
                 { "listaFondos", listaFondos },
                 { "fechaInicial", dtFechaInicio.ToString("dd/MM/yyyy") },
@@ -110,15 +110,15 @@ namespace QueTalMiAFP.Controllers {
 			HttpResponseMessage response = await client.GetAsync(requestUri);
             using Stream responseStream = await response.Content.ReadAsStreamAsync();
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            SalObtenerCuotas retornoConsulta = await JsonSerializer.DeserializeAsync<SalObtenerCuotas>(responseStream, options);
+            SalObtenerCuotas? retornoConsulta = await JsonSerializer.DeserializeAsync<SalObtenerCuotas>(responseStream, options);
 
-            if (retornoConsulta.S3Url == null) {
-                return retornoConsulta.ListaCuotas;
+            if (retornoConsulta!.S3Url == null) {
+                return retornoConsulta!.ListaCuotas!;
 			} else {
                 HttpResponseMessage responseS3 = await client.GetAsync(retornoConsulta.S3Url);
                 using Stream responseS3Stream = await responseS3.Content.ReadAsStreamAsync();
                 JsonSerializerOptions optionsS3 = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                return (await JsonSerializer.DeserializeAsync<IEnumerable<CuotaUf>>(responseS3Stream, optionsS3)).ToList();
+                return (await JsonSerializer.DeserializeAsync<IEnumerable<CuotaUf>>(responseS3Stream, optionsS3))!.ToList();
 			}
         }
 
@@ -177,7 +177,7 @@ namespace QueTalMiAFP.Controllers {
             var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entrada), Encoding.UTF8, "application/json"));
             using Stream responseStream = await response.Content.ReadAsStreamAsync();
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return (await JsonSerializer.DeserializeAsync<IEnumerable<SalObtenerUltimaCuota>>(responseStream, options)).ToList();
+            return (await JsonSerializer.DeserializeAsync<IEnumerable<SalObtenerUltimaCuota>>(responseStream, options))!.ToList();
         }
 
         // GET: api/Cuota/ObtenerRentabilidadRealUltimoAnno
@@ -202,7 +202,7 @@ namespace QueTalMiAFP.Controllers {
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"AFP;FECHA;FONDO;VALOR_CUOTA;VALOR_UF");
-            foreach (CuotaUf cuota in retorno.Value) {
+            foreach (CuotaUf cuota in retorno.Value!) {
                 sb.AppendLine(
                     $"{cuota.Afp};" +
                     $"{cuota.Fecha};" +

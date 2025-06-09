@@ -7,6 +7,6 @@ namespace QueTalMiAFP.Models.ViewModels {
 		[Required(ErrorMessage = "Debes validar que no eres un robot.")]
 		[GoogleReCaptchaValidation]
 		[BindProperty(Name = "g-recaptcha-response")]
-		public string GoogleReCaptchaResponse { get; set; }
+		public required string GoogleReCaptchaResponse { get; set; }
 	}
 }

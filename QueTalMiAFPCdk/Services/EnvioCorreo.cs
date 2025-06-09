@@ -27,17 +27,17 @@ namespace QueTalMiAFP.Services {
 		private readonly string _servAccountPrivateKey;
 
 		public EnvioCorreo(IConfiguration configuration) {
-			_direccion = configuration.GetValue<string>("Correo:Direccion");
-			_direccionAlias = configuration.GetValue<string>("Correo:DireccionAlias");
-			_nombre = configuration.GetValue<string>("Correo:Nombre");
-			_direccionNotificacion = configuration.GetValue<string>("Correo:DireccionNotificacion");
-			_nombreNotificacion = configuration.GetValue<string>("Correo:NombreNotificacion");
-			_servAccountClientEmail = configuration.GetValue<string>("Correo:ServiceAccount:client_email");
-			_servAccountPrivateKey = configuration.GetValue<string>("Correo:ServiceAccount:private_key");
+			_direccion = configuration.GetValue<string>("Correo:Direccion")!;
+			_direccionAlias = configuration.GetValue<string>("Correo:DireccionAlias")!;
+			_nombre = configuration.GetValue<string>("Correo:Nombre")!;
+			_direccionNotificacion = configuration.GetValue<string>("Correo:DireccionNotificacion")!;
+			_nombreNotificacion = configuration.GetValue<string>("Correo:NombreNotificacion")!;
+			_servAccountClientEmail = configuration.GetValue<string>("Correo:ServiceAccount:client_email")!;
+			_servAccountPrivateKey = configuration.GetValue<string>("Correo:ServiceAccount:private_key")!;
 		}
 
 		public static string ArmarCuerpo(Dictionary<string, string> datos, string plantilla) {
-			string pathTemplate = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TemplatesCorreos", plantilla);
+			string pathTemplate = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "TemplatesCorreos", plantilla);
 			string[] lineas = File.ReadAllLines(pathTemplate);
 
 			StringBuilder builder = new StringBuilder();
@@ -52,7 +52,7 @@ namespace QueTalMiAFP.Services {
 			return salida;
 		}
 
-		public async Task Notificar(string subject, string body, string responderADireccion = null, string responderANombre = null) {
+		public async Task Notificar(string subject, string body, string? responderADireccion = null, string? responderANombre = null) {
 			ServiceAccountCredential credential = new ServiceAccountCredential(
 				new ServiceAccountCredential.Initializer(_servAccountClientEmail) {
 					User = _direccion,

@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace QueTalMiAFP.Models.Others {
 	public class EntActualizacionMasivaUf {
-		public List<Uf> Ufs { get; set; }
+		public required List<Uf> Ufs { get; set; }
 	}
 }

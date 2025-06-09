@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace QueTalMiAFP.Models.Others {
 	public class SalObtenerUltimaCuota {
-		public string Afp { get; set; }
+		public required string Afp { get; set; }
 		public DateTime Fecha { get; set; }
-		public string Fondo { get; set; }
+		public required string Fondo { get; set; }
 		public decimal Valor { get; set; }
 		public decimal? Comision { get; set; }
 	}

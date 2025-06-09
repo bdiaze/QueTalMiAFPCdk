@@ -29,9 +29,9 @@ namespace QueTalMiAFP.Controllers {
 			_logger = logger;
 			_configuration = configuration;
 
-			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url");
-			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key");
-			_reCaptchaClientKey = _configuration.GetValue<string>("GoogleReCaptcha:ClientKey");
+			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
+			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
+			_reCaptchaClientKey = _configuration.GetValue<string>("GoogleReCaptcha:ClientKey")!;
 		}
 
 		public async Task<IActionResult> Index() {
@@ -60,15 +60,15 @@ namespace QueTalMiAFP.Controllers {
 			HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
 			using Stream responseStream = await response.Content.ReadAsStreamAsync();
 			JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-			MensajeUsuario mensajeResultado = await JsonSerializer.DeserializeAsync<MensajeUsuario>(responseStream, options);
+			MensajeUsuario? mensajeResultado = await JsonSerializer.DeserializeAsync<MensajeUsuario>(responseStream, options);
 
 			Dictionary<string, string> datos = new Dictionary<string, string>();
-			datos.Add("[IdMensaje]", mensajeResultado.IdMensaje.ToString());
-			datos.Add("[FechaIngreso]", mensajeResultado.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss"));
-			datos.Add("[Nombre]", mensajeResultado.Nombre.Replace("<", "&lt;").Replace(">", "&gt;"));
-			datos.Add("[Correo]", mensajeResultado.Correo.Replace("<", "&lt;").Replace(">", "&gt;"));
-			datos.Add("[Mensaje]", mensajeResultado.Mensaje.Replace("<", "&lt;").Replace(">", "&gt;"));
-			datos.Add("[TipoMensaje]", mensajeResultado.TipoMensaje.DescripcionLarga);
+			datos.Add("[IdMensaje]", mensajeResultado!.IdMensaje.ToString());
+			datos.Add("[FechaIngreso]", mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss"));
+			datos.Add("[Nombre]", mensajeResultado!.Nombre.Replace("<", "&lt;").Replace(">", "&gt;"));
+			datos.Add("[Correo]", mensajeResultado!.Correo.Replace("<", "&lt;").Replace(">", "&gt;"));
+			datos.Add("[Mensaje]", mensajeResultado!.Mensaje.Replace("<", "&lt;").Replace(">", "&gt;"));
+			datos.Add("[TipoMensaje]", mensajeResultado!.TipoMensaje!.DescripcionLarga);
 			string body = EnvioCorreo.ArmarCuerpo(datos, "MensajeRecibido.html");
 			
 			EnvioCorreo envioCorreo = new EnvioCorreo(_configuration);
