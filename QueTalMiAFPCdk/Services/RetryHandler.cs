@@ -16,7 +16,7 @@ namespace QueTalMiAFP.Services {
 			MaxRetries = configuration.GetValue<int>("AWSGatewayAPIKey:maxRetries");
 		}
 
-		protected override async Task<HttpResponseMessage?> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			HttpResponseMessage? response = null;
 			for (int i = 0; i < MaxRetries; i++) {
 				response = await base.SendAsync(request, cancellationToken);
@@ -34,7 +34,7 @@ namespace QueTalMiAFP.Services {
 				}
 			}
 
-			return response;
+			return response!;
 		}
 	}
 }

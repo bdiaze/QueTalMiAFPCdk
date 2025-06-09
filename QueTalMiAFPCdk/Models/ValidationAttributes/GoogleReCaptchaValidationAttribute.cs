@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace QueTalMiAFP.Models.ValidationAttributes {
 	public class GoogleReCaptchaValidationAttribute: ValidationAttribute {
-		protected override ValidationResult IsValid(object value, ValidationContext validationContext) {
+		protected override ValidationResult? IsValid(object? value, ValidationContext validationContext) {
 			string strError = "Nos reservamos el derecho de admisión, por lo que los robots no están autorizados para ingresar en esta página.";
 			byte[] bytesError = Encoding.UTF8.GetBytes(strError);
 			string binaryStrError = "";

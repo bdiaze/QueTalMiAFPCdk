@@ -54,7 +54,7 @@ namespace QueTalMiAFP.Controllers {
 			byte[] salt = new byte[16];
 			Array.Copy(hashedLlaveBytes, 0, salt, 0, 16);
 
-			Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(llaveExtraccion, salt, 100000);
+			Rfc2898DeriveBytes pbkdf2 = new(llaveExtraccion, salt, 100000, HashAlgorithmName.SHA1);
 			byte[] hash = pbkdf2.GetBytes(20);
 			byte[] hashBytes = new byte[36];
 			Array.Copy(salt, 0, hashBytes, 0, 16);

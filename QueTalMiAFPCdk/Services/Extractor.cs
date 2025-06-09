@@ -872,17 +872,17 @@ namespace QueTalMiAFPCdk.Services {
 				string url_api_base = _comisionesCavUrlApiBase; // 202102
 				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMM"));
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api);
-				request.UserAgent = GetRandomUserAgent();
-				request.Referer = GetRandomReferer(2);
-				request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-				request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
-				request.Headers.Add("Accept-Language", "es-MX,es;q=0.9,es-419;q=0.8,en;q=0.7");
-				request.Headers.Add("Cache-Control", "max-age=0");
-
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-				using Stream stream = response.GetResponseStream();
+				HttpClient request = new(new HttpClientHandler {
+					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+				request.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+                request.DefaultRequestHeaders.Add("Referer", GetRandomReferer(2));
+                request.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+                request.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+                request.DefaultRequestHeaders.Add("Accept-Language", "es-MX,es;q=0.9,es-419;q=0.8,en;q=0.7");
+                request.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+                using HttpResponseMessage response = await request.GetAsync(url_api);
+				using Stream stream = await response.Content.ReadAsStreamAsync();
 				using StreamReader reader = new(stream);
 				string contenido = await reader.ReadToEndAsync();
 				HtmlDocument htmlDoc = new();
