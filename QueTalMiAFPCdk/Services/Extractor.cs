@@ -737,10 +737,11 @@ namespace QueTalMiAFPCdk.Services {
 				string url_api_base = _valoresUfUrlApiBase;
 				string url_api = string.Format(url_api_base, anno.Year);
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api);
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+                using HttpResponseMessage response = await request.GetAsync(url_api);
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 JObject json = JObject.Parse(contenido);
