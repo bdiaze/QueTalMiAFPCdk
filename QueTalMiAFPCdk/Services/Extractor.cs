@@ -667,21 +667,20 @@ namespace QueTalMiAFPCdk.Services {
 					fechaFinal.ToString("dd/MM/yyyy")));
 
 				string url_api_base = _afpUnoUrlApiBase;
-				string parametros = string.Format("{{\"fechaInicio\":\"{0}\",\"fechaFin\":\"{1}\"}}",
-					fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
-					fechaFinal.AddDays(7).ToString("yyyy-MM-dd"));
-				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-				request.Method = "POST";
-				request.UserAgent = GetRandomUserAgent();
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				request.ContentType = "application/json;charset=UTF-8";
-				byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
-				request.ContentLength = byteArray.Length;
-				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray);
-				}
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+
+                var objParametros = new {
+                    fechaInicio = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
+                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd")
+                };
+                string parametros = JsonConvert.SerializeObject(objParametros);
+
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+                request.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+
+                using HttpResponseMessage response = await request.PostAsync(url_api_base, new StringContent(parametros, Encoding.UTF8, "application/json"));
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 JObject json = JObject.Parse(contenido);
