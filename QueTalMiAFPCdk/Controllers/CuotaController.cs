@@ -175,7 +175,7 @@ namespace QueTalMiAFP.Controllers {
 
             using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
             client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(WebUtility.HtmlEncode(JsonConvert.SerializeObject(entrada)), Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entrada), Encoding.UTF8, "application/json"));
             using Stream responseStream = await response.Content.ReadAsStreamAsync();
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             return (await JsonSerializer.DeserializeAsync<IEnumerable<SalObtenerUltimaCuota>>(responseStream, options))!.ToList();
