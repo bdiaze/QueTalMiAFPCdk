@@ -415,17 +415,12 @@ namespace QueTalMiAFPCdk.Services {
 					fondo == "D" || fondo == null ? "D" : "",
 					fondo == "E" || fondo == null ? "E" : "");
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-				request.Method = "POST";
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				request.ContentType = "application/x-www-form-urlencoded";
-				byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
-				request.ContentLength = byteArray.Length;
-				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray);
-				}
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+
+                using HttpResponseMessage response = await request.PostAsync(url_api_base, new StringContent(parametros, Encoding.UTF8, "application/x-www-form-urlencoded"));
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
 
