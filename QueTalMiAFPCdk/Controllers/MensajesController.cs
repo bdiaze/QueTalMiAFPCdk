@@ -37,13 +37,12 @@ namespace QueTalMiAFP.Controllers {
 		}
 
 		public async Task<IActionResult> Index() {
-			using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
+			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 			HttpResponseMessage response = await client.GetAsync(_baseUrl + "TipoMensaje/ObtenerVigentes");
-			using Stream responseStream = await response.Content.ReadAsStreamAsync();
-			JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+			string responseString = await response.Content.ReadAsStringAsync();
 
-			ViewBag.TiposMensaje = await JsonSerializer.DeserializeAsync<List<TipoMensaje>>(responseStream, options);
+			ViewBag.TiposMensaje = JsonConvert.DeserializeObject<List<TipoMensaje>>(responseString);
 			ViewBag.reCaptchaClientKey = _reCaptchaClientKey;
 			return View();
 		}
@@ -57,28 +56,32 @@ namespace QueTalMiAFP.Controllers {
 					.First());
 			}
 
-			using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
+			IngresarMensajeViewModel modelSanitizado = new() { 
+				IdTipoMensaje = model.IdTipoMensaje,
+				Nombre = WebUtility.HtmlEncode(model.Nombre),
+				Correo = WebUtility.HtmlEncode(model.Correo),
+				Mensaje = WebUtility.HtmlEncode(model.Mensaje),
+				GoogleReCaptchaResponse = model.GoogleReCaptchaResponse,
+			};
+
+            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
-			model.Nombre = WebUtility.HtmlEncode(model.Nombre);
-			model.Correo = WebUtility.HtmlEncode(model.Correo);
-			model.Mensaje = WebUtility.HtmlEncode(model.Mensaje);
-			string content = JsonConvert.SerializeObject(model);
-
-            HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(content, Encoding.UTF8, "application/json"));
+            HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(modelSanitizado), Encoding.UTF8, "application/json"));
 			string responseString = await response.Content.ReadAsStringAsync();
             MensajeUsuario? mensajeResultado = JsonConvert.DeserializeObject<MensajeUsuario>(responseString);
 
-            Dictionary<string, string> datos = new Dictionary<string, string>();
-			datos.Add("[IdMensaje]", mensajeResultado!.IdMensaje.ToString());
-			datos.Add("[FechaIngreso]", mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss"));
-			datos.Add("[Nombre]", mensajeResultado!.Nombre);
-			datos.Add("[Correo]", mensajeResultado!.Correo);
-			datos.Add("[Mensaje]", mensajeResultado!.Mensaje);
-			datos.Add("[TipoMensaje]", mensajeResultado!.TipoMensaje!.DescripcionLarga);
+            Dictionary<string, string> datos = new() {
+                { "[IdMensaje]", mensajeResultado!.IdMensaje.ToString() },
+                { "[FechaIngreso]", mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss") },
+                { "[Nombre]", mensajeResultado!.Nombre },
+                { "[Correo]", mensajeResultado!.Correo },
+                { "[Mensaje]", mensajeResultado!.Mensaje },
+                { "[TipoMensaje]", mensajeResultado!.TipoMensaje!.DescripcionLarga }
+            };
 			string body = EnvioCorreo.ArmarCuerpo(datos, "MensajeRecibido.html");
 			
-			EnvioCorreo envioCorreo = new EnvioCorreo(_configuration);
+			EnvioCorreo envioCorreo = new(_configuration);
 			await envioCorreo.Notificar($"¡Ha llegado un mensaje de {mensajeResultado.Nombre}!", body, mensajeResultado.Correo, mensajeResultado.Nombre);
 
 			return View(mensajeResultado);
