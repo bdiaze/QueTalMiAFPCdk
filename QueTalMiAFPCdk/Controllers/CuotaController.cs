@@ -1,13 +1,14 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using QueTalMiAFP.Models.Others;
 using QueTalMiAFP.Repositories;
 using QueTalMiAFP.Services;
+using System;
+using System.Globalization;
+using System.Net;
+using System.Text;
+using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace QueTalMiAFP.Controllers {
@@ -174,7 +175,7 @@ namespace QueTalMiAFP.Controllers {
 
             using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
             client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entrada), Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(WebUtility.HtmlEncode(JsonConvert.SerializeObject(entrada)), Encoding.UTF8, "application/json"));
             using Stream responseStream = await response.Content.ReadAsStreamAsync();
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             return (await JsonSerializer.DeserializeAsync<IEnumerable<SalObtenerUltimaCuota>>(responseStream, options))!.ToList();
@@ -207,8 +208,8 @@ namespace QueTalMiAFP.Controllers {
                     $"{cuota.Afp};" +
                     $"{cuota.Fecha};" +
                     $"{cuota.Fondo};" +
-                    $"{cuota.Valor.ToString(CultureInfo.GetCultureInfo("es-ES"))};" +
-                    $"{cuota.ValorUf?.ToString(CultureInfo.GetCultureInfo("es-ES"))}");
+                    $"{cuota.Valor.ToString(CultureInfo.InvariantCulture).Replace(".", ",")};" +
+                    $"{cuota.ValorUf?.ToString(CultureInfo.InvariantCulture).Replace(".", ",")}");
             }
 
             byte[] bytes = new UTF8Encoding().GetBytes(sb.ToString());

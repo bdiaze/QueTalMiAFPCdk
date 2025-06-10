@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -57,17 +58,21 @@ namespace QueTalMiAFP.Controllers {
 
 			using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-			HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+			HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(WebUtility.HtmlEncode(JsonConvert.SerializeObject(model)), Encoding.UTF8, "application/json"));
 			using Stream responseStream = await response.Content.ReadAsStreamAsync();
 			JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 			MensajeUsuario? mensajeResultado = await JsonSerializer.DeserializeAsync<MensajeUsuario>(responseStream, options);
 
-			Dictionary<string, string> datos = new Dictionary<string, string>();
+			mensajeResultado!.Nombre = WebUtility.HtmlEncode(mensajeResultado!.Nombre);
+			mensajeResultado!.Correo = WebUtility.HtmlEncode(mensajeResultado!.Correo);
+			mensajeResultado!.Mensaje = WebUtility.HtmlEncode(mensajeResultado!.Mensaje);
+
+            Dictionary<string, string> datos = new Dictionary<string, string>();
 			datos.Add("[IdMensaje]", mensajeResultado!.IdMensaje.ToString());
 			datos.Add("[FechaIngreso]", mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss"));
-			datos.Add("[Nombre]", mensajeResultado!.Nombre.Replace("<", "&lt;").Replace(">", "&gt;"));
-			datos.Add("[Correo]", mensajeResultado!.Correo.Replace("<", "&lt;").Replace(">", "&gt;"));
-			datos.Add("[Mensaje]", mensajeResultado!.Mensaje.Replace("<", "&lt;").Replace(">", "&gt;"));
+			datos.Add("[Nombre]", mensajeResultado!.Nombre);
+			datos.Add("[Correo]", mensajeResultado!.Correo);
+			datos.Add("[Mensaje]", mensajeResultado!.Mensaje);
 			datos.Add("[TipoMensaje]", mensajeResultado!.TipoMensaje!.DescripcionLarga);
 			string body = EnvioCorreo.ArmarCuerpo(datos, "MensajeRecibido.html");
 			
