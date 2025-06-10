@@ -56,41 +56,60 @@ jobs:
                   WEBAPP_EXECSTART: ${{ vars.WEBAPP_EXECSTART }}
                   CLOUDFLARE_CLIENT_CRT: ${{ secrets.CLOUDFLARE_CLIENT_CRT }}
               run: |
+                echo 'Se añade EC2 Host a Known Hosts'
                 mkdir -p ~/.ssh
                 ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
                 
+                echo 'Se crea archivo SSH Key de EC2'
                 echo "$EC2_SSH_KEY" > ssh_key.pem
                 chmod 600 ssh_key.pem
                 
+                echo 'Se crea archivo de CRT Cloudflare'
+                echo "$CLOUDFLARE_CLIENT_CRT" > cloudflare.crt
+                
                 # En caso de que ya se haya desplegado alguna vez la aplicación, se detiene y se eliminan los archivos antiguos...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY" '
+                    echo 'Se detiene servicio web'
                     sudo systemctl stop $WEBAPP_SERVICE || true
+                    echo 'Se eliminan archivos del servicio web'
                     rm -rf ~/$WEBAPP_DIRECTORY/*
                 '
                 
                 # Se copian las piezas publicadas en directorio remoto de instancia EC2...
+                echo 'Se copian archivos publicados en EC2'
                 scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY
                 
                 # Se copia el archivo service...
+                echo 'Se copia archivo .service en EC2'
                 scp -i ssh_key.pem ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
-                # Se copia el archivo service...
+                # Se copia el archivo de nginx...
+                echo 'Se copia archivo .conf en EC2'
                 scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
-                # Se inicializa el web service...
-                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART SUBDOMAIN_NAME=$SUBDOMAIN_NAME CERTBOT_EMAIL=$CERTBOT_EMAIL CLOUDFLARE_CLIENT_CRT=$CLOUDFLARE_CLIENT_CRT" '
-                    sudo mkdir /etc/nginx/certs || true
-                    echo "$CLOUDFLARE_CLIENT_CRT" | sudo tee /etc/nginx/certs/cloudflare.crt
+                # Se copia archivo CRT de cloudflare...
+                echo 'Se copia archivo cloudflare.crt en EC2'
+                scp -i ssh_key.pem ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
+                echo ''
+                # Se inicializa el web service...
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART SUBDOMAIN_NAME=$SUBDOMAIN_NAME CERTBOT_EMAIL=$CERTBOT_EMAIL" '
+                    echo 'Se mueve archivo cloudflare.crt'
+                    sudo mkdir /etc/nginx/certs || true
+                    sudo mv -f ~/$WEBAPP_DIRECTORY/cloudflare.crt /etc/nginx/certs/
+                    
+                    echo 'Se mueve archivo .service y se inicia servicio'
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/
                     sudo chmod +x ~/$WEBAPP_DIRECTORY/$WEBAPP_EXECSTART
                     sudo systemctl daemon-reload
                     sudo systemctl enable $WEBAPP_SERVICE
                     sudo systemctl restart $WEBAPP_SERVICE
                     
+                    echo 'Se mueve archivo .conf y se reinicia nginx'
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
                     sudo systemctl reload nginx 
                     
+                    echo 'Se configura certificados con certbot'
                     sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
                     sudo systemctl reload nginx 
                 '
