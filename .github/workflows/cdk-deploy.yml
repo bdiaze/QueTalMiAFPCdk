@@ -105,11 +105,11 @@ jobs:
                     sudo systemctl enable $WEBAPP_SERVICE
                     sudo systemctl restart $WEBAPP_SERVICE
                     
-                    echo 'Se mueve archivo .conf y se reinicia nginx'
+                    # echo 'Se mueve archivo .conf y se reinicia nginx'
                     # sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
                     # sudo systemctl reload nginx 
                     
-                    echo 'Se configura certificados con certbot'
+                    # echo 'Se configura certificados con certbot'
                     # sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
                     sudo systemctl reload nginx 
                 '
