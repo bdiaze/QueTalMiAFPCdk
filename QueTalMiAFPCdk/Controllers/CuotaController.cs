@@ -173,6 +173,10 @@ namespace QueTalMiAFP.Controllers {
                 }
             }
 
+            entrada.ListaAFPs = WebUtility.HtmlEncode(entrada.ListaAFPs);
+            entrada.ListaFondos = WebUtility.HtmlEncode(entrada.ListaFondos);
+            entrada.ListaFechas = WebUtility.HtmlEncode(entrada.ListaFechas);
+
             using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
             client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
             var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entrada), Encoding.UTF8, "application/json"));

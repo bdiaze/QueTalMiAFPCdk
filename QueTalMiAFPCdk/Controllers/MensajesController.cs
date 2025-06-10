@@ -60,13 +60,13 @@ namespace QueTalMiAFP.Controllers {
 			using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
+			model.Nombre = WebUtility.HtmlEncode(model.Nombre);
+			model.Correo = WebUtility.HtmlEncode(model.Correo);
+			model.Mensaje = WebUtility.HtmlEncode(model.Mensaje);
+
             HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
 			string responseString = await response.Content.ReadAsStringAsync();
             MensajeUsuario? mensajeResultado = JsonConvert.DeserializeObject<MensajeUsuario>(responseString);
-
-			mensajeResultado!.Nombre = WebUtility.HtmlEncode(mensajeResultado!.Nombre);
-			mensajeResultado!.Correo = WebUtility.HtmlEncode(mensajeResultado!.Correo);
-			mensajeResultado!.Mensaje = WebUtility.HtmlEncode(mensajeResultado!.Mensaje);
 
             Dictionary<string, string> datos = new Dictionary<string, string>();
 			datos.Add("[IdMensaje]", mensajeResultado!.IdMensaje.ToString());
