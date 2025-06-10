@@ -75,10 +75,12 @@ namespace QueTalMiAFPCdk.Services {
 					fechaInicio.ToString("yyyy-MM-dd"),
 					fechaFinal.ToString("yyyy-MM-dd"));
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api);
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+
+                using HttpResponseMessage response = await request.GetAsync(url_api);
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 JArray arreglo = JArray.Parse(contenido);
