@@ -200,24 +200,22 @@ namespace QueTalMiAFPCdk.Services {
 				string base64Key = _afpModeloV3Base64Key;
                 string base64IV = _afpModeloV3Base64IV;
 
-                string parametros = string.Format("{{\"fechaIni\":\"{0}\",\"fechaFin\":\"{1}\"}}",
-                    fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
-                    fechaFinal.AddDays(7).ToString("yyyy-MM-dd"));
-				parametros = Aes256Cbc.Encriptar(parametros, base64Key, base64IV);
-				parametros = string.Format("{{\"enc\":\"{0}\"}}", parametros);
+                var objParametros = new {
+                    fechaIni = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
+                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd")
+                };
+                string parametros = Aes256Cbc.Encriptar(JsonConvert.SerializeObject(objParametros), base64Key, base64IV);
+                var objParametrosEnc = new {
+                    enc = parametros
+                };
+                parametros = JsonConvert.SerializeObject(objParametrosEnc);
 
-                HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-                request.Method = "POST";
-                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-                request.ContentType = "application/json;charset=UTF-8";
-                byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
-                request.ContentLength = byteArray.Length;
-                using (Stream dataStream = await request.GetRequestStreamAsync()) {
-                    await dataStream.WriteAsync(byteArray);
-                }
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
 
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                using HttpResponseMessage response = await request.PostAsync(url_api_base, new StringContent(parametros, Encoding.UTF8, "application/json"));
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 JObject json = JObject.Parse(contenido);
@@ -278,11 +276,13 @@ namespace QueTalMiAFPCdk.Services {
 
 				string url_api_base = _afpCuprumUrlApiBase;
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-                request.UserAgent = GetRandomUserAgent();
-                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+                request.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+
+                using HttpResponseMessage response = await request.GetAsync(url_api_base);
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 JObject json = JObject.Parse(contenido);
@@ -341,11 +341,12 @@ namespace QueTalMiAFPCdk.Services {
 					HttpUtility.UrlEncode(fechaInicio.ToString("dd/MM/yyyy")),
 					HttpUtility.UrlEncode(fechaFinal.ToString("dd/MM/yyyy")));
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api);
-				request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+
+                using HttpResponseMessage response = await request.GetAsync(url_api);
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 contenido = contenido.Replace("\\\"", "\"");
