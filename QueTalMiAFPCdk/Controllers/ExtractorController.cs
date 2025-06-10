@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using QueTalMiAFP.Controllers;
 using QueTalMiAFP.Models;
 using QueTalMiAFP.Models.Entities;
 using QueTalMiAFP.Models.Others;
@@ -19,7 +20,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace QueTalMiAFP.Controllers {
+namespace QueTalMiAFPCdk.Controllers {
 	public class ExtractorController : Controller {
 		private readonly ILogger<EstadisticasController> _logger;
 		private readonly IConfiguration _configuration;
@@ -27,7 +28,9 @@ namespace QueTalMiAFP.Controllers {
 		private readonly string _baseUrl;
 		private readonly string _xApiKey;
 
-		public ExtractorController(ILogger<EstadisticasController> logger, IConfiguration configuration) {
+        private readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
+
+        public ExtractorController(ILogger<EstadisticasController> logger, IConfiguration configuration) {
 			_logger = logger;
 			_configuration = configuration;
 
@@ -61,7 +64,7 @@ namespace QueTalMiAFP.Controllers {
 			Array.Copy(hash, 0, hashBytes, 16, 20);
 			string strLlaveExtraccion = Convert.ToBase64String(hashBytes);
 
-			Extractor extractor = new Extractor(_configuration);
+			Extractor extractor = new(_configuration);
 
 			if (strLlaveExtraccion != hashedLlave) {
 				extractor.RegistrarLog("Error, no se efectúa la extracción debido a que la llave ingresada no es correcta.", 1);
@@ -89,13 +92,13 @@ namespace QueTalMiAFP.Controllers {
 			DateTime fechaFinal = DateTime.Now.ToUniversalTime().Date;
 
 			extractor.RegistrarLog("Se inicia proceso de extracción de los valores UF.");
-			List<Task<HashSet<Uf>>> tasksUf = new List<Task<HashSet<Uf>>>();
+			List<Task<HashSet<Uf>>> tasksUf = [];
 			for (int anno = fechaInicio.Year; anno <= fechaFinal.Year; anno++) {
-				DateTime fechaInicioParc = new DateTime(
+				DateTime fechaInicioParc = new(
 					anno,
 					anno > fechaInicio.Year ? 1 : fechaInicio.Month,
 					anno > fechaInicio.Year ? 1 : fechaInicio.Day);
-				DateTime fechaFinalParc = new DateTime(
+				DateTime fechaFinalParc = new(
 					anno,
 					anno < fechaFinal.Year ? 12 : fechaFinal.Month,
 					anno < fechaFinal.Year ? 31 : fechaFinal.Day);
@@ -104,18 +107,18 @@ namespace QueTalMiAFP.Controllers {
 			}
 
 			extractor.RegistrarLog("Se inicia proceso de extracción de las comisiones de todas las AFPs.");
-			List<Task<List<Comision>>> tasksComisiones = new List<Task<List<Comision>>>();
+			List<Task<List<Comision>>> tasksComisiones = [];
 			for (int anno = fechaInicio.Year; anno <= fechaFinal.Year; anno++) {
-				DateTime fechaInicioParc = new DateTime(
+				DateTime fechaInicioParc = new(
 					anno,
 					anno > fechaInicio.Year ? 1 : fechaInicio.Month,
 					anno > fechaInicio.Year ? 1 : fechaInicio.Day);
-				DateTime fechaFinalParc = new DateTime(
+				DateTime fechaFinalParc = new(
 					anno,
 					anno < fechaFinal.Year ? 12 : fechaFinal.Month,
 					anno < fechaFinal.Year ? 31 : fechaFinal.Day);
 
-				DateTime fechaMesAnno = new DateTime(
+				DateTime fechaMesAnno = new(
 					fechaInicioParc.Year,
 					fechaInicioParc.Month,
 					1);
@@ -131,13 +134,13 @@ namespace QueTalMiAFP.Controllers {
 			}
 
 			extractor.RegistrarLog("Se inicia proceso de extracción de los valores cuotas para todas las AFPs.");
-			List<Task<List<Cuota>>> tasksCuotas = new List<Task<List<Cuota>>>();
+			List<Task<List<Cuota>>> tasksCuotas = [];
 			for (int anno = fechaInicio.Year; anno <= fechaFinal.Year; anno++) {
-				DateTime fechaInicioParc = new DateTime(
+				DateTime fechaInicioParc = new(
 					anno,
 					anno > fechaInicio.Year ? 1 : fechaInicio.Month,
 					anno > fechaInicio.Year ? 1 : fechaInicio.Day);
-				DateTime fechaFinalParc = new DateTime(
+				DateTime fechaFinalParc = new(
 					anno,
 					anno < fechaFinal.Year ? 12 : fechaFinal.Month,
 					anno < fechaFinal.Year ? 31 : fechaFinal.Day);
@@ -155,7 +158,7 @@ namespace QueTalMiAFP.Controllers {
 					tasksCuotas.Add(extractor.ObtenerCuotasUno(fechaInicioParcUno, fechaFinalParc, null));
 				}
 
-				DateTime fechaInicioParcProvida = new DateTime(
+				DateTime fechaInicioParcProvida = new(
 					fechaInicioParc.Year,
 					fechaInicioParc.Month,
 					1);
@@ -175,16 +178,15 @@ namespace QueTalMiAFP.Controllers {
 					if (ufParciales != null) {
 						cantUfsExtraidas += ufParciales.Count;
 
-						EntActualizacionMasivaUf entActMasivUf = new EntActualizacionMasivaUf() {
-							Ufs = new List<Uf>(ufParciales)
-						};
+						EntActualizacionMasivaUf entActMasivUf = new() {
+							Ufs = [.. ufParciales]
+                        };
 
-						using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
+						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
 						client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 						var response = await client.PostAsync(_baseUrl + "Uf/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivUf), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
-						JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-						SalActualizacionMasivaUf? salActMasivUf = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaUf>(responseStream, options);
+						SalActualizacionMasivaUf? salActMasivUf = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaUf>(responseStream, _options);
 						cantUfsInsertadas += salActMasivUf!.CantUfsInsertadas;
 						cantUfsActualizadas += salActMasivUf!.CantUfsActualizadas;
 					}
@@ -202,16 +204,15 @@ namespace QueTalMiAFP.Controllers {
 					if (comisionesParciales != null) {
 						cantComisionesExtraidas += comisionesParciales.Count;
 
-						EntActualizacionMasivaComision entActMasivComision = new EntActualizacionMasivaComision() {
-							Comisiones = new List<Comision>(comisionesParciales)
-						};
+						EntActualizacionMasivaComision entActMasivComision = new() {
+							Comisiones = [.. comisionesParciales]
+                        };
 
-						using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
+						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
 						client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 						var response = await client.PostAsync(_baseUrl + "Comision/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivComision), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
-						JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-						SalActualizacionMasivaComision? salActMasivComision = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaComision>(responseStream, options);
+						SalActualizacionMasivaComision? salActMasivComision = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaComision>(responseStream, _options);
 						cantComisionesInsertadas += salActMasivComision!.CantComisionesInsertadas;
 						cantComisionesActualizadas += salActMasivComision!.CantComisionesActualizadas;
 					}
@@ -229,16 +230,15 @@ namespace QueTalMiAFP.Controllers {
 					if (cuotasParciales != null) {
 						cantCuotasExtraidas += cuotasParciales.Count;
 
-						EntActualizacionMasivaCuota entActMasivCuota = new EntActualizacionMasivaCuota() {
-							Cuotas = new List<Cuota>(cuotasParciales)
-						};
+						EntActualizacionMasivaCuota entActMasivCuota = new() {
+							Cuotas = [.. cuotasParciales]
+                        };
 
-						using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
+						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
 						client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 						var response = await client.PostAsync(_baseUrl + "Cuota/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivCuota), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
-						JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-						SalActualizacionMasivaCuota? salActMasivCuota = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaCuota>(responseStream, options);
+						SalActualizacionMasivaCuota? salActMasivCuota = await JsonSerializer.DeserializeAsync<SalActualizacionMasivaCuota>(responseStream, _options);
 						cantCuotasInsertadas += salActMasivCuota!.CantCuotasInsertadas;
 						cantCuotasActualizadas += salActMasivCuota!.CantCuotasActualizadas;
 					}

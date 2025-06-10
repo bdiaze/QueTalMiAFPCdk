@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using QueTalMiAFPCdk.Models.ViewModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace QueTalMiAFP.Models.ViewModels {
 	public class IngresarMensajeViewModel : GoogleReCaptchaModelBase {
