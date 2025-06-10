@@ -126,22 +126,18 @@ namespace QueTalMiAFPCdk.Services {
 
 				string url_api_base = _afpModeloV2UrlApiBase;
 
-				string parametros = string.Format("{{\"fechaIni\":\"{0}\",\"fechaFin\":\"{1}\"}}",
-					fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
-					fechaFinal.AddDays(7).ToString("yyyy-MM-dd"));
+                var objParametros = new {
+                    fechaIni = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
+                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd")
+                };
+                string parametros = JsonConvert.SerializeObject(objParametros);
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-				request.Method = "POST";
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				request.ContentType = "application/json;charset=UTF-8";
-				byte[] byteArray = Encoding.UTF8.GetBytes(parametros);
-				request.ContentLength = byteArray.Length;
-				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray);
-                }
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
 
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                using HttpResponseMessage response = await request.PostAsync(url_api_base, new StringContent(parametros, Encoding.UTF8, "application/json"));
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 JObject json = JObject.Parse(contenido);
