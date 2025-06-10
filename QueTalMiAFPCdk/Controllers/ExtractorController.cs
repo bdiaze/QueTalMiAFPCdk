@@ -144,7 +144,12 @@ namespace QueTalMiAFPCdk.Controllers {
 					anno,
 					anno < fechaFinal.Year ? 12 : fechaFinal.Month,
 					anno < fechaFinal.Year ? 31 : fechaFinal.Day);
-				tasksCuotas.Add(extractor.ObtenerCuotasCapital(fechaInicioParc, fechaFinalParc, null));
+
+                List<string> fondos = [ "A", "B", "C", "D", "E" ];
+                foreach (string fondo in fondos) {
+                    tasksCuotas.Add(extractor.ObtenerCuotasCapitalV2(fechaInicioParc, fechaFinalParc, fondo));
+                }
+
 				tasksCuotas.Add(extractor.ObtenerCuotasHabitat(fechaInicioParc, fechaFinalParc, null));
 				tasksCuotas.Add(extractor.ObtenerCuotasPlanvital(fechaInicioParc, fechaFinalParc, null));
 

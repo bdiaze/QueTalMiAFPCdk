@@ -5,13 +5,10 @@ using QueTalMiAFP.Models.Entities;
 using QueTalMiAFP.Models.Others;
 using QueTalMiAFP.Services;
 using QueTalMiAFP.Services.Exceptions;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 
@@ -49,6 +46,7 @@ namespace QueTalMiAFPCdk.Services {
 		private readonly string _afpModeloV3Base64IV = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64IV")!;
         private readonly string _afpCuprumUrlApiBase = configuration.GetValue<string>("Extractor:AFPCuprum:UrlApiBase")!;
         private readonly string _afpCapitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPCapital:UrlApiBase")!;
+        private readonly string _afpCapitalV2UrlApiBase = configuration.GetValue<string>("Extractor:AFPCapitalV2:UrlApiBase")!;
         private readonly string _afpHabitatUrlApiBase = configuration.GetValue<string>("Extractor:AFPHabitat:UrlApiBase")!;
         private readonly string _afpPlanvitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPPlanvital:UrlApiBase")!;
         private readonly string _afpProvidaUrlApiBase = configuration.GetValue<string>("Extractor:AFPProvida:UrlApiBase")!;
@@ -394,7 +392,94 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> ObtenerCuotasHabitat(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		
+        public async Task<List<Cuota>> ObtenerCuotasCapitalV2(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+            try {
+                RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
+                    NOMBRE_CAPITAL,
+                    fondo ?? "*",
+                    fechaInicio.ToString("dd/MM/yyyy"),
+                    fechaFinal.ToString("dd/MM/yyyy")));
+
+                await RandomWait();
+
+                string url_api_base = _afpCapitalV2UrlApiBase;
+                string url_api = string.Format(url_api_base, fechaFinal.Year, fondo, fechaFinal.ToString("yyyyMMdd"));
+
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+                request.DefaultRequestHeaders.Add("User-Agent", GetRandomUserAgent());
+                request.DefaultRequestHeaders.Add("Referer", GetRandomReferer(3));
+                request.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+                request.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br, zstd");
+                request.DefaultRequestHeaders.Add("Accept-Language", "es-MX,es;q=0.9,es-419;q=0.8,en;q=0.7,gl;q=0.6");
+                using HttpResponseMessage response = await request.GetAsync(url_api);
+
+                using Stream stream = await response.Content.ReadAsStreamAsync();
+                using StreamReader reader = new(stream);
+                string contenido = await reader.ReadToEndAsync();
+
+                List<Cuota> retorno = [];
+
+                int posCapital = 0;
+                foreach (string linea in Regex.Split(contenido, "\r\n|\r|\n")) {
+                    if (!linea.Contains(";")) {
+                        continue;
+                    }
+
+                    string[] celdas = linea.Split(";");
+
+                    // Se valida si es un encabezado...
+                    if (celdas[0] == "Fecha") {
+                        // Si ya se seteó una posCapital, significa que estamos en segunda grilla, por lo que se termina loop...
+                        if (posCapital != 0) {
+                            break;
+                        }
+
+                        for (int i = 0; i < celdas.Length; i++) {
+                            if (celdas[i] == "CAPITAL") {
+                                posCapital = i;
+                                break;
+                            }
+                        }
+                        continue;
+                    // Se valida si es una linea con valores cuotas...
+                    } else if (celdas[0].Length == 10 && celdas[0].Substring(0, 4) == fechaFinal.Year.ToString()) {
+                        string[] diaMesAnno = celdas[0].Split("-");
+                        DateTime fecha = new(int.Parse(diaMesAnno[0]), int.Parse(diaMesAnno[1]), int.Parse(diaMesAnno[2]));
+                        decimal valorCuota = decimal.Parse(celdas[posCapital].Replace(".","").Replace(",", "."), CultureInfo.InvariantCulture);
+
+                        if (fechaInicio <= fecha && fecha <= fechaFinal) {
+                            retorno.Add(new Cuota() {
+                                Afp = NOMBRE_CAPITAL,
+                                Fecha = fecha,
+                                Fondo = fondo,
+                                Valor = valorCuota
+                            });
+                        }
+                    }
+                }
+
+                RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
+                        NOMBRE_CAPITAL,
+                        fondo ?? "*",
+                        fechaInicio.ToString("dd/MM/yyyy"),
+                        fechaFinal.ToString("dd/MM/yyyy"),
+                        retorno.Count));
+
+                return retorno;
+            } catch (Exception ex) {
+                throw new ExcepcionValorCuota(ex) {
+                    Afp = NOMBRE_CAPITAL,
+                    FechaInicio = fechaInicio,
+                    FechaFinal = fechaFinal,
+                    Fondo = fondo
+                };
+            }
+        }
+        
+        public async Task<List<Cuota>> ObtenerCuotasHabitat(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_HABITAT,
@@ -960,9 +1045,15 @@ namespace QueTalMiAFPCdk.Services {
 				list.Add("https://www.spensiones.cl/apps/comisiones/getComisAPV.php?fecha=202103");
 				list.Add("https://www.spensiones.cl/apps/comisiones/getComisAPV.php?fecha=202102");
 				list.Add("https://www.spensiones.cl/apps/comisiones/getComisAPV.php?fecha=202101");
-			}
+			} else if (i == 3) {
+                list.Add("https://www.spensiones.cl/apps/valoresCuotaFondo/vcfAFP.php?tf=A");
+                list.Add("https://www.spensiones.cl/apps/valoresCuotaFondo/vcfAFP.php?tf=B");
+                list.Add("https://www.spensiones.cl/apps/valoresCuotaFondo/vcfAFP.php?tf=C");
+                list.Add("https://www.spensiones.cl/apps/valoresCuotaFondo/vcfAFP.php?tf=D");
+                list.Add("https://www.spensiones.cl/apps/valoresCuotaFondo/vcfAFP.php?tf=E");
+            }
 
-			Random random = new(Guid.NewGuid().GetHashCode());
+                Random random = new(Guid.NewGuid().GetHashCode());
 			int index = random.Next(list.Count);
 			return list[index];
 		}
