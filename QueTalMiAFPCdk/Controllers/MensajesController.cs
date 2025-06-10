@@ -63,8 +63,9 @@ namespace QueTalMiAFP.Controllers {
 			model.Nombre = WebUtility.HtmlEncode(model.Nombre);
 			model.Correo = WebUtility.HtmlEncode(model.Correo);
 			model.Mensaje = WebUtility.HtmlEncode(model.Mensaje);
+			string content = JsonConvert.SerializeObject(model);
 
-            HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+            HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(content, Encoding.UTF8, "application/json"));
 			string responseString = await response.Content.ReadAsStringAsync();
             MensajeUsuario? mensajeResultado = JsonConvert.DeserializeObject<MensajeUsuario>(responseString);
 

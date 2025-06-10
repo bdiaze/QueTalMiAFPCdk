@@ -176,10 +176,11 @@ namespace QueTalMiAFP.Controllers {
             entrada.ListaAFPs = WebUtility.HtmlEncode(entrada.ListaAFPs);
             entrada.ListaFondos = WebUtility.HtmlEncode(entrada.ListaFondos);
             entrada.ListaFechas = WebUtility.HtmlEncode(entrada.ListaFechas);
+            string content = JsonConvert.SerializeObject(entrada);
 
             using HttpClient client = new HttpClient(new RetryHandler(new HttpClientHandler(), _configuration));
             client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entrada), Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(content, Encoding.UTF8, "application/json"));
             using Stream responseStream = await response.Content.ReadAsStreamAsync();
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             return (await JsonSerializer.DeserializeAsync<IEnumerable<SalObtenerUltimaCuota>>(responseStream, options))!.ToList();
