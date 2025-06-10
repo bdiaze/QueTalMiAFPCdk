@@ -29,10 +29,9 @@ namespace QueTalMiAFPCdk.Models.ValidationAttributes {
 
 			string jsonResponse = httpResponse.Content.ReadAsStringAsync().Result;
 			dynamic jsonData = JObject.Parse(jsonResponse);
-			if (!jsonData.success.Equals(true.ToString(), StringComparison.CurrentCultureIgnoreCase)) {
+			if (!jsonData.success.ToString().Equals("true", StringComparison.CurrentCultureIgnoreCase)) {
 				return errorResult.Value;
 			}
-
 
 			return ValidationResult.Success!;
 		}
