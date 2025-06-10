@@ -592,18 +592,13 @@ namespace QueTalMiAFPCdk.Services {
 				</soapenv:Envelope>";
 				body = string.Format(body, mesAnno.ToString("yyyyMM"));
 
-				HttpWebRequest request = WebRequest.CreateHttp(url_api_base);
-				request.Method = "POST";
-				request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-				request.ContentType = "text/xml; charset=utf-8";
-				request.Headers.Add("x-csrf-token", Guid.NewGuid().ToString());
-				byte[] byteArray = Encoding.UTF8.GetBytes(body);
-				request.ContentLength = byteArray.Length;
-				using (Stream dataStream = await request.GetRequestStreamAsync()) {
-					await dataStream.WriteAsync(byteArray);
-				}
-                using HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                using Stream stream = response.GetResponseStream();
+                HttpClient request = new(new HttpClientHandler {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+                });
+                request.DefaultRequestHeaders.Add("x-csrf-token", Guid.NewGuid().ToString());
+
+                using HttpResponseMessage response = await request.PostAsync(url_api_base, new StringContent(body, Encoding.UTF8, "text/xml"));
+                using Stream stream = await response.Content.ReadAsStreamAsync();
                 using StreamReader reader = new(stream);
                 string contenido = await reader.ReadToEndAsync();
                 XmlDocument xml = new();
