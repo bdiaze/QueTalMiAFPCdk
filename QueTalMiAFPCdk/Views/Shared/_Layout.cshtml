@@ -18,7 +18,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-controller="Estadisticas" asp-action="Index">
-                    <img src="~/flavicon.svg" width="25" class="mr-2" />
+                    <img src="~/flavicon.svg" width="30" class="mr-2" />
                     <p style="display: inline;">¿Qué tal mi AFP?</p>
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -26,25 +26,27 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse">
-                    <ul class="navbar-nav">
-                        <li class="nav-item ml-2 mr-2">
-                            <a class="nav-link text-dark" asp-controller="Estadisticas" asp-action="Index">Comparando AFPs por Fondo</a>
+                    <ul class="navbar-nav  w-100">
+                        <li class="nav-item  w-100">
+                            <a class="nav-link text-dark text-center" asp-controller="Estadisticas" asp-action="Index">Rentabilidad por Fondo</a>
                         </li>
-                        <li class="nav-item ml-2 mr-2">
-                            <a class="nav-link text-dark" asp-controller="Estadisticas" asp-action="ComparandoFondos">Comparando Fondos por AFP</a>
+                        <li class="nav-item  w-100">
+                            <a class="nav-link text-dark text-center" asp-controller="Estadisticas" asp-action="ComparandoFondos">Rentabilidad por AFP</a>
                         </li>
-                        <li class="nav-item ml-2 mr-2">
-                            <a class="nav-link text-dark" asp-controller="Simulador" asp-action="Index">Simulador de Ganancias</a>
+                        <li class="nav-item  w-100">
+                            <a class="nav-link text-dark text-center" asp-controller="Simulador" asp-action="Index">Simula tus Ganancias</a>
                         </li>
-                        <li class="nav-item ml-2 mr-2">
-                            <a class="nav-link text-dark" asp-controller="AccederCuotas" asp-action="Index">Acceder a Valores Cuotas</a>
+                        <li class="nav-item  w-100">
+                            <a class="nav-link text-dark text-center" asp-controller="AccederCuotas" asp-action="Index">Obtén los Valores Cuota</a>
                         </li>
+                        <!--
                         <li class="nav-item ml-2 mr-2">
                             <a class="nav-link text-dark" asp-controller="Mensajes" asp-action="Index">Contáctate con Nosotros</a>
                         </li>
                         <li class="nav-item ml-2 mr-2">
                             <a class="nav-link text-dark" asp-controller="Extractor" asp-action="Index">Actualizar Base de Datos</a>
                         </li>
+                        -->
                     </ul>
                 </div>
             </div>
@@ -57,9 +59,39 @@
     </div>
 
     <footer class="border-top footer text-muted mt-3">
+        <!--
         <div class="container">
             <img src="~/flavicon.svg" width="20" class="mr-2" />
             2021 - ¿Qué tal mi AFP?
+        </div>
+        -->
+        <!--
+        <div class="container text-left">
+            <a class="navbar-brand mx-3" asp-controller="Estadisticas" asp-action="Index">
+                <img src="~/flavicon.svg" width="20" class="mr-2" />
+                <p class="text-muted" style="display: inline;">¿Qué tal mi AFP?</p>
+            </a>
+            <a class="text-muted mx-3" asp-controller="Mensajes" asp-action="Index">Contáctate con Nosotros</a>
+            <a class="text-muted mx-3" asp-controller="Extractor" asp-action="Index">Actualizar Base de Datos</a>
+        </div>
+        -->
+        <div class="container">
+            <nav class="navbar navbar-expand-sm navbar-light bg-white">
+                <a class="navbar-item text-muted" asp-controller="Estadisticas" asp-action="Index">
+                    <img src="~/flavicon.svg" width="25" class="d-inline mr-2" />
+                    2021 - ¿Qué tal mi AFP?
+                </a>
+                <div class="w-100">
+                    <ul class="navbar-nav">
+                        <li class="nav-item ml-auto mr-3">
+                            <a class="text-muted text-center" asp-controller="Mensajes" asp-action="Index">Contáctate con Nosotros</a>
+                        </li>
+                        <li class="nav-item ml-auto mr-3">
+                            <a class="text-muted text-center" asp-controller="Extractor" asp-action="Index">Actualizar Valores Registrados</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
     </footer>
 
