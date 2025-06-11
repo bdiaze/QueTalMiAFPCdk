@@ -1,10 +1,15 @@
+using Amazon.S3;
 using QueTalMiAFP.Repositories;
+using QueTalMiAFPCdk.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
+
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddSingleton<S3BucketHelper, S3BucketHelper>();
 builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
 
 var app = builder.Build();

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using QueTalMiAFP.Models.Others;
 using QueTalMiAFP.Repositories;
 using QueTalMiAFP.Services;
+using QueTalMiAFPCdk.Services;
 using System;
 using System.Globalization;
 using System.Net;
@@ -15,13 +16,15 @@ namespace QueTalMiAFPCdk.Controllers {
     public class CuotaController : ControllerBase {
         private readonly IConfiguration _configuration;
         private readonly ICuotaUfComisionDAO _cuotaUfComisionDAO;
+        private readonly S3BucketHelper _s3BucketHelper;
 
         private readonly string _baseUrl;
         private readonly string _xApiKey;
 
-        public CuotaController(IConfiguration configuration, ICuotaUfComisionDAO cuotaUfComisionDAO) {
+        public CuotaController(IConfiguration configuration, ICuotaUfComisionDAO cuotaUfComisionDAO, S3BucketHelper s3BucketHelper) {
             _configuration = configuration;
             _cuotaUfComisionDAO = cuotaUfComisionDAO;
+            _s3BucketHelper = s3BucketHelper;
 
             _baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
             _xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
@@ -113,9 +116,7 @@ namespace QueTalMiAFPCdk.Controllers {
             if (retornoConsulta!.S3Url == null) {
                 return retornoConsulta!.ListaCuotas!;
 			} else {
-                HttpResponseMessage responseS3 = await client.GetAsync(retornoConsulta.S3Url);
-                string responseStringS3 = await responseS3.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<CuotaUf>>(responseStringS3)!;
+                return JsonConvert.DeserializeObject<List<CuotaUf>>(await _s3BucketHelper.GetFile(retornoConsulta!.S3Url))!;
 			}
         }
 
