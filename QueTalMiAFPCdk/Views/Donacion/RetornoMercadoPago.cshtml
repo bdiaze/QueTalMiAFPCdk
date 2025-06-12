@@ -1,0 +1,34 @@
+﻿@using QueTalMiAFPCdk.Models.ViewModels
+@{
+    if (ViewBag.Resultado == "success")
+    {
+        ViewData["Title"] = "¡Donación recibida!";
+    } 
+    else 
+    {
+        ViewData["Title"] = "¡Ups! No se hizo el donativo...";
+    }
+}
+@if (ViewBag.Resultado == "success")
+{
+    <h1 class="text-center">¡Los completos volvieron al menú!</h1>
+    <p class="text-center mt-4 mb-0">
+        El equipo de ¿Qué tal mi AFP? está muy agradecido de tu donación 
+        ya que nos permite seguir ofreciendo este servicio.
+        Cada aporte nos ayuda a solventar los costos asociados a nuestra plataforma, 
+        desde pagar por los dominios a arrendar los servidores, y por eso te decimos..
+        <br/><cite><b>¡Muchas Gracias!</b></cite>.
+    </p>
+    <img class="rounded mx-auto d-block" src="~/images/completo.webp" width="300vh" />
+    <a class="btn btn-success py-2 w-100" asp-controller="Donacion" asp-action="Index">Click para volver...</a>
+} 
+else
+{
+    <h1 class="text-center">@ViewData["Title"]</h1>
+    <p class="text-center mt-4 mb-4">
+        Parece que hubo un problema con el donativo, 
+        te recomendamos validar que el cobro no se haya llevado a cabo
+        e intentar nuevamente.
+    </p>
+    <a class="btn btn-danger py-2 w-100" asp-controller="Donacion" asp-action="Index">Click para intentar de nuevo...</a>
+}

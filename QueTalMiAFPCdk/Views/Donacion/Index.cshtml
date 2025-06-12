@@ -1,0 +1,75 @@
+﻿@using QueTalMiAFPCdk.Models.ViewModels
+@model DonacionViewModel
+@{
+    ViewData["Title"] = "¿Unos completitos?";
+}
+
+@section Head {
+    <meta name="description" content="¿Te ha gustado tanto nuestro trabajo que te gustaría hacernos un donativo? ¡Pues este es el lugar para ello! 
+    Un donativo, o como nosotros le llamamos, una invitación a unos completitos, es siempre muy bien recibido por nuestro equipo." />
+}
+
+@section Scripts {
+    <script src="~/js/Donacion.js" asp-append-version="true"></script>
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="mt-3">
+    ¿Te ha gustado tanto nuestro trabajo que te gustaría hacernos un donativo? ¡Pues este es el lugar para ello! 
+    Un donativo, o como nosotros le llamamos, <cite>"una invitación a unos completitos"</cite>, es siempre muy bien recibido por nuestro equipo. 
+</p>
+
+<hr />
+
+@if (!ViewBag.MontoCargado) {
+    <form method="post" asp-action="EmitiendoPago">
+        <div class="input-group input-group-lg">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-success px-4" type="button" onclick="cargarMonto('$1.000')">$1.000</button>
+                <button class="btn btn-outline-success px-4" type="button" onclick="cargarMonto('$5.000')">$5.000</button>
+                <button class="btn btn-outline-success px-4" type="button" onclick="cargarMonto('$10.000')">$10.000</button>
+            </div>
+            <input asp-for="Monto" type="text" id="inputMonto" class="form-control" required />
+        </div>
+        <span style="margin-left: 12.4em" asp-validation-for="Monto"></span>
+
+        <input class="btn btn-success mt-3 py-3 px-0 w-100" type="submit" value="¡Ir a los métodos de pago!" />
+    </form>
+} else {
+    <div class="input-group input-group-lg">
+        <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary px-4" type="button" onclick="cargarMonto('$1.000')" disabled>$1.000</button>
+            <button class="btn btn-outline-secondary px-4" type="button" onclick="cargarMonto('$5.000')" disabled>$5.000</button>
+            <button class="btn btn-outline-secondary px-4" type="button" onclick="cargarMonto('$10.000')" disabled>$10.000</button>
+        </div>
+        <input asp-for="Monto" type="text" id="inputMonto" class="form-control" required disabled/>
+    </div>
+
+    <a class=" btn btn-outline-secondary mt-3 py-3 px-0 w-100" asp-controller="Donacion" asp-action="Index">Click para editar monto a donar</a>
+
+    <hr />
+
+    <div id="walletBrick_container" class="mt-3 w-100 mx-auto"></div>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script>
+        const mp = new MercadoPago("@ViewBag.MercadoPagoPublicKey");
+
+        const bricksBuilder = mp.bricks();
+        const renderWalletBrick = async (bricksBuilder) => {
+            await bricksBuilder.create("wallet", "walletBrick_container", {
+                initialization: {
+                    preferenceId: "@ViewBag.PreferenceId"
+                },
+                customization: {
+                    theme: 'default',
+                    customStyle: {
+                        valueProp: 'security_safety',
+                    }
+                }
+            });
+        };
+
+        renderWalletBrick(bricksBuilder);
+    </script>
+}

@@ -10,6 +10,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddSingleton<S3BucketHelper, S3BucketHelper>();
+builder.Services.AddSingleton<MercadoPagoHelper, MercadoPagoHelper>();
 builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
 
 var app = builder.Build();
