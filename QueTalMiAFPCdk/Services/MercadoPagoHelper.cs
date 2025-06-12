@@ -1,6 +1,4 @@
 ﻿using System.Configuration;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Policy;
 using MercadoPago.Config;
 
 namespace QueTalMiAFPCdk.Services {
