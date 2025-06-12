@@ -38,9 +38,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     }
                 ],
                 BackUrls = new PreferenceBackUrlsRequest {
-                    Success = "https://localhost:44332/donacion/retornomercadopago/success",
-                    Failure = "https://localhost:44332/donacion/retornomercadopago/failure",
-                    Pending = "https://localhost:44332/donacion/retornomercadopago/failure",
+                    Success = mercadoPagoHelper.UrlSuccess,
+                    Failure = mercadoPagoHelper.UrlFailure,
+                    Pending = mercadoPagoHelper.UrlPending,
                 },
                 AutoReturn = "approved"
             };
