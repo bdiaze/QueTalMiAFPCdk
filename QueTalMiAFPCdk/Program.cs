@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
-builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddSingleton<ParameterStoreHelper, ParameterStoreHelper>();
+builder.Services.AddSingleton<SecretManagerHelper, SecretManagerHelper>();
 builder.Services.AddSingleton<S3BucketHelper, S3BucketHelper>();
 builder.Services.AddSingleton<MercadoPagoHelper, MercadoPagoHelper>();
 builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
