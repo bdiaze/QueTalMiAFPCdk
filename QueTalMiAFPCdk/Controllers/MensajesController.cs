@@ -19,17 +19,14 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace QueTalMiAFP.Controllers {
-	public class MensajesController(ILogger<MensajesController> logger, ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, IConfiguration configuration) : Controller {
-		private readonly ILogger<MensajesController> _logger = logger;
-		private readonly IConfiguration _configuration = configuration;
-
+namespace QueTalMiAFPCdk.Controllers {
+	public class MensajesController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) : Controller {
 		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
 		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
 		private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
 
         public async Task<IActionResult> Index() {
-			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 			HttpResponseMessage response = await client.GetAsync(_baseUrl + "TipoMensaje/ObtenerVigentes");
 			string responseString = await response.Content.ReadAsStringAsync();
@@ -56,7 +53,7 @@ namespace QueTalMiAFP.Controllers {
 				GoogleReCaptchaResponse = model.GoogleReCaptchaResponse,
 			};
 
-            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
             HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(modelSanitizado), Encoding.UTF8, "application/json"));
@@ -73,7 +70,7 @@ namespace QueTalMiAFP.Controllers {
             };
 			string body = EnvioCorreo.ArmarCuerpo(datos, "MensajeRecibido.html");
 			
-			EnvioCorreo envioCorreo = new(_configuration);
+			EnvioCorreo envioCorreo = new(parameterStore, secretManager);
 			await envioCorreo.Notificar($"¡Ha llegado un mensaje de {mensajeResultado.Nombre}!", body, mensajeResultado.Correo, mensajeResultado.Nombre);
 
 			return View(mensajeResultado);

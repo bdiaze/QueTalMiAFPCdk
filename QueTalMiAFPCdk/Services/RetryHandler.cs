@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using QueTalMiAFPCdk.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,14 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace QueTalMiAFP.Services {
-	public class RetryHandler : DelegatingHandler {
-		private readonly int MaxRetries;
+	public class RetryHandler(HttpMessageHandler innerHandler, ParameterStoreHelper parameterStore) : DelegatingHandler(innerHandler) {
+		private readonly int MaxRetries = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MaxRetries").Result);
 
-		public RetryHandler(HttpMessageHandler innerHandler, IConfiguration configuration) : base(innerHandler) {
-			MaxRetries = configuration.GetValue<int>("AWSGatewayAPIKey:maxRetries");
-		}
-
-		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			HttpResponseMessage? response = null;
 			for (int i = 0; i < MaxRetries; i++) {
 				response = await base.SendAsync(request, cancellationToken);
