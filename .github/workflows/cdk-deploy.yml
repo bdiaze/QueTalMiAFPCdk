@@ -19,7 +19,8 @@ jobs:
             DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
             SUBDOMAIN_NAME: ${{ vars.SUBDOMAIN_NAME }}
             EC2_HOST: ${{ vars.EC2_HOST }}
-            CERTBOT_EMAIL: ${{ vars.CERTBOT_EMAIL }}
+            PREFIX_ROLES_WEB_SERVER: ${{ vars.PREFIX_ROLES_WEB_SERVER }}
+            S3_BUCKET_ARN: ${{ vars.S3_BUCKET_ARN }}
                         
         steps:
             - name: Checkout Repositorio
@@ -55,6 +56,7 @@ jobs:
                   WEBAPP_SERVICE: ${{ vars.WEBAPP_SERVICE }}
                   WEBAPP_EXECSTART: ${{ vars.WEBAPP_EXECSTART }}
                   CLOUDFLARE_CLIENT_CRT: ${{ secrets.CLOUDFLARE_CLIENT_CRT }}
+                  CERTBOT_EMAIL: ${{ vars.CERTBOT_EMAIL }}
               run: |
                 echo 'Se añade EC2 Host a Known Hosts'
                 mkdir -p ~/.ssh
