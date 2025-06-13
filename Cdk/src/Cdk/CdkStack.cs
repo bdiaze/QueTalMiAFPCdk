@@ -147,6 +147,24 @@ namespace Cdk
                 StringValue = afpUnoUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
+            StringParameter strParValoresUfUrlApiBase = new(this, $"{appName}StringParameterValoresUfUrlApiBase", new StringParameterProps {
+                ParameterName = $"/{appName}/Extractor/ValoresUf/UrlApiBase",
+                Description = $"URL API Base para extraccion de valores Uf - {appName}",
+                StringValue = valoresUfUrlApiBase,
+                Tier = ParameterTier.STANDARD,
+            });
+            StringParameter strParComisionesUrlApiBase = new(this, $"{appName}StringParameterComisionesUrlApiBase", new StringParameterProps {
+                ParameterName = $"/{appName}/Extractor/Comisiones/UrlApiBase",
+                Description = $"URL API Base para extraccion de comisiones - {appName}",
+                StringValue = comisionesUrlApiBase,
+                Tier = ParameterTier.STANDARD,
+            });
+            StringParameter strParComisionesCavUrlApiBase = new(this, $"{appName}StringParameterComisionesCavUrlApiBase", new StringParameterProps {
+                ParameterName = $"/{appName}/Extractor/ComisionesCav/UrlApiBase",
+                Description = $"URL API Base para extraccion de comisiones CAV - {appName}",
+                StringValue = comisionesCavUrlApiBase,
+                Tier = ParameterTier.STANDARD,
+            });
 
             // Se crean todos los parámetros de la API de QueTalMiAFP...
             StringParameter strParApiUrl = new(this, $"{appName}StringParameterApiUrl", new StringParameterProps {
@@ -212,37 +230,37 @@ namespace Cdk
             StringParameter strParGmailDireccion = new(this, $"{appName}StringParameterGmailDireccion", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/Direccion",
                 Description = $"Direccion de Gmail desde donde se mandan las notificaciones - {appName}",
-                StringValue = googleRecaptchaClientKey,
+                StringValue = gmailDireccion,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailDireccionAlias = new(this, $"{appName}StringParameterGmailDireccionAlias", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/DireccionAlias",
                 Description = $"Alias de la direccion de Gmail desde donde se mandan las notificaciones  - {appName}",
-                StringValue = googleRecaptchaClientKey,
+                StringValue = gmailDireccionAlias,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailNombre = new(this, $"{appName}StringParameterGmailNombre", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/Nombre",
                 Description = $"Nombre a mostrarse como remitente de la notificacion - {appName}",
-                StringValue = googleRecaptchaClientKey,
+                StringValue = gmailNombre,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailDireccionNotif = new(this, $"{appName}StringParameterGmailDireccionNotificacion", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/DireccionNotificacion",
                 Description = $"Direccion a la que se envia notificacion de Gmail - {appName}",
-                StringValue = googleRecaptchaClientKey,
+                StringValue = gmailDireccionNotificacion,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailNombreNotif = new(this, $"{appName}StringParameterGmailNombreNotificacion", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/NombreNotificacion",
                 Description = $"Nombre del receptor de la notificacion de Gmail - {appName}",
-                StringValue = googleRecaptchaClientKey,
+                StringValue = gmailNombreNotificacion,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailClientEmail = new(this, $"{appName}StringParameterGmailClientEmail", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/ClientEmail",
                 Description = $"Client Email de Gmail - {appName}",
-                StringValue = googleRecaptchaClientKey,
+                StringValue = gmailClientEmail,
                 Tier = ParameterTier.STANDARD,
             });
 
@@ -305,6 +323,9 @@ namespace Cdk
                                         strParAfpPlanvitalUrlApiBase.ParameterArn,
                                         strParAfpProvidaUrlApiBase.ParameterArn,
                                         strParAfpUnoUrlApiBase.ParameterArn,
+                                        strParValoresUfUrlApiBase.ParameterArn,
+                                        strParComisionesUrlApiBase.ParameterArn,
+                                        strParComisionesCavUrlApiBase.ParameterArn,
                                         strParApiMaxRetries.ParameterArn,
                                         strParApiMilisegForzarTimeout.ParameterArn,
                                         strParApiS3BucketName.ParameterArn,
