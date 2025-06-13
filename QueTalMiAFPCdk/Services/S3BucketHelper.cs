@@ -12,6 +12,7 @@ namespace QueTalMiAFPCdk.Services {
 
             using (AmazonSecurityTokenServiceClient client = new()) {
                 AssumeRoleRequest request = new() {
+                    RoleSessionName = "QueTalMiAFP-S3GetObject-Session",
                     RoleArn = assumeRole,
                 };
 
