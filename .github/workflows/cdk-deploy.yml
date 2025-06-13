@@ -84,14 +84,13 @@ jobs:
                 scp -i ssh_key.pem ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
                 # Se copia el archivo de nginx...
-                # echo 'Se copia archivo .conf en EC2'
-                # scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
+                echo 'Se copia archivo .conf en EC2'
+                scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
                 # Se copia archivo CRT de cloudflare...
                 echo 'Se copia archivo cloudflare.crt en EC2'
                 scp -i ssh_key.pem ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
-                echo ''
                 # Se inicializa el web service...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART SUBDOMAIN_NAME=$SUBDOMAIN_NAME CERTBOT_EMAIL=$CERTBOT_EMAIL" '
                     echo 'Se mueve archivo cloudflare.crt'
@@ -105,12 +104,12 @@ jobs:
                     sudo systemctl enable $WEBAPP_SERVICE
                     sudo systemctl restart $WEBAPP_SERVICE
                     
-                    # echo 'Se mueve archivo .conf y se reinicia nginx'
-                    # sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
-                    # sudo systemctl reload nginx 
+                    echo 'Se mueve archivo .conf y se reinicia nginx'
+                    sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
+                    sudo systemctl reload nginx 
                     
-                    # echo 'Se configura certificados con certbot'
-                    # sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
+                    echo 'Se configura certificados con certbot'
+                    sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
                     sudo systemctl reload nginx 
                 '
                 
