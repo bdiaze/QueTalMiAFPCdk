@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Route53;
+using Amazon.CDK.AWS.SecretsManager;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
 using System;
@@ -241,6 +242,19 @@ namespace Cdk
                 Tier = ParameterTier.STANDARD,
             });
 
+            // Se crea secreto para toda la aplicación...
+            Secret secret = new(this, $"{appName}Secret", new SecretProps { 
+                SecretName = $"/{appName}",
+                Description = $"Secretos de la aplicación {appName}",
+                SecretObjectValue = new Dictionary<string, SecretValue> {
+                    { "ExtractorKey", SecretValue.UnsafePlainText(queTalMiAfpExtractionKey) },
+                    { "ApiKey", SecretValue.UnsafePlainText(queTalMiAfpApiKey) },
+                    { "MercadoPagoAccessToken", SecretValue.UnsafePlainText(mercadoPagoAccessToken) },
+                    { "GoogleRecaptchaSecretKey", SecretValue.UnsafePlainText(googleRecaptchaSecretKey) },
+                    { "GmailPrivateKey", SecretValue.UnsafePlainText(gmailPrivateKey) },
+                },
+            });
+
             // Se crea rol de la subapp que asumirá la instancia web server...
             Role assumeRole = new(this, $"{appName}WebServerRole", new RoleProps {
                 RoleName = $"{prefixRolesWebServer}{appName}",
@@ -258,6 +272,15 @@ namespace Cdk
                                     ],
                                     Resources = [
                                         $"{s3bucketArn}/*",
+                                    ],
+                                }),
+                                new PolicyStatement(new PolicyStatementProps{
+                                    Sid = $"{appName}AccessToSecretManager",
+                                    Actions = [
+                                        "secretsmanager:GetSecretValue"
+                                    ],
+                                    Resources = [
+                                        secret.SecretFullArn,
                                     ],
                                 }),
                                 new PolicyStatement(new PolicyStatementProps{
