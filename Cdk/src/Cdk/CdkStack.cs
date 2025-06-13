@@ -16,6 +16,7 @@ namespace Cdk
             string domainName = System.Environment.GetEnvironmentVariable("DOMAIN_NAME") ?? throw new ArgumentNullException("DOMAIN_NAME");
             string subdomainName = System.Environment.GetEnvironmentVariable("SUBDOMAIN_NAME") ?? throw new ArgumentNullException("SUBDOMAIN_NAME");
             string ec2Host = System.Environment.GetEnvironmentVariable("EC2_HOST") ?? throw new ArgumentNullException("EC2_HOST");
+            string ec2RoleArn = System.Environment.GetEnvironmentVariable("EC2_ROLE_ARN") ?? throw new ArgumentNullException("EC2_ROLE_ARN");
             string prefixRolesWebServer = System.Environment.GetEnvironmentVariable("PREFIX_ROLES_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_ROLES_WEB_SERVER");
             string s3bucketArn = System.Environment.GetEnvironmentVariable("S3_BUCKET_ARN") ?? throw new ArgumentNullException("S3_BUCKET_ARN");
 
@@ -35,7 +36,7 @@ namespace Cdk
             _ = new Role(this, $"{appName}WebServerRole", new RoleProps {
                 RoleName = $"{prefixRolesWebServer}{appName}",
                 Description = $"Rol de {appName} para ser asumido por Web Server",
-                AssumedBy = new ServicePrincipal("ec2.amazonaws.com"),
+                AssumedBy = new ArnPrincipal(ec2RoleArn),
                 InlinePolicies = new Dictionary<string, PolicyDocument> {
                     {
                         $"{appName}WebServerPolicy",

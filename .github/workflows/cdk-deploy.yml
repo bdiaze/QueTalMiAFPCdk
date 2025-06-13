@@ -19,6 +19,7 @@ jobs:
             DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
             SUBDOMAIN_NAME: ${{ vars.SUBDOMAIN_NAME }}
             EC2_HOST: ${{ vars.EC2_HOST }}
+            EC2_ROLE_ARN: ${{ vars.EC2_ROLE_ARN }}
             PREFIX_ROLES_WEB_SERVER: ${{ vars.PREFIX_ROLES_WEB_SERVER }}
             S3_BUCKET_ARN: ${{ vars.S3_BUCKET_ARN }}
                         
