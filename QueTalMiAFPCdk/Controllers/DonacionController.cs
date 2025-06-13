@@ -13,6 +13,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 Monto = "$1.000"
             };
             ViewBag.MontoCargado = false;
+            ViewBag.OcultarCompleto = true;
             return View(model);
         }
 
@@ -51,6 +52,7 @@ namespace QueTalMiAFPCdk.Controllers {
             ViewBag.MercadoPagoPublicKey = mercadoPagoHelper.PublicKey;
             ViewBag.PreferenceId = preference.Id;
             ViewBag.MontoCargado = true;
+            ViewBag.OcultarCompleto = true;
 
             return View("Index", model);    
         }
@@ -58,6 +60,7 @@ namespace QueTalMiAFPCdk.Controllers {
         [Route("[controller]/[action]/{resultado}")]
         public IActionResult RetornoMercadoPago(string resultado) {
             ViewBag.Resultado = resultado.ToLower();
+            ViewBag.OcultarCompleto = true;
             return View();
         }
     }

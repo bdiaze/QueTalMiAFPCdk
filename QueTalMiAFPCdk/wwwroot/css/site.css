@@ -166,3 +166,43 @@ p, h6 {
 .validation-summary-valid {
     display: none;
 }
+
+.referencia-relativa-completo {
+    position: relative;
+}
+
+.contenedor-completo {
+    top: -2.5rem;
+    right: 0;
+    overflow: hidden;
+    width: 18rem;
+    height: 8rem;
+    padding-top: 2.3rem;
+    position: absolute;
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(25%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.boton-completo {
+    animation: 1s ease-out 0s 1 slideInFromRight;
+    right: -11.8rem;
+    transition: right 0.3s linear;
+    position: absolute;
+    z-index: 1000;
+}
+
+.contenedor-completo:is(:hover) .boton-completo {
+    right: -2rem;
+}
+
+.boton-completo:not(:hover) {
+    background-color: #f8f9fa;
+}
