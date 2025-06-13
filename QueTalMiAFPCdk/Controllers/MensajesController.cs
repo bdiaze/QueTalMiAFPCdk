@@ -6,6 +6,7 @@ using QueTalMiAFP.Models.Entities;
 using QueTalMiAFP.Models.Others;
 using QueTalMiAFP.Models.ViewModels;
 using QueTalMiAFP.Services;
+using QueTalMiAFPCdk.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,24 +20,15 @@ using System.Threading.Tasks;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace QueTalMiAFP.Controllers {
-	public class MensajesController : Controller {
-		private readonly ILogger<MensajesController> _logger;
-		private readonly IConfiguration _configuration;
+	public class MensajesController(ILogger<MensajesController> logger, ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, IConfiguration configuration) : Controller {
+		private readonly ILogger<MensajesController> _logger = logger;
+		private readonly IConfiguration _configuration = configuration;
 
-		private readonly string _baseUrl;
-		private readonly string _xApiKey;
-		private readonly string _reCaptchaClientKey;
+		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
+		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
+		private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
 
-		public MensajesController(ILogger<MensajesController> logger, IConfiguration configuration) {
-			_logger = logger;
-			_configuration = configuration;
-
-			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
-			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
-			_reCaptchaClientKey = _configuration.GetValue<string>("GoogleReCaptcha:ClientKey")!;
-		}
-
-		public async Task<IActionResult> Index() {
+        public async Task<IActionResult> Index() {
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 			HttpResponseMessage response = await client.GetAsync(_baseUrl + "TipoMensaje/ObtenerVigentes");
