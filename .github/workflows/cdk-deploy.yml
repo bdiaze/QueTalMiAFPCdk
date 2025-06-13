@@ -74,6 +74,24 @@ jobs:
                                                       
             - name: Instalar AWS CDK
               run: npm install -g aws-cdk
+              
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+              with:
+                  aws-region: ${{ vars.REGION_AWS }}
+                  role-to-assume: ${{ vars.ARN_GITHUB_ROLE }}
+                
+            - name: CDK Synth
+              working-directory: ${{ vars.DIRECTORIO_CDK }}
+              run: cdk synth
+              
+            - name: CDK Diff
+              working-directory: ${{ vars.DIRECTORIO_CDK }}
+              run: cdk --app cdk.out diff
+              
+            - name: CDK Deploy
+              working-directory: ${{ vars.DIRECTORIO_CDK }}
+              run: cdk --app cdk.out deploy --require-approval never
                                           
             - name: Publish .NET Application
               run: dotnet publish /p:PublishDir=../publish /p:PublishReadyToRun=true -r linux-arm64 --self-contained true 
@@ -150,21 +168,3 @@ jobs:
                     # sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
                     sudo systemctl reload nginx 
                 '
-                
-            - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-              with:
-                  aws-region: ${{ vars.REGION_AWS }}
-                  role-to-assume: ${{ vars.ARN_GITHUB_ROLE }}
-                
-            - name: CDK Synth
-              working-directory: ${{ vars.DIRECTORIO_CDK }}
-              run: cdk synth
-              
-            - name: CDK Diff
-              working-directory: ${{ vars.DIRECTORIO_CDK }}
-              run: cdk --app cdk.out diff
-              
-            - name: CDK Deploy
-              working-directory: ${{ vars.DIRECTORIO_CDK }}
-              run: cdk --app cdk.out deploy --require-approval never
