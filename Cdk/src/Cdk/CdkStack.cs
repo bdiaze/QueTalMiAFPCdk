@@ -73,73 +73,73 @@ namespace Cdk
             // Se crean todos los parámetros de URL para la extracción de valores...
             StringParameter strParAfpModeloUrlApiBase = new(this, $"{appName}StringParameterAfpModeloUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModelo/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Modelo - {appName}",
+                Description = $"URL API Base para extraccion de AFP Modelo - {appName}",
                 StringValue = afpModeloUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpModeloV2UrlApiBase = new(this, $"{appName}StringParameterAfpModeloV2UrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModeloV2/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Modelo v2 - {appName}",
+                Description = $"URL API Base para extraccion de AFP Modelo v2 - {appName}",
                 StringValue = afpModeloV2UrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpModeloV3UrlApiBase = new(this, $"{appName}StringParameterAfpModeloV3UrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModeloV3/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Modelo v3 - {appName}",
+                Description = $"URL API Base para extraccion de AFP Modelo v3 - {appName}",
                 StringValue = afpModeloV3UrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpModeloV3Base64Key = new(this, $"{appName}StringParameterAfpModeloV3Base64Key", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModeloV3/Base64Key",
-                Description = $"Base64 Key para extracción de AFP Modelo v3 - {appName}",
+                Description = $"Base64 Key para extraccion de AFP Modelo v3 - {appName}",
                 StringValue = afpModeloV3Base64Key,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpModeloV3Base64IV = new(this, $"{appName}StringParameterAfpModeloV3Base64IV", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModeloV3/Base64IV",
-                Description = $"Base64 IV para extracción de AFP Modelo v3 - {appName}",
+                Description = $"Base64 IV para extraccion de AFP Modelo v3 - {appName}",
                 StringValue = afpModeloV3Base64IV,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpCuprumUrlApiBase = new(this, $"{appName}StringParameterAfpCuprumUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPCuprum/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Cuprum - {appName}",
+                Description = $"URL API Base para extraccion de AFP Cuprum - {appName}",
                 StringValue = afpCuprumUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpCapitalUrlApiBase = new(this, $"{appName}StringParameterAfpCapitalUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPCapital/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Capital - {appName}",
+                Description = $"URL API Base para extraccion de AFP Capital - {appName}",
                 StringValue = afpCapitalUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpCapitalV2UrlApiBase = new(this, $"{appName}StringParameterAfpCapitalV2UrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPCapitalV2/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Capital v2 - {appName}",
+                Description = $"URL API Base para extraccion de AFP Capital v2 - {appName}",
                 StringValue = afpCapitalV2UrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpHabitatUrlApiBase = new(this, $"{appName}StringParameterAfpHabitatUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPHabitat/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Habitat - {appName}",
+                Description = $"URL API Base para extraccion de AFP Habitat - {appName}",
                 StringValue = afpHabitatUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpPlanvitalUrlApiBase = new(this, $"{appName}StringParameterAfpPlanvitalUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPPlanvital/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Planvital - {appName}",
+                Description = $"URL API Base para extraccion de AFP Planvital - {appName}",
                 StringValue = afpPlanvitalUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpProvidaUrlApiBase = new(this, $"{appName}StringParameterAfpProvidaUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPProvida/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Provida - {appName}",
+                Description = $"URL API Base para extraccion de AFP Provida - {appName}",
                 StringValue = afpProvidaUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpUnoUrlApiBase = new(this, $"{appName}StringParameterAfpUnoUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPUno/UrlApiBase",
-                Description = $"URL API Base para extracción de AFP Uno - {appName}",
+                Description = $"URL API Base para extraccion de AFP Uno - {appName}",
                 StringValue = afpUnoUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
@@ -207,31 +207,31 @@ namespace Cdk
             // Se crean todos los parámetros de Gmail...
             StringParameter strParGmailDireccion = new(this, $"{appName}StringParameterGmailDireccion", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/Direccion",
-                Description = $"Dirección de Gmail desde donde se mandan las notificaciones - {appName}",
+                Description = $"Direccion de Gmail desde donde se mandan las notificaciones - {appName}",
                 StringValue = googleRecaptchaClientKey,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailDireccionAlias = new(this, $"{appName}StringParameterGmailDireccionAlias", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/DireccionAlias",
-                Description = $"Alias de la dirección de Gmail desde donde se mandan las notificaciones  - {appName}",
+                Description = $"Alias de la direccion de Gmail desde donde se mandan las notificaciones  - {appName}",
                 StringValue = googleRecaptchaClientKey,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailNombre = new(this, $"{appName}StringParameterGmailNombre", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/Nombre",
-                Description = $"Nombre a mostrarse como remitente de la notificación - {appName}",
+                Description = $"Nombre a mostrarse como remitente de la notificacion - {appName}",
                 StringValue = googleRecaptchaClientKey,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailDireccionNotif = new(this, $"{appName}StringParameterGmailDireccionNotificacion", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/DireccionNotificacion",
-                Description = $"Direccion a la que se envía notificación de Gmail - {appName}",
+                Description = $"Direccion a la que se envia notificacion de Gmail - {appName}",
                 StringValue = googleRecaptchaClientKey,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParGmailNombreNotif = new(this, $"{appName}StringParameterGmailNombreNotificacion", new StringParameterProps {
                 ParameterName = $"/{appName}/Gmail/NombreNotificacion",
-                Description = $"Nombre del receptor de la notificación de Gmail - {appName}",
+                Description = $"Nombre del receptor de la notificacion de Gmail - {appName}",
                 StringValue = googleRecaptchaClientKey,
                 Tier = ParameterTier.STANDARD,
             });
@@ -245,7 +245,7 @@ namespace Cdk
             // Se crea secreto para toda la aplicación...
             Secret secret = new(this, $"{appName}Secret", new SecretProps { 
                 SecretName = $"/{appName}",
-                Description = $"Secretos de la aplicación {appName}",
+                Description = $"Secretos de la aplicacion {appName}",
                 SecretObjectValue = new Dictionary<string, SecretValue> {
                     { "ExtractorKey", SecretValue.UnsafePlainText(queTalMiAfpExtractionKey) },
                     { "ApiKey", SecretValue.UnsafePlainText(queTalMiAfpApiKey) },
