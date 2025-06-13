@@ -37,19 +37,23 @@ namespace Cdk
             string valoresUfUrlApiBase = System.Environment.GetEnvironmentVariable("VALORES_UF_URL_API_BASE") ?? throw new ArgumentNullException("VALORES_UF_URL_API_BASE");
             string comisionesUrlApiBase = System.Environment.GetEnvironmentVariable("COMISIONES_URL_API_BASE") ?? throw new ArgumentNullException("COMISIONES_URL_API_BASE");
             string comisionesCavUrlApiBase = System.Environment.GetEnvironmentVariable("COMISIONES_CAV_URL_API_BASE") ?? throw new ArgumentNullException("COMISIONES_CAV_URL_API_BASE");
+            
             string queTalMiAfpExtractionKey = System.Environment.GetEnvironmentVariable("QUETALMIAFP_EXTRACTION_KEY") ?? throw new ArgumentNullException("QUETALMIAFP_EXTRACTION_KEY");
             string queTalMiAfpApiUrl = System.Environment.GetEnvironmentVariable("QUETALMIAFP_API_URL") ?? throw new ArgumentNullException("QUETALMIAFP_API_URL");
             string queTalMiAfpApiKey = System.Environment.GetEnvironmentVariable("QUETALMIAFP_API_KEY") ?? throw new ArgumentNullException("QUETALMIAFP_API_KEY");
             string queTalMiAfpS3BucketName = System.Environment.GetEnvironmentVariable("QUETALMIAFP_S3_BUCKET_NAME") ?? throw new ArgumentNullException("QUETALMIAFP_S3_BUCKET_NAME");
             string queTalMiAfpMaxRetries = System.Environment.GetEnvironmentVariable("QUETALMIAFP_MAX_RETRIES") ?? throw new ArgumentNullException("QUETALMIAFP_MAX_RETRIES");
             string queTalMiAfpMilisegForzarTimeout = System.Environment.GetEnvironmentVariable("QUETALMIAFP_MILISEG_FORZAR_TIMEOUT") ?? throw new ArgumentNullException("QUETALMIAFP_MILISEG_FORZAR_TIMEOUT");
+            
             string mercadoPagoPublicKey = System.Environment.GetEnvironmentVariable("MERCADOPAGO_PUBLIC_KEY") ?? throw new ArgumentNullException("MERCADOPAGO_PUBLIC_KEY");
             string mercadoPagoAccessToken = System.Environment.GetEnvironmentVariable("MERCADOPAGO_ACCESS_TOKEN") ?? throw new ArgumentNullException("MERCADOPAGO_ACCESS_TOKEN");
             string mercadoPagoUrlSuccess = System.Environment.GetEnvironmentVariable("MERCADOPAGO_URL_SUCCESS") ?? throw new ArgumentNullException("MERCADOPAGO_URL_SUCCESS");
             string mercadoPagoUrlFailure = System.Environment.GetEnvironmentVariable("MERCADOPAGO_URL_FAILURE") ?? throw new ArgumentNullException("MERCADOPAGO_URL_FAILURE");
             string mercadoPagoUrlPending = System.Environment.GetEnvironmentVariable("MERCADOPAGO_URL_PENDING") ?? throw new ArgumentNullException("MERCADOPAGO_URL_PENDING");
+            
             string googleRecaptchaClientKey = System.Environment.GetEnvironmentVariable("GOOGLE_RECAPTCHA_CLIENT_KEY") ?? throw new ArgumentNullException("GOOGLE_RECAPTCHA_CLIENT_KEY");
             string googleRecaptchaSecretKey = System.Environment.GetEnvironmentVariable("GOOGLE_RECAPTCHA_SECRET_KEY") ?? throw new ArgumentNullException("GOOGLE_RECAPTCHA_SECRET_KEY");
+            
             string gmailDireccion = System.Environment.GetEnvironmentVariable("GMAIL_DIRECCION") ?? throw new ArgumentNullException("GMAIL_DIRECCION");
             string gmailDireccionAlias = System.Environment.GetEnvironmentVariable("GMAIL_DIRECCION_ALIAS") ?? throw new ArgumentNullException("GMAIL_DIRECCION_ALIAS");
             string gmailNombre = System.Environment.GetEnvironmentVariable("GMAIL_NOMBRE") ?? throw new ArgumentNullException("GMAIL_NOMBRE");
