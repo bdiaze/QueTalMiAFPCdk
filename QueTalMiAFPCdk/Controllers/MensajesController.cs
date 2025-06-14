@@ -1,23 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using QueTalMiAFP.Models.Entities;
-using QueTalMiAFP.Models.Others;
-using QueTalMiAFP.Models.ViewModels;
-using QueTalMiAFP.Services;
+using QueTalMiAFPCdk.Models.Entities;
+using QueTalMiAFPCdk.Models.Others;
+using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace QueTalMiAFPCdk.Controllers {
 	public class MensajesController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) : Controller {

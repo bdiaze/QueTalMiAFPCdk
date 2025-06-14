@@ -2,19 +2,11 @@
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using MimeKit;
-using QueTalMiAFP.Models.Others;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using QueTalMiAFPCdk.Models.Others;
 using System.Net.Mail;
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace QueTalMiAFPCdk.Services {
 	public class EnvioCorreo(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) {

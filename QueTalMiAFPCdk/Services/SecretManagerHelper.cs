@@ -3,16 +3,15 @@ using Amazon.SecretsManager.Model;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 using Newtonsoft.Json;
-using System.Configuration;
 
 namespace QueTalMiAFPCdk.Services {
-    public class SecretManagerHelper(IConfiguration configuration) {
+    public class SecretManagerHelper(ParameterStoreHelper parameterStore) {
 
         private readonly Dictionary<string, dynamic> secretsValues = [];
 
         public async Task<dynamic> ObtenerSecreto(string secretName) {
             if (!secretsValues.TryGetValue(secretName, out dynamic? value)) {
-                string assumeRole = configuration.GetValue<string>("AWSGatewayAPIKey:AssumeRoleArn")!;
+                string assumeRole = await parameterStore.ObtenerParametro("/QueTalMiAFP/Api/AssumeRoleArn");
 
                 using AmazonSecurityTokenServiceClient client = new();
                 AssumeRoleRequest request = new() {

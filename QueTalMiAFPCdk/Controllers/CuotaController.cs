@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
-using QueTalMiAFP.Models.Others;
-using QueTalMiAFP.Repositories;
-using QueTalMiAFP.Services;
+using QueTalMiAFPCdk.Models.Others;
+using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
-using System;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -13,22 +11,9 @@ using System.Text;
 namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class CuotaController : ControllerBase {
-        private readonly IConfiguration _configuration;
-        private readonly ICuotaUfComisionDAO _cuotaUfComisionDAO;
-        private readonly S3BucketHelper _s3BucketHelper;
-
-        private readonly string _baseUrl;
-        private readonly string _xApiKey;
-
-        public CuotaController(IConfiguration configuration, ICuotaUfComisionDAO cuotaUfComisionDAO, S3BucketHelper s3BucketHelper) {
-            _configuration = configuration;
-            _cuotaUfComisionDAO = cuotaUfComisionDAO;
-            _s3BucketHelper = s3BucketHelper;
-
-            _baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
-            _xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
-        }
+    public class CuotaController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, ICuotaUfComisionDAO cuotaUfComisionDAO, S3BucketHelper s3BucketHelper) : ControllerBase {
+        private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
+        private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
 
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
@@ -106,7 +91,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 { "fechaFinal", dtFechaFinal.ToString("dd/MM/yyyy") }
             };
 
-			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 			string requestUri = QueryHelpers.AddQueryString(_baseUrl + "CuotaUfComision/ObtenerCuotas", parameters);
 			HttpResponseMessage response = await client.GetAsync(requestUri);
@@ -116,7 +101,7 @@ namespace QueTalMiAFPCdk.Controllers {
             if (retornoConsulta!.S3Url == null) {
                 return retornoConsulta!.ListaCuotas!;
 			} else {
-                return JsonConvert.DeserializeObject<List<CuotaUf>>(await _s3BucketHelper.GetFile(retornoConsulta!.S3Url))!;
+                return JsonConvert.DeserializeObject<List<CuotaUf>>(await s3BucketHelper.GetFile(retornoConsulta!.S3Url))!;
 			}
         }
 
@@ -177,7 +162,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 TipoComision = entrada.TipoComision
             };
 
-            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
             client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
             var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
             string responseString = await response.Content.ReadAsStringAsync();
@@ -189,10 +174,10 @@ namespace QueTalMiAFPCdk.Controllers {
         [Route("[action]")]
         [HttpGet]
         public async Task<ActionResult<List<RentabilidadReal>>> ObtenerRentabilidadRealUltimoAnno() {
-            DateTime fechaFinal = await _cuotaUfComisionDAO.UltimaFechaTodas();
+            DateTime fechaFinal = await cuotaUfComisionDAO.UltimaFechaTodas();
             DateTime fechaInicial = fechaFinal.AddYears(-1);
 
-            return await _cuotaUfComisionDAO.ObtenerRentabilidadReal(
+            return await cuotaUfComisionDAO.ObtenerRentabilidadReal(
                 "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
                 "A,B,C,D,E",
                 fechaInicial,

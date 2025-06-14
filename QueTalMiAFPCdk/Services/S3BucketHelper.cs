@@ -4,11 +4,11 @@ using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 
 namespace QueTalMiAFPCdk.Services {
-    public class S3BucketHelper(IConfiguration configuration) {
+    public class S3BucketHelper(ParameterStoreHelper parameterStore) {
 
         public async Task<string> GetFile(string keyName) {
-            string assumeRole = configuration.GetValue<string>("AWSGatewayAPIKey:AssumeRoleArn")!;
-            string bucketName = configuration.GetValue<string>("AWSGatewayAPIKey:s3BucketName")!;
+            string assumeRole = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/AssumeRoleArn").Result;
+            string bucketName = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/S3BucketName").Result;
 
             using (AmazonSecurityTokenServiceClient client = new()) {
                 AssumeRoleRequest request = new() {

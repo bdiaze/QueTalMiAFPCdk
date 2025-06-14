@@ -1,26 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using QueTalMiAFP.Models;
-using QueTalMiAFP.Models.Others;
-using QueTalMiAFP.Models.ViewModels;
-using QueTalMiAFP.Repositories;
+using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
+using QueTalMiAFPCdk.Repositories;
 
-namespace QueTalMiAFP.Controllers {
-	public class EstadisticasController : Controller {
-		private readonly ICuotaUfComisionDAO _cuotaUfComisionDAO;
+namespace QueTalMiAFPCdk.Controllers {
+	public class EstadisticasController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
 
-		public EstadisticasController(ICuotaUfComisionDAO cuotaUfComisionDAO) {
-			_cuotaUfComisionDAO = cuotaUfComisionDAO;
-		}
-
-		public async Task<IActionResult> Index() {
-			DateTime? ultimaFechaAlgunValorCuota = await _cuotaUfComisionDAO.UltimaFechaAlguna();
+        public async Task<IActionResult> Index() {
+			DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
 			if (ultimaFechaAlgunValorCuota == null) {
 				ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 			}
@@ -29,7 +17,7 @@ namespace QueTalMiAFP.Controllers {
 		}
 
 		public async Task<IActionResult> ComparandoFondos() {
-			DateTime? ultimaFechaAlgunValorCuota = await _cuotaUfComisionDAO.UltimaFechaAlguna();
+			DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
 			if (ultimaFechaAlgunValorCuota == null) {
 				ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 			}
@@ -40,11 +28,11 @@ namespace QueTalMiAFP.Controllers {
 		public async Task<IActionResult> PremioRentabilidad() {
 			string afps = "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO";
 			string fondos = "A,B,C,D,E";
-			DateTime ultimaFecha = await _cuotaUfComisionDAO.UltimaFechaTodas();
+			DateTime ultimaFecha = await cuotaUfComisionDAO.UltimaFechaTodas();
 			DateTime fechaInicial = ultimaFecha.AddYears(-1);
-			List<RentabilidadReal> rentabilidades = await _cuotaUfComisionDAO.ObtenerRentabilidadReal(afps, fondos, fechaInicial, ultimaFecha);
+			List<RentabilidadReal> rentabilidades = await cuotaUfComisionDAO.ObtenerRentabilidadReal(afps, fondos, fechaInicial, ultimaFecha);
 
-			List<RentabilidadReal> rentabilidadesPromedios = new List<RentabilidadReal>();
+			List<RentabilidadReal> rentabilidadesPromedios = [];
 			foreach (string afp in afps.Split(",")) {
 				decimal sumaRentabilidades = rentabilidades.Where(r => r.Afp == afp).Sum(r => r.Rentabilidad);
 				int cantRentabilidades = rentabilidades.Where(r => r.Afp == afp).Count();
@@ -55,14 +43,14 @@ namespace QueTalMiAFP.Controllers {
 					Rentabilidad = rentabilidadPromedio
 				});
 			}
-			rentabilidadesPromedios = rentabilidadesPromedios.OrderByDescending(r => r.Rentabilidad).ToList();
+			rentabilidadesPromedios = [.. rentabilidadesPromedios.OrderByDescending(r => r.Rentabilidad)];
 
 			if (rentabilidadesPromedios.Count > 0) { 
 				string formatoPrimerLugar = ".svg";
 				if (rentabilidadesPromedios[0].Afp == "HABITAT" || rentabilidadesPromedios[0].Afp == "PROVIDA" || rentabilidadesPromedios[0].Afp == "UNO") { 
 					formatoPrimerLugar = ".png";
 				}
-				string nombreAfpPrimerLugar = rentabilidadesPromedios[0].Afp.Substring(0, 1) + rentabilidadesPromedios[0].Afp[1..].ToLower();
+				string nombreAfpPrimerLugar = rentabilidadesPromedios[0].Afp[..1] + rentabilidadesPromedios[0].Afp[1..].ToLower();
 				ViewBag.UrlImagenPrimerLugar = $"/images/logos_afps/LogoAFP{nombreAfpPrimerLugar + formatoPrimerLugar}";
 			}
 
@@ -71,7 +59,7 @@ namespace QueTalMiAFP.Controllers {
 				if (rentabilidadesPromedios[1].Afp == "HABITAT" || rentabilidadesPromedios[1].Afp == "PROVIDA" || rentabilidadesPromedios[1].Afp == "UNO") {
 					formatoSegundoLugar = ".png";
 				}
-				string nombreAfpSegundoLugar = rentabilidadesPromedios[1].Afp.Substring(0, 1) + rentabilidadesPromedios[1].Afp[1..].ToLower();
+				string nombreAfpSegundoLugar = rentabilidadesPromedios[1].Afp[..1] + rentabilidadesPromedios[1].Afp[1..].ToLower();
 				ViewBag.UrlImagenSegundoLugar = $"/images/logos_afps/LogoAFP{nombreAfpSegundoLugar + formatoSegundoLugar}";
 			}
 
@@ -80,7 +68,7 @@ namespace QueTalMiAFP.Controllers {
 				if (rentabilidadesPromedios[2].Afp == "HABITAT" || rentabilidadesPromedios[2].Afp == "PROVIDA" || rentabilidadesPromedios[2].Afp == "UNO") {
 					formatoTercerLugar = ".png";
 				}
-				string nombreAfpTercerLugar = rentabilidadesPromedios[2].Afp.Substring(0, 1) + rentabilidadesPromedios[2].Afp[1..].ToLower();
+				string nombreAfpTercerLugar = rentabilidadesPromedios[2].Afp[..1] + rentabilidadesPromedios[2].Afp[1..].ToLower();
 				ViewBag.UrlImagenTercerLugar = $"/images/logos_afps/LogoAFP{nombreAfpTercerLugar + formatoTercerLugar}";
 			}
 

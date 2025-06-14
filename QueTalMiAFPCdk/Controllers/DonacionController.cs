@@ -1,10 +1,8 @@
 ﻿using MercadoPago.Client.Preference;
 using MercadoPago.Resource.Preference;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Services;
-using System.Security.Cryptography.X509Certificates;
 
 namespace QueTalMiAFPCdk.Controllers {
     public class DonacionController(MercadoPagoHelper mercadoPagoHelper) : Controller {

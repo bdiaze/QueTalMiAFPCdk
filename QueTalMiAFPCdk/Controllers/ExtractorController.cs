@@ -3,40 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using QueTalMiAFP.Controllers;
-using QueTalMiAFP.Models;
-using QueTalMiAFP.Models.Entities;
-using QueTalMiAFP.Models.Others;
-using QueTalMiAFP.Services;
+using QueTalMiAFPCdk.Models.Entities;
+using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class ExtractorController : Controller {
-		private readonly ILogger<EstadisticasController> _logger;
-		private readonly IConfiguration _configuration;
-
-		private readonly string _baseUrl;
-		private readonly string _xApiKey;
+	public class ExtractorController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) : Controller {
+		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
+		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
 
         private readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
-
-        public ExtractorController(ILogger<EstadisticasController> logger, IConfiguration configuration) {
-			_logger = logger;
-			_configuration = configuration;
-
-			_baseUrl = _configuration.GetValue<string>("AWSGatewayAPIKey:api-url")!;
-			_xApiKey = _configuration.GetValue<string>("AWSGatewayAPIKey:x-api-key")!;
-		}
 
 		public IActionResult Index() {
 			return View();
@@ -52,7 +32,7 @@ namespace QueTalMiAFPCdk.Controllers {
 		[HttpPost]
 		[Route("api/[controller]/[action]")]
 		public async Task<List<Log>> ExtraerValores(int tipoExtraccion, string llaveExtraccion) {
-			string hashedLlave = _configuration.GetValue<string>("AccesoExtraccion:Llave")!;
+			string hashedLlave = (await secretManager.ObtenerSecreto("/QueTalMiAFP")).ExtractorKey;
 			byte[] hashedLlaveBytes = Convert.FromBase64String(hashedLlave);
 			byte[] salt = new byte[16];
 			Array.Copy(hashedLlaveBytes, 0, salt, 0, 16);
@@ -64,7 +44,7 @@ namespace QueTalMiAFPCdk.Controllers {
 			Array.Copy(hash, 0, hashBytes, 16, 20);
 			string strLlaveExtraccion = Convert.ToBase64String(hashBytes);
 
-			Extractor extractor = new(_configuration);
+			Extractor extractor = new(parameterStore);
 
 			if (strLlaveExtraccion != hashedLlave) {
 				extractor.RegistrarLog("Error, no se efectúa la extracción debido a que la llave ingresada no es correcta.", 1);
@@ -187,7 +167,7 @@ namespace QueTalMiAFPCdk.Controllers {
 							Ufs = [.. ufParciales]
                         };
 
-						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 						client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 						var response = await client.PostAsync(_baseUrl + "Uf/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivUf), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
@@ -213,7 +193,7 @@ namespace QueTalMiAFPCdk.Controllers {
 							Comisiones = [.. comisionesParciales]
                         };
 
-						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 						client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 						var response = await client.PostAsync(_baseUrl + "Comision/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivComision), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();
@@ -239,7 +219,7 @@ namespace QueTalMiAFPCdk.Controllers {
 							Cuotas = [.. cuotasParciales]
                         };
 
-						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), _configuration));
+						using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 						client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 						var response = await client.PostAsync(_baseUrl + "Cuota/ActualizacionMasiva", new StringContent(JsonConvert.SerializeObject(entActMasivCuota), Encoding.UTF8, "application/json"));
 						using Stream responseStream = await response.Content.ReadAsStreamAsync();

@@ -1,10 +1,9 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QueTalMiAFP.Models.Entities;
-using QueTalMiAFP.Models.Others;
-using QueTalMiAFP.Services;
-using QueTalMiAFP.Services.Exceptions;
+using QueTalMiAFPCdk.Models.Entities;
+using QueTalMiAFPCdk.Models.Others;
+using QueTalMiAFPCdk.Services.Exceptions;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -13,7 +12,7 @@ using System.Web;
 using System.Xml;
 
 namespace QueTalMiAFPCdk.Services {
-	public class Extractor(IConfiguration configuration) {
+	public class Extractor(ParameterStoreHelper parameterStore) {
 		public const string NOMBRE_CAPITAL = "CAPITAL";
 		public const string NOMBRE_CUPRUM = "CUPRUM";
 		public const string NOMBRE_HABITAT = "HABITAT";
@@ -39,21 +38,21 @@ namespace QueTalMiAFPCdk.Services {
 			new Uf() { Fecha = new DateTime(2014, 12, 30), Valor = 24627.10M }
 		];
 
-		private readonly string _afpModeloUrlApiBase = configuration.GetValue<string>("Extractor:AFPModelo:UrlApiBase")!;
-        private readonly string _afpModeloV2UrlApiBase = configuration.GetValue<string>("Extractor:AFPModeloV2:UrlApiBase")!;
-        private readonly string _afpModeloV3UrlApiBase = configuration.GetValue<string>("Extractor:AFPModeloV3:UrlApiBase")!;
-        private readonly string _afpModeloV3Base64Key = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64Key")!;
-		private readonly string _afpModeloV3Base64IV = configuration.GetValue<string>("Extractor:AFPModeloV3:Base64IV")!;
-        private readonly string _afpCuprumUrlApiBase = configuration.GetValue<string>("Extractor:AFPCuprum:UrlApiBase")!;
-        private readonly string _afpCapitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPCapital:UrlApiBase")!;
-        private readonly string _afpCapitalV2UrlApiBase = configuration.GetValue<string>("Extractor:AFPCapitalV2:UrlApiBase")!;
-        private readonly string _afpHabitatUrlApiBase = configuration.GetValue<string>("Extractor:AFPHabitat:UrlApiBase")!;
-        private readonly string _afpPlanvitalUrlApiBase = configuration.GetValue<string>("Extractor:AFPPlanvital:UrlApiBase")!;
-        private readonly string _afpProvidaUrlApiBase = configuration.GetValue<string>("Extractor:AFPProvida:UrlApiBase")!;
-        private readonly string _afpUnoUrlApiBase = configuration.GetValue<string>("Extractor:AFPUno:UrlApiBase")!;
-        private readonly string _valoresUfUrlApiBase = configuration.GetValue<string>("Extractor:ValoresUf:UrlApiBase")!;
-        private readonly string _comisionesUrlApiBase = configuration.GetValue<string>("Extractor:Comisiones:UrlApiBase")!;
-        private readonly string _comisionesCavUrlApiBase = configuration.GetValue<string>("Extractor:ComisionesCav:UrlApiBase")!;
+        private readonly string _afpModeloUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPModelo/UrlApiBase").Result;
+        private readonly string _afpModeloV2UrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPModeloV2/UrlApiBase").Result;
+        private readonly string _afpModeloV3UrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPModeloV3/UrlApiBase").Result;
+        private readonly string _afpModeloV3Base64Key = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPModeloV3/Base64Key").Result;
+		private readonly string _afpModeloV3Base64IV = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPModeloV3/Base64IV").Result;
+        private readonly string _afpCuprumUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPCuprum/UrlApiBase").Result;
+        private readonly string _afpCapitalUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPCapital/UrlApiBase").Result;
+        private readonly string _afpCapitalV2UrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPCapitalV2/UrlApiBase").Result;
+        private readonly string _afpHabitatUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPHabitat/UrlApiBase").Result;
+        private readonly string _afpPlanvitalUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPPlanvital/UrlApiBase").Result;
+        private readonly string _afpProvidaUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPProvida/UrlApiBase").Result;
+        private readonly string _afpUnoUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/AFPUno/UrlApiBase").Result;
+        private readonly string _valoresUfUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/ValoresUf/UrlApiBase").Result;
+        private readonly string _comisionesUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/Comisiones/UrlApiBase").Result;
+        private readonly string _comisionesCavUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/ComisionesCav/UrlApiBase").Result;
 
         public async Task<List<Cuota>> ObtenerCuotasModelo(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
@@ -445,7 +444,7 @@ namespace QueTalMiAFPCdk.Services {
                         }
                         continue;
                     // Se valida si es una linea con valores cuotas...
-                    } else if (celdas[0].Length == 10 && celdas[0].Substring(0, 4) == fechaFinal.Year.ToString()) {
+                    } else if (celdas[0].Length == 10 && celdas[0][..4] == fechaFinal.Year.ToString()) {
                         string[] diaMesAnno = celdas[0].Split("-");
                         DateTime fecha = new(int.Parse(diaMesAnno[0]), int.Parse(diaMesAnno[1]), int.Parse(diaMesAnno[2]));
                         decimal valorCuota = decimal.Parse(celdas[posCapital].Replace(".","").Replace(",", "."), CultureInfo.InvariantCulture);

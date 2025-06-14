@@ -1,15 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using QueTalMiAFPCdk.Services;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 
-namespace QueTalMiAFP.Services {
+namespace QueTalMiAFPCdk.Services {
 	public class RetryHandler(HttpMessageHandler innerHandler, ParameterStoreHelper parameterStore) : DelegatingHandler(innerHandler) {
 		private readonly int MaxRetries = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MaxRetries").Result);
 
@@ -25,7 +16,7 @@ namespace QueTalMiAFP.Services {
 					errorTypeHeader = null;
 				}
 
-				if ((response.IsSuccessStatusCode && errorTypeHeader == null) || 
+				if (response.IsSuccessStatusCode && errorTypeHeader == null || 
 					response.StatusCode == HttpStatusCode.BadRequest) {
 					return response;
 				}

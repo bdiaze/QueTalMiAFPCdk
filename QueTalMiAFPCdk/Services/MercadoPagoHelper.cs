@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using MercadoPago.Config;
+﻿using MercadoPago.Config;
 
 namespace QueTalMiAFPCdk.Services {
     public class MercadoPagoHelper {
@@ -9,12 +8,12 @@ namespace QueTalMiAFPCdk.Services {
         public string UrlFailure { get; set; }
         public string UrlPending { get; set; }
 
-        public MercadoPagoHelper(IConfiguration configuration) {
-            string accessToken = configuration.GetValue<string>("MercadoPago:AccessToken")!;
-            PublicKey = configuration.GetValue<string>("MercadoPago:PublicKey")!;
-            UrlSuccess = configuration.GetValue<string>("MercadoPago:UrlSuccess")!;
-            UrlFailure = configuration.GetValue<string>("MercadoPago:UrlFailure")!;
-            UrlPending = configuration.GetValue<string>("MercadoPago:UrlPending")!;
+        public MercadoPagoHelper(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) {
+            string accessToken = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.MercadoPagoAccessToken;
+            PublicKey = parameterStore.ObtenerParametro("/QueTalMiAFP/MercadoPago/PublicKey").Result;
+            UrlSuccess = parameterStore.ObtenerParametro("/QueTalMiAFP/MercadoPago/UrlSuccess").Result;
+            UrlFailure = parameterStore.ObtenerParametro("/QueTalMiAFP/MercadoPago/UrlFailure").Result;
+            UrlPending = parameterStore.ObtenerParametro("/QueTalMiAFP/MercadoPago/UrlPending").Result;
 
             MercadoPagoConfig.AccessToken = accessToken;
         }

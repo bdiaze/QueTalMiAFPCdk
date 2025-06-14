@@ -1,5 +1,5 @@
 using Amazon.S3;
-using QueTalMiAFP.Repositories;
+using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
 
 var builder = WebApplication.CreateBuilder(args);

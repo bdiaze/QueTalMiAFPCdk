@@ -1,10 +1,7 @@
-﻿using Amazon.SecretsManager;
-using Amazon.SecretsManager.Model;
-using Amazon.SecurityToken;
+﻿using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 using Amazon.SimpleSystemsManagement;
 using Amazon.SimpleSystemsManagement.Model;
-using Newtonsoft.Json;
 
 namespace QueTalMiAFPCdk.Services {
     public class ParameterStoreHelper(IConfiguration configuration) {
@@ -13,7 +10,7 @@ namespace QueTalMiAFPCdk.Services {
 
         public async Task<string> ObtenerParametro(string parameterName) {
             if (!parametersValues.TryGetValue(parameterName, out string? value)) {
-                string assumeRole = configuration.GetValue<string>("AWSGatewayAPIKey:AssumeRoleArn")!;
+                string assumeRole = configuration.GetValue<string>("AssumeRoleArn")!;
 
                 using AmazonSecurityTokenServiceClient client = new();
                 AssumeRoleRequest request = new() {
