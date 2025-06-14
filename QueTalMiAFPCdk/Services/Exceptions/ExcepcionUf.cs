@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace QueTalMiAFP.Services.Exceptions {
-	class ExcepcionUf : Exception {
-		public ExcepcionUf(Exception ex) : base(null, ex) { }
-		public DateTime FechaInicio { get; set; }
+namespace QueTalMiAFPCdk.Services.Exceptions {
+	class ExcepcionUf(Exception ex) : Exception(null, ex) {
+        public DateTime FechaInicio { get; set; }
 		public DateTime FechaFinal { get; set; }
 
 		public override string ToString() {

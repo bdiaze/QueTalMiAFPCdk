@@ -2,6 +2,7 @@
 using System.Text;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using QueTalMiAFPCdk.Services;
 
 namespace QueTalMiAFPCdk.Models.ValidationAttributes {
 	public class GoogleReCaptchaValidationAttribute: ValidationAttribute {
@@ -17,9 +18,9 @@ namespace QueTalMiAFPCdk.Models.ValidationAttributes {
 				return errorResult.Value;
 			}
 
-			IConfiguration configuration = (IConfiguration)validationContext!.GetService(typeof(IConfiguration))!;
+			SecretManagerHelper secretManager = (SecretManagerHelper)validationContext!.GetService(typeof(SecretManagerHelper))!;
 			string reCaptchaResponse = value!.ToString()!;
-			string reCaptchaSecret = configuration!.GetValue<string>("GoogleReCaptcha:SecretKey")!;
+			string reCaptchaSecret = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.GoogleRecaptchaSecretKey;
 
 			HttpClient httpClient = new();
 			HttpResponseMessage httpResponse = httpClient.GetAsync($"https://www.google.com/recaptcha/api/siteverify?secret={reCaptchaSecret}&response={reCaptchaResponse}").Result;

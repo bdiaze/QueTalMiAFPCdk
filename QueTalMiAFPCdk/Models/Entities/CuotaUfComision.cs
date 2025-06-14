@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QueTalMiAFP.Models.Entities {
+namespace QueTalMiAFPCdk.Models.Entities {
 	public class CuotaUfComision {
 		public required string Afp { get; set; }
 

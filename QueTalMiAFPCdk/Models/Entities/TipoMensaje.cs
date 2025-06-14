@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace QueTalMiAFP.Models.Entities {
+namespace QueTalMiAFPCdk.Models.Entities {
 	public class TipoMensaje {
 		public short IdTipoMensaje { get; set; }
 

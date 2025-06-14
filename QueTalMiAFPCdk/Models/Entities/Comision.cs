@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QueTalMiAFP.Models.Entities {
+namespace QueTalMiAFPCdk.Models.Entities {
 	public class Comision {
 		public const byte TIPO_VALOR_PORCENTAJE = 1;
 		public const byte TIPO_VALOR_PESO_CHILENO = 2;

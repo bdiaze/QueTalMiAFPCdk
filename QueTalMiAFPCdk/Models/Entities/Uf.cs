@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QueTalMiAFP.Models.Entities {
+namespace QueTalMiAFPCdk.Models.Entities {
 	public class Uf {
 		public long Id { get; set; }
 

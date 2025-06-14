@@ -1,7 +1,6 @@
-﻿using QueTalMiAFPCdk.Models.ViewModels;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace QueTalMiAFP.Models.ViewModels {
+namespace QueTalMiAFPCdk.Models.ViewModels {
 	public class IngresarMensajeViewModel : GoogleReCaptchaModelBase {
 		[Display(Name = "Me gustaría:")]
 		[Required(ErrorMessage = "Debes seleccionar un motivo.")]

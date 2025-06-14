@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace QueTalMiAFP.Models.Others {
+namespace QueTalMiAFPCdk.Models.Others {
 	public class Log {
 		public DateTime Fecha { get; set; }
 		public required string Mensaje { get; set; }

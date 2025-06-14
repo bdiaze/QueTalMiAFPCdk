@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace QueTalMiAFP.Services.Exceptions {
-	public class ExcepcionComision : Exception {
-		public ExcepcionComision(Exception ex) : base(null, ex) { }
-
-		public string? Afp { get; set; }
+namespace QueTalMiAFPCdk.Services.Exceptions {
+	public class ExcepcionComision(Exception ex) : Exception(null, ex) {
+        public string? Afp { get; set; }
 		public DateTime MesAnno { get; set; }
 
 		public override string ToString() {
