@@ -12,8 +12,7 @@ namespace Cdk
 {
     public class CdkStack : Stack
     {
-        internal CdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
-        {
+        internal CdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props) {
             string appName = System.Environment.GetEnvironmentVariable("APP_NAME") ?? throw new ArgumentNullException("APP_NAME");
             string domainName = System.Environment.GetEnvironmentVariable("DOMAIN_NAME") ?? throw new ArgumentNullException("DOMAIN_NAME");
             string subdomainName = System.Environment.GetEnvironmentVariable("SUBDOMAIN_NAME") ?? throw new ArgumentNullException("SUBDOMAIN_NAME");
@@ -21,6 +20,7 @@ namespace Cdk
             string ec2RoleArn = System.Environment.GetEnvironmentVariable("EC2_ROLE_ARN") ?? throw new ArgumentNullException("EC2_ROLE_ARN");
             string prefixRolesWebServer = System.Environment.GetEnvironmentVariable("PREFIX_ROLES_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_ROLES_WEB_SERVER");
             string s3bucketArn = System.Environment.GetEnvironmentVariable("S3_BUCKET_ARN") ?? throw new ArgumentNullException("S3_BUCKET_ARN");
+            string developmentUser = System.Environment.GetEnvironmentVariable("DEVELOPMENT_USER") ?? throw new ArgumentException("DEVELOPMENT_USER");
 
             string afpModeloUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_URL_API_BASE");
             string afpModeloV2UrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_V2_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_V2_URL_API_BASE");
@@ -281,7 +281,10 @@ namespace Cdk
             Role assumeRole = new(this, $"{appName}WebServerRole", new RoleProps {
                 RoleName = $"{prefixRolesWebServer}{appName}",
                 Description = $"Rol de {appName} para ser asumido por Web Server",
-                AssumedBy = new ArnPrincipal(ec2RoleArn),
+                AssumedBy = new CompositePrincipal(
+                    new ArnPrincipal(ec2RoleArn), 
+                    new ArnPrincipal(developmentUser)
+                ),
                 InlinePolicies = new Dictionary<string, PolicyDocument> {
                     {
                         $"{appName}WebServerPolicy",

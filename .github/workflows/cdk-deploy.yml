@@ -22,6 +22,7 @@ jobs:
             EC2_ROLE_ARN: ${{ vars.EC2_ROLE_ARN }}
             PREFIX_ROLES_WEB_SERVER: ${{ vars.PREFIX_ROLES_WEB_SERVER }}
             S3_BUCKET_ARN: ${{ vars.S3_BUCKET_ARN }}
+            DEVELOPMENT_USER: ${{ secrets.DEVELOPMENT_USER }}
             AFP_MODELO_URL_API_BASE: ${{ vars.AFP_MODELO_URL_API_BASE }}
             AFP_MODELO_V2_URL_API_BASE: ${{ vars.AFP_MODELO_V2_URL_API_BASE }}
             AFP_MODELO_V3_URL_API_BASE: ${{ vars.AFP_MODELO_V3_URL_API_BASE }}
