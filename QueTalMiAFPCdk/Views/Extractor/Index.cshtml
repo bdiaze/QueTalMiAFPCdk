@@ -66,57 +66,60 @@
         </tr>
     </table>
     <h6>A continuación selecciona el tipo de extracción que deseas efectuar:</h6>
-    <table style="width: 100%;">
-        <tr>
-            <td>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion1" value="1">
-                    <label class="form-check-label ml-3" for="tipoExtraccion1">
-                        <b>Extracción Completa:</b> Se obtienen todos los datos registrados desde el 01/08/2002.
-                    </label>
+
+    <div style="display: grid; grid-template-columns: auto auto" class="mb-3">
+        <div class="pr-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion1" value="1">
+                <label class="form-check-label ml-3" for="tipoExtraccion1">
+                    <b>Extracción Completa:</b> Se obtienen todos los datos registrados desde el 01/08/2002.
+                </label>
+            </div>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion2" value="2">
+                <label class="form-check-label ml-3" for="tipoExtraccion2">
+                    <b>Extracción Último Año:</b> Se obtienen los datos registrados desde el
+                    @DateTime.Now.ToUniversalTime().Date.AddYears(-1).ToString("dd/MM/yyyy") al
+                    @DateTime.Now.ToUniversalTime().Date.ToString("dd/MM/yyyy").
+                </label>
+            </div>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion3" value="3">
+                <label class="form-check-label ml-3" for="tipoExtraccion3">
+                    <b>Extracción Último Mes:</b> Se obtienen los datos registrados desde el
+                    @DateTime.Now.ToUniversalTime().Date.AddMonths(-1).ToString("dd/MM/yyyy") al
+                    @DateTime.Now.ToUniversalTime().Date.ToString("dd/MM/yyyy").
+                </label>
+            </div>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion4" value="4" checked>
+                <label class="form-check-label ml-3" for="tipoExtraccion4">
+                    <b>Extracción Última Semana:</b> Se obtienen los datos registrados desde el
+                    @DateTime.Now.ToUniversalTime().Date.AddDays(-7).ToString("dd/MM/yyyy") al
+                    @DateTime.Now.ToUniversalTime().Date.ToString("dd/MM/yyyy").
+                </label>
+            </div>
+        </div>
+        <div class="my-auto">
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" for="llaveExtraccion">Llave</span>
                 </div>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion2" value="2">
-                    <label class="form-check-label ml-3" for="tipoExtraccion2">
-                        <b>Extracción Último Año:</b> Se obtienen los datos registrados desde el
-                        @DateTime.Now.ToUniversalTime().Date.AddYears(-1).ToString("dd/MM/yyyy") al
-                        @DateTime.Now.ToUniversalTime().Date.ToString("dd/MM/yyyy").
-                    </label>
-                </div>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion3" value="3">
-                    <label class="form-check-label ml-3" for="tipoExtraccion3">
-                        <b>Extracción Último Mes:</b> Se obtienen los datos registrados desde el
-                        @DateTime.Now.ToUniversalTime().Date.AddMonths(-1).ToString("dd/MM/yyyy") al
-                        @DateTime.Now.ToUniversalTime().Date.ToString("dd/MM/yyyy").
-                    </label>
-                </div>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="radio" name="tipoExtraccion" id="tipoExtraccion4" value="4" checked>
-                    <label class="form-check-label ml-3" for="tipoExtraccion4">
-                        <b>Extracción Última Semana:</b> Se obtienen los datos registrados desde el
-                        @DateTime.Now.ToUniversalTime().Date.AddDays(-7).ToString("dd/MM/yyyy") al
-                        @DateTime.Now.ToUniversalTime().Date.ToString("dd/MM/yyyy").
-                    </label>
-                </div>
-            </td>
-            <td style="width: 30%;" class="pl-3">
-                <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" for="llaveExtraccion">Llave</span>
+                <input type="password" class="form-control" name="llaveExtraccion" id="llaveExtraccion" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                <div style="display: grid; grid-template-columns: auto auto auto">
+                    <div class="ml-auto mr-1">
+                        <span style="display:none;" class="position-relative spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     </div>
-                    <input type="password" class="form-control" name="llaveExtraccion" id="llaveExtraccion" required />
+                    <div class="text-center">Extraer Datos</div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <div style="display:inline-block; margin-left:10px;">Extraer Datos</div>
-                </button>
-            </td>
-        </tr>
-    </table>
+            </button>
+        </div>
+    </div>
     @if (Model != null) {
         <h4 class="p-2 m-0 logs mt-3" style="width:100%; text-align:center; border:1px solid #dee2e6;">Historial del Proceso de Extracción</h4>
-        <div class="logs" style="width:100%; max-height:30em; overflow:auto;">
+        <div class="logs mb-3" style="width:100%; max-height:30em; overflow:auto;">
             <table style="table-layout:fixed; width:100%;" class="table table-bordered m-0">
                 @for (int i = 0; i < Model.Count(); i++) {
                     Log log = Model.ElementAt(i);
@@ -125,11 +128,11 @@
                         logSiguiente = Model.ElementAt(i + 1);
                     }
                     <tr>
-                        <th class="@(logSiguiente != null && logSiguiente.Tipo == 1 ? "bb-more-danger" : "") @(log.Tipo == 1 ? "text-light bg-danger b-more-danger" : "")" style="width:4em; text-align:center;">
+                        <th class="@(logSiguiente != null && logSiguiente.Tipo == 1 ? "bb-more-danger" : "") @(log.Tipo == 1 ? "text-light bg-danger b-more-danger" : "")" style="width:3em; text-align:center;">
                             @(Model.Count() - i)
                         </th>
-                        <td class="@(logSiguiente != null && logSiguiente.Tipo == 1 ? "bb-more-danger" : "") @(log.Tipo == 1 ? "text-light bg-danger b-more-danger" : "")" scope="row" style="width:12em; text-align:center;">
-                            @log.Fecha.ToString("dd/MM/yyyy HH:mm:ss")
+                        <td class="@(logSiguiente != null && logSiguiente.Tipo == 1 ? "bb-more-danger" : "") @(log.Tipo == 1 ? "text-light bg-danger b-more-danger" : "")" style="width: 30%; text-align:center;">
+                            <div>@log.Fecha.ToString("dd/MM/yyyy HH:mm:ss")</div>
                         </td>
                         <td class="@(logSiguiente != null && logSiguiente.Tipo == 1 ? "bb-more-danger" : "") @(log.Tipo == 1 ? "b-more-danger" : "")">@log.Mensaje</td>
                     </tr>

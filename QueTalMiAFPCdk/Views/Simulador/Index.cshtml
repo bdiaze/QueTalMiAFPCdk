@@ -35,18 +35,18 @@
 <div class="w-100 mt-3">
     <table class="w-100">
         <tr>
-            <td>
+            <td class="pl-0">
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" for="sueldoMensual">Sueldo Imp.:</span>
+                        <span class="input-group-text" for="sueldoMensual">Sueldo Imp.</span>
                     </div>
                     <input value="@ViewBag.SueldoImponible" type="text" class="form-control" id="sueldoMensual" style="width: 5rem;">
                 </div>
             </td>
-            <td>
+            <td class="pr-0">
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" for="diaPagoCotiz">Día Pago Cotiz.:</span>
+                        <span class="input-group-text" for="diaPagoCotiz">Pago Cotiz.</span>
                     </div>
                     <select class="custom-select" id="diaPagoCotiz" style="width: 1rem;">
                         @for (int i = 1; i <= 31; i++) {
@@ -62,7 +62,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" class="px-0">
                 <div class="input-group input-daterange">
                     <div class="input-group-prepend">
                         <span class="input-group-text">
@@ -93,7 +93,7 @@
     </table>
 </div>
 
-<div class="card mb-3 mt-2 ml-1 mr-1">
+<div class="card mb-3 mt-2">
     <div class="card-header pt-0 pb-0" id="headingGPFiltrosAvanzados">
         <button style="font-size: 0.8rem" class="btn btn-block text-left btnNoShadow p-1" type="button" data-toggle="collapse" data-target="#collapseGPFiltrosAvanzados" aria-expanded="false" aria-controls="collapseGPFiltrosAvanzados">
             Filtros Avanzados

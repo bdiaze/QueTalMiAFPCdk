@@ -170,7 +170,7 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
-<button id="btnDescargarCSV" type="button" style="width:33%;" class="btn btn-primary pl-5 pr-5 pb-2 pt-2 mb-1">Descargar</button>
+<button id="btnDescargarCSV" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2 mb-1">Descargar</button>
 
 <hr />
 
@@ -182,9 +182,9 @@
     <tr>
         <th style="text-align: center; min-width: 9em;">URL API</th>
         @if (Model) {
-            <td id="urlAPI">https://localhost:44332/api/Cuota/ObtenerCuotas</td>
+            <td id="urlAPI" class="text-break">https://localhost:44332/api/Cuota/ObtenerCuotas</td>
         } else {
-            <td id="urlAPI">https://www.quetalmiafp.cl/api/Cuota/ObtenerCuotas</td>
+            <td id="urlAPI" class="text-break">https://www.quetalmiafp.cl/api/Cuota/ObtenerCuotas</td>
         }
     </tr>
     <tr>
@@ -377,12 +377,12 @@
     <textarea style="word-break:break-all; resize:none; background-color:#fff;" class="form-control" id="urlResultanteEjemplo" readonly rows="4"></textarea>
 </div>
 
-<button id="btnConsultaAPIEjemplo" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2 mt-3" onclick="consultaAPIEjemplo()">
+<button id="btnConsultaAPIEjemplo" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2 mt-3 mb-3" onclick="consultaAPIEjemplo()">
     <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
     <div style="display:inline-block;">Probar Consulta</div>
 </button>
 
-<div class="input-group mt-3" style="display: none;">
+<div class="input-group mb-3" style="display: none;">
     <div class="input-group-prepend">
         <span class="input-group-text" style="width: 9em;">JSON Resultado</span>
     </div>

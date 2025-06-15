@@ -26,9 +26,9 @@
     <form method="post" asp-action="EmitiendoPago">
         <div class="input-group input-group-lg">
             <div class="input-group-prepend">
-                <button class="btn btn-outline-success px-4" type="button" onclick="cargarMonto('$1.000')">$1.000</button>
-                <button class="btn btn-outline-success px-4" type="button" onclick="cargarMonto('$5.000')">$5.000</button>
-                <button class="btn btn-outline-success px-4" type="button" onclick="cargarMonto('$10.000')">$10.000</button>
+                <button class="btn btn-outline-success px-3" type="button" onclick="cargarMonto('$1.000')">$1.000</button>
+                <button class="btn btn-outline-success px-3" type="button" onclick="cargarMonto('$5.000')">$5.000</button>
+                <button class="btn btn-outline-success px-3" type="button" onclick="cargarMonto('$10.000')">$10.000</button>
             </div>
             <input asp-for="Monto" type="text" id="inputMonto" class="form-control" required />
         </div>
@@ -50,7 +50,7 @@
 
     <hr />
 
-    <div id="walletBrick_container" class="mt-3 w-100 mx-auto"></div>
+    <div id="walletBrick_container" class="my-3 w-100 mx-auto"></div>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script>
         const mp = new MercadoPago("@ViewBag.MercadoPagoPublicKey");
