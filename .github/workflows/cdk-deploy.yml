@@ -145,13 +145,14 @@ jobs:
                 # Se copia el archivo de nginx...
                 [[ $CONFIGURAR_NGINX == 1 ]] && echo 'Se copia archivo .conf en EC2'
                 [[ $CONFIGURAR_NGINX == 1 ]] && scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
+                [[ $CONFIGURAR_NGINX != 1 ]] && echo 'No se copia archivo .conf en EC2'
                 
                 # Se copia archivo CRT de cloudflare...
                 echo 'Se copia archivo cloudflare.crt en EC2'
                 scp -i ssh_key.pem ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
                 # Se inicializa el web service...
-                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART SUBDOMAIN_NAME=$SUBDOMAIN_NAME CERTBOT_EMAIL=$CERTBOT_EMAIL CONFIGURAR_NGINX=$CONFIGURAR_NGINX CONFIGURAR_CERTBOT=$CONFIGURAR_CERTBOT" '
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART" '
                     echo 'Se mueve archivo cloudflare.crt'
                     sudo mkdir /etc/nginx/certs || true
                     sudo mv -f ~/$WEBAPP_DIRECTORY/cloudflare.crt /etc/nginx/certs/
@@ -163,12 +164,20 @@ jobs:
                     sudo systemctl enable $WEBAPP_SERVICE
                     sudo systemctl restart $WEBAPP_SERVICE
                     sudo systemctl reload nginx
-                    
-                    [[ $CONFIGURAR_NGINX == 1 ]] && echo 'Se mueve archivo .conf y se reinicia nginx'
-                    [[ $CONFIGURAR_NGINX == 1 ]] && sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
-                    [[ $CONFIGURAR_NGINX == 1 ]] && sudo systemctl reload nginx 
-                    
-                    [[ $CONFIGURAR_CERTBOT == 1 ]] && echo 'Se configura certificados con certbot'
-                    [[ $CONFIGURAR_CERTBOT == 1 ]] && sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
-                    [[ $CONFIGURAR_CERTBOT == 1 ]] && sudo systemctl reload nginx 
                 '
+                
+                # Se mueve archivo .conf y se reinicia nginx...
+                [[ $CONFIGURAR_NGINX == 1 ]] && ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY" '
+                    echo 'Se mueve archivo .conf y se reinicia nginx'
+                    sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
+                    sudo systemctl reload nginx
+                '
+                [[ $CONFIGURAR_NGINX != 1 ]] && echo 'No se mueve archivo .conf ni se reinicia nginx'
+                
+                # Se configura certificados con certbot...
+                [[ $CONFIGURAR_CERTBOT == 1 ]] && ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "SUBDOMAIN_NAME=$SUBDOMAIN_NAME CERTBOT_EMAIL=$CERTBOT_EMAIL" '                   
+                    echo 'Se configura certificados con certbot'
+                    sudo certbot --nginx -d $SUBDOMAIN_NAME -m $CERTBOT_EMAIL --agree-tos --non-interactive
+                    sudo systemctl reload nginx 
+                '
+                [[ $CONFIGURAR_CERTBOT != 1 ]] && echo 'No se configura certificados con certbot'
