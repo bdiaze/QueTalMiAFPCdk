@@ -20,51 +20,100 @@
     am4core.ready(function () {
         am4core.options.queue = true;
 
+        // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de rentabilidad real...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
             $("#collapseRRFondo" + fondo).on("shown.bs.collapse", function () {
                 $("#headingRRFondo" + fondo).find("i.fa-chevron-down").hide();
                 $("#headingRRFondo" + fondo).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("RRFondo" + fondo);
                 obtenerRentRealSoloTipo(fondo);
             });
 
             $("#collapseRRFondo" + fondo).on("hide.bs.collapse", function () {
                 $("#headingRRFondo" + fondo).find("i.fa-chevron-down").show();
                 $("#headingRRFondo" + fondo).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("RRFondo" + fondo);
             });
         });
 
+        // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de rentabilidad...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
             $("#collapseRTFondo" + fondo).on("shown.bs.collapse", function () {
                 $("#headingRTFondo" + fondo).find("i.fa-chevron-down").hide();
                 $("#headingRTFondo" + fondo).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("RTFondo" + fondo);
                 obtenerRentSoloTipo(fondo);
             });
 
             $("#collapseRTFondo" + fondo).on("hide.bs.collapse", function () {
                 $("#headingRTFondo" + fondo).find("i.fa-chevron-down").show();
                 $("#headingRTFondo" + fondo).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("RTFondo" + fondo);
             });
         });
 
+        // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de valores cuota...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
             $("#collapseVCFondo" + fondo).on("show.bs.collapse", function () {
                 $("#headingVCFondo" + fondo).find("i.fa-chevron-down").hide();
                 $("#headingVCFondo" + fondo).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("VCFondo" + fondo);
                 obtenerCuotaSoloTipo(fondo);
             });
 
             $("#collapseVCFondo" + fondo).on("hide.bs.collapse", function () {
                 $("#headingVCFondo" + fondo).find("i.fa-chevron-down").show();
                 $("#headingVCFondo" + fondo).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("VCFondo" + fondo);
             });
         });
 
-        $("#collapseRRFondoA").collapse("show");
+        // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
+        let graficosAbiertos = $.cookie("GraficosAbiertos");
+        if (graficosAbiertos == undefined) {
+            graficosAbiertos = ["RRFondoA"];
+        } else {
+            graficosAbiertos = graficosAbiertos.split(",");
+        }
+        graficosAbiertos.forEach(grafico => {
+            $("#collapse" + grafico).collapse("show");
+        });
     });
 });
+
+function marcarGraficoAbierto(grafico) { 
+    let graficosAbiertos = $.cookie("GraficosAbiertos");
+    if (graficosAbiertos == undefined) {
+        graficosAbiertos = [];
+    } else {
+        graficosAbiertos = graficosAbiertos.split(",");
+    }
+
+    if (!graficosAbiertos.includes(grafico)) {
+        graficosAbiertos.push(grafico);
+    }
+    $.cookie("GraficosAbiertos", graficosAbiertos.join(","), { expires: 365, path: '/' });
+}
+
+function marcarGraficoCerrado(grafico) {
+    let graficosAbiertos = $.cookie("GraficosAbiertos");
+    if (graficosAbiertos == undefined) {
+        graficosAbiertos = [];
+    } else {
+        graficosAbiertos = graficosAbiertos.split(",");
+    }
+
+    let posicion = graficosAbiertos.indexOf(grafico);
+    if (posicion >= 0) {
+        graficosAbiertos.splice(posicion, 1);
+    }
+
+    if (graficosAbiertos.length > 0) {
+        $.cookie("GraficosAbiertos", graficosAbiertos.join(","), { expires: 365, path: '/' });
+    } else {
+        $.removeCookie('GraficosAbiertos', { path: '/' });
+    }
+}
 
 function btnFiltrarRentabilidad() {
     ["A", "B", "C", "D", "E"].forEach(fondo => {
