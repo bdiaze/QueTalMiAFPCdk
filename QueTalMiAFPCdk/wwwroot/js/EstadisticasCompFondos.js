@@ -24,13 +24,14 @@
             $("#collapseRR" + afp).on("shown.bs.collapse", function () {
                 $("#headingRR" + afp).find("i.fa-chevron-down").hide();
                 $("#headingRR" + afp).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("RR" + afp);
                 obtenerRentRealSoloTipo(afp);
             });
 
             $("#collapseRR" + afp).on("hide.bs.collapse", function () {
                 $("#headingRR" + afp).find("i.fa-chevron-down").show();
                 $("#headingRR" + afp).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("RR" + afp);
             });
         });
 
@@ -38,13 +39,14 @@
             $("#collapseRT" + afp).on("shown.bs.collapse", function () {
                 $("#headingRT" + afp).find("i.fa-chevron-down").hide();
                 $("#headingRT" + afp).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("RT" + afp);
                 obtenerRentSoloTipo(afp);
             });
 
             $("#collapseRT" + afp).on("hide.bs.collapse", function () {
                 $("#headingRT" + afp).find("i.fa-chevron-down").show();
                 $("#headingRT" + afp).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("RT" + afp);
             });
         });
 
@@ -52,19 +54,63 @@
             $("#collapseVC" + afp).on("show.bs.collapse", function () {
                 $("#headingVC" + afp).find("i.fa-chevron-down").hide();
                 $("#headingVC" + afp).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("VC" + afp);
                 obtenerCuotaSoloTipo(afp);
             });
 
             $("#collapseVC" + afp).on("hide.bs.collapse", function () {
                 $("#headingVC" + afp).find("i.fa-chevron-down").show();
                 $("#headingVC" + afp).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("VC" + afp);
             });
         });
 
-        $("#collapseRRCapital").collapse("show");
+        // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
+        let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
+        if (graficosAbiertos == undefined) {
+            graficosAbiertos = ["RRCapital"];
+        } else {
+            graficosAbiertos = graficosAbiertos.split(",");
+        }
+        graficosAbiertos.forEach(grafico => {
+            $("#collapse" + grafico).collapse("show");
+        });
     });
 });
+
+function marcarGraficoAbierto(grafico) {
+    let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
+    if (graficosAbiertos == undefined) {
+        graficosAbiertos = [];
+    } else {
+        graficosAbiertos = graficosAbiertos.split(",");
+    }
+
+    if (!graficosAbiertos.includes(grafico)) {
+        graficosAbiertos.push(grafico);
+    }
+    $.cookie("GraficosAbiertosPorAFP", graficosAbiertos.join(","), { expires: 365, path: '/Estadisticas/ComparandoFondos' });
+}
+
+function marcarGraficoCerrado(grafico) {
+    let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
+    if (graficosAbiertos == undefined) {
+        graficosAbiertos = [];
+    } else {
+        graficosAbiertos = graficosAbiertos.split(",");
+    }
+
+    let posicion = graficosAbiertos.indexOf(grafico);
+    if (posicion >= 0) {
+        graficosAbiertos.splice(posicion, 1);
+    }
+
+    if (graficosAbiertos.length > 0) {
+        $.cookie("GraficosAbiertosPorAFP", graficosAbiertos.join(","), { expires: 365, path: '/Estadisticas/ComparandoFondos' });
+    } else {
+        $.removeCookie('GraficosAbiertosPorAFP', { path: '/Estadisticas/ComparandoFondos' });
+    }
+}
 
 function btnFiltrarRentabilidad() {
     ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
