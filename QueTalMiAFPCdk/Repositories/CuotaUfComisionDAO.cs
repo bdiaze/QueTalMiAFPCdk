@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Services;
 using System.Globalization;
@@ -11,9 +12,11 @@ namespace QueTalMiAFPCdk.Repositories {
 		Task<DateTime> UltimaFechaAlguna();
 		Task<DateTime?> UltimaFechaAlgunaConTimeout();
 		Task<List<RentabilidadReal>> ObtenerRentabilidadReal(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
-	}
+		Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
 
-	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) : ICuotaUfComisionDAO {
+    }
+
+	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
 		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
 		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
 		private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
@@ -75,7 +78,29 @@ namespace QueTalMiAFPCdk.Repositories {
 			HttpResponseMessage response = await client.GetAsync(requestUri);
 			using Stream responseStream = await response.Content.ReadAsStreamAsync();
 			JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
-			return (await JsonSerializer.DeserializeAsync<List<RentabilidadReal>>(responseStream, options))!;
+			return (await System.Text.Json.JsonSerializer.DeserializeAsync<List<RentabilidadReal>>(responseStream, options))!;
 		}
+
+		public async Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal) {
+            Dictionary<string, string?> parameters = new() {
+                { "listaAFPs", listaAFPs },
+                { "listaFondos", listaFondos },
+                { "fechaInicial", fechaInicial.ToString("dd/MM/yyyy") },
+                { "fechaFinal", fechaFinal.ToString("dd/MM/yyyy") }
+            };
+
+            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
+            client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
+            string requestUri = QueryHelpers.AddQueryString(_baseUrl + "CuotaUfComision/ObtenerCuotas", parameters);
+            HttpResponseMessage response = await client.GetAsync(requestUri);
+            string responseString = await response.Content.ReadAsStringAsync();
+            SalObtenerCuotas? retornoConsulta = JsonConvert.DeserializeObject<SalObtenerCuotas>(responseString);
+
+            if (retornoConsulta!.S3Url == null) {
+                return retornoConsulta!.ListaCuotas!;
+            } else {
+                return JsonConvert.DeserializeObject<List<CuotaUf>>(await s3BucketHelper.GetFile(retornoConsulta!.S3Url))!;
+            }
+        }
 	}
 }
