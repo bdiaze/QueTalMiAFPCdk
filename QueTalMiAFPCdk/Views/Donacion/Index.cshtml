@@ -15,12 +15,15 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p class="mt-3">
-    ¿Te ha gustado tanto nuestro trabajo que te gustaría hacernos un donativo? ¡Pues este es el lugar para ello! 
-    Un donativo, o como nosotros le llamamos, <cite>"una invitación a unos completitos"</cite>, es siempre muy bien recibido por nuestro equipo. 
-</p>
-
-<hr />
+<div>
+    <img class="rounded d-block mr-3" style="float: left; width: min(300px, 30vw);" src="~/images/completo.webp" />
+    <div class="align-middle d-flex align-items-center" style="height: min(300px, 30vw);">
+        <p class="text-center">
+            ¿Te ha gustado tanto nuestro trabajo que te gustaría hacernos un donativo? ¡Pues este es el lugar para ello! 
+            Un donativo, o como nosotros le llamamos, <cite>"una invitación a unos completitos"</cite>, es siempre muy bien recibido por nuestro equipo. 
+        </p>
+    </div>
+</div>
 
 @if (!ViewBag.MontoCargado) {
     <form method="post" asp-action="EmitiendoPago">
