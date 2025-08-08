@@ -1,0 +1,123 @@
+﻿#filtroFondos {
+    /* padding-left: min(calc(120px + 1.5rem), calc(20vw + 1.5rem)); */
+}
+
+#filtroFondos label {
+    width: 10vw;
+    max-width: 9rem;
+    min-width: 5.7rem;
+}
+
+div:has(> table.grillaLogos) {
+    float: left;
+}
+
+.grillaLogos {
+    table-layout: fixed;
+    border: none;
+}
+
+.grillaLogos, .grillaLogos td {
+    max-width: calc(120px + 1.5rem);
+    width: calc(20vw + 1.5rem);
+}
+
+.grillaLogos tr:first-child {
+    height: calc(4.0rem);
+    position: relative;
+    top: 1px;
+}
+
+.grillaLogos tr:not(:first-child) {
+    height: calc(min(80px, 15vw));
+}
+
+.grillaLogos td {
+    border-top: none;
+    border-left: none;
+}
+
+.grillaLogos img {
+    max-width: 120px;
+}
+
+div:has(> table.valoresCuota) {
+    overflow: auto;
+}
+
+.valoresCuota {
+    table-layout: fixed;
+    width: 100%;
+    border: none;
+}
+
+.valoresCuota tr:first-child {
+    height: 4.0rem;
+}
+
+.valoresCuota tr:first-child td {
+    width: 6rem;
+    border-left: none;
+}
+
+.valoresCuota tr:first-child td p:first-child {
+    font-size: 0.65rem;
+}
+
+.valoresCuota tr:not(:first-child) {
+    height: calc(min(80px, 15vw));
+}
+
+.valoresCuota tr:not(:first-child) td {
+    font-size: 0.80rem;
+    border-left: none;
+}
+
+#filtroFondosHistorial label {
+    width: 10vw;
+    max-width: 9rem;
+    min-width: 5.7rem;
+}
+
+div:has(> table.grillaHistorial) {
+    overflow: auto;
+}
+
+.grillaHistorial {
+    table-layout: fixed;
+    min-width: 40rem;
+    width: calc(100% - 10px);
+}
+
+.grillaHistorial tr td {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.grillaHistorial tr:nth-child(-n + 2) {
+    height: 3.0rem;
+    vertical-align: middle;
+}
+
+.grillaHistorial tr:not(:nth-child(-n + 2)) td {
+    height: 4.2rem;
+}
+
+.grillaHistorial tr:not(:nth-child(-n + 2)) td p:first-child {
+    font-size: 0.7rem;
+    position: relative;
+    top: -0.4rem;
+    left: 0.7rem;
+}
+
+.grillaHistorial tr:not(:nth-child(-n + 2)) td p:not(:first-child) {
+    position: relative;
+    top: -0.3rem;
+    font-size: 0.85rem;
+}
+
+form div.input-group {
+    width: 50vw;
+    max-width: calc(45rem - 4px);
+    min-width: 28.2rem;
+}
