@@ -181,3 +181,5 @@ jobs:
                     sudo systemctl reload nginx 
                 '
                 [[ $CONFIGURAR_CERTBOT != 1 ]] && echo 'No se configura certificados con certbot'
+                
+                echo 'Termina exitosamente el copiado y configuración de la aplicación'
