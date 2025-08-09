@@ -87,6 +87,17 @@ div:has(> table.grillaHistorial) {
     table-layout: fixed;
     min-width: 40rem;
     width: calc(100% - 10px);
+    border: none;
+}
+
+.grillaHistorial img {
+    float: left;
+    max-width: 160px;
+}
+
+.grillaHistorial .tituloHistorial {
+    /* margin-right: calc(min(20vw, 160px) + 1.5rem); */
+    font-size: 1.3rem;
 }
 
 .grillaHistorial tr td {

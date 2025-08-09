@@ -61,7 +61,7 @@
             {
                 <tr>
                     <th class="align-middle p-0 text-center">
-                        <img class="rounded mx-auto d-block" style="width: @(resumenAfp.Ancho)vw; height: calc(min(@(resumenAfp.Alto)vw, 55px));" src="@resumenAfp.UrlLogo" alt="AFP @resumenAfp.Nombre"/>
+                        <img class="rounded mx-auto d-block" style="width: @(resumenAfp.Ancho)vw; height: min(@(resumenAfp.Alto)vw, 55px);" src="@resumenAfp.UrlLogo" alt="AFP @resumenAfp.Nombre"/>
                     </th>
                 </tr>
             }
@@ -145,8 +145,12 @@
     <div class="p-0 m-0 mb-3" style="display:@(fondo == ViewBag.FiltroHistorialFondoSeleccionado ? "block" : "none");" id="historial@(fondo)"Historial>
         <table class="table table-bordered text-center mb-1 grillaHistorial">
             <tr>
-                <td colspan="7">
-                    <p class="text-center m-0 text-muted">AFP @(Model.Historial.Afp) - @(primerDia.ToString("MMMM yyyy").ToUpper())</p>
+                <td class="px-0 pt-0" colspan="7" style="border: none;">
+                    @{
+                        ResumenAfp datosAfpHistorial = Model.Resumenes.FirstOrDefault(r => r.Nombre.Equals(Model.Historial.Afp, StringComparison.InvariantCultureIgnoreCase));
+                    }
+                    <!--<img class="rounded d-block ml-4 my-auto" style="width: @(datosAfpHistorial.Ancho)vw; height: min(@(datosAfpHistorial.Alto)vw, 70px);" src="@(datosAfpHistorial.UrlLogo)" alt="AFP @(datosAfpHistorial.Nombre)"/>-->
+                    <span class="text-muted tituloHistorial">AFP @(datosAfpHistorial.Nombre) - @(primerDia.ToString("MMMM yyyy").ToUpper())</span>
                 </td>
             </tr>    
             <tr>
