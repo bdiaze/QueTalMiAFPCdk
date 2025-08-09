@@ -144,19 +144,19 @@
     </div>
 </div>
 
-@foreach(string fondo in "A,B,C,D,E".Split(",")) {
+@{
+    ResumenAfp datosAfpHistorial = Model.Resumenes.FirstOrDefault(r => r.Nombre.Equals(Model.Historial!.Afp, StringComparison.InvariantCultureIgnoreCase))!;
     DateTime primerDia = new DateTime(Model.Historial!.Anno.GetValueOrDefault(), Model.Historial!.Mes.GetValueOrDefault(), 1);
     int diasPrevios = ((int)primerDia.DayOfWeek) - 1;
     int cantDiasMes = primerDia.AddMonths(1).AddDays(-1).Day;
+}
+@foreach(string fondo in "A,B,C,D,E".Split(",")) {
     int diaAux = 1;
 
     <div class="p-0 m-0 mb-3" style="display:@(fondo == ViewBag.FiltroHistorialFondoSeleccionado ? "block" : "none");" id="historial@(fondo)"Historial>
         <table class="table table-bordered text-center mb-1 grillaHistorial">
             <tr>
                 <td class="px-0 pt-0" colspan="7" style="border: none;">
-                    @{
-                        ResumenAfp datosAfpHistorial = Model.Resumenes.FirstOrDefault(r => r.Nombre.Equals(Model.Historial.Afp, StringComparison.InvariantCultureIgnoreCase));
-                    }
                     <!--<img class="rounded d-block ml-4 my-auto" style="width: @(datosAfpHistorial.Ancho)vw; height: min(@(datosAfpHistorial.Alto)vw, 70px);" src="@(datosAfpHistorial.UrlLogo)" alt="AFP @(datosAfpHistorial.Nombre)"/>-->
                     <span class="text-muted tituloHistorial">AFP @(datosAfpHistorial.Nombre) - @(primerDia.ToString("MMMM", cultureInfo)[0].ToString().ToUpper() + primerDia.ToString("MMMM", cultureInfo).Substring(1) + primerDia.ToString(" yyyy"))</span>
                 </td>

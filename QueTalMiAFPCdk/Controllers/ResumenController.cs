@@ -5,39 +5,81 @@ using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
     public class ResumenController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
         private const int CANTIDAD_DIAS_RESUMEN = 7;
 
+        private static readonly Dictionary<string, string> LISTA_AFPS = new() {
+            { "CAPITAL", "Capital" },
+            { "CUPRUM", "Cuprum" },
+            { "HABITAT", "Habitat" },
+            { "MODELO", "Modelo" },
+            { "PLANVITAL", "PlanVital" },
+            { "PROVIDA", "ProVida" },
+            { "UNO", "Uno" },
+        };
+
+        private static readonly Dictionary<int, string> LISTA_MESES = new() {
+            { 1, "Enero" },
+            { 2, "Febrero" },
+            { 3, "Marzo" },
+            { 4, "Abril" },
+            { 5, "Mayo" },
+            { 6, "Junio" },
+            { 7, "Julio" },
+            { 8, "Agosto" },
+            { 9, "Septiembre" },
+            { 10, "Octubre" },
+            { 11, "Noviembre" },
+            { 12, "Diciembre" },
+        };
+
         public async Task<IActionResult> Index(ResumenViewModel modeloEntrada) {
             string? inputAfp = modeloEntrada.Historial?.Afp;
             int? inputMes = modeloEntrada.Historial?.Mes;
             int? inputAnno = modeloEntrada.Historial?.Anno;
 
-            // Se define la fecha hasta como la última fecha en la que se tiene al menos un valor cuota...
-            DateTime? fechaHasta = await cuotaUfComisionDAO.UltimaFechaAlguna();
-            if (fechaHasta == null) {
-                fechaHasta = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
-            }
+            // Se comienza con consulta de última fecha, mediante Task para poder avanzar en las otras tareas...
+            Task<DateTime> taskFechaHasta = cuotaUfComisionDAO.UltimaFechaAlguna();
 
-            // Se crea listado de fechas que será usado en la cabecera de la tabla de valores cuota...
-            List<DateTime> fechas = [fechaHasta.GetValueOrDefault()];
-            for (int i = -1; i >= -1 * (CANTIDAD_DIAS_RESUMEN - 1); i--) {
-                fechas.Add(fechaHasta.GetValueOrDefault().AddDays(i));
-            }
+            DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 
-            // Se obtienen los valores cuota de todas las AFP y fondo seleccionado, para el rango de fechas a mostrar en la tabla...
-            List<CuotaUf> valoresCuota = await cuotaUfComisionDAO.ObtenerCuotas(
+            // Se obtienen los valores cuota de todas las AFP y fondo seleccionado, para el rango de fechas a mostrar en la tabla, mediante Task...
+            Task<List<CuotaUf>> taskValoresCuota = cuotaUfComisionDAO.ObtenerCuotas(
                 "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
                 "A,B,C,D,E",
-                fechas.Last().AddDays(-7), // Se consulta un rango mayor de dias en caso de necesitar rellenar fines de semana
-                fechas.First()
+                fechaActual.AddDays(-14), // Se consulta un rango mayor de dias en caso de necesitar rellenar fines de semana
+                fechaActual
             );
 
+            // Se añaden valores por defecto para inputs...
+            inputAnno ??= fechaActual.Year;
+            inputMes ??= fechaActual.Month;
+            inputAfp ??= Request.Cookies["FiltroHistorialAfpSeleccionada"];
+            inputAfp ??= "CAPITAL";
+
+            // Se prepara rango de fecha a utilizar para historial de valores cuota...
+            DateTime? fechaDesdeHistorial = null;
+            try {
+                fechaDesdeHistorial = new DateTime(inputAnno.GetValueOrDefault(), inputMes.GetValueOrDefault(), 1);
+            } catch {
+                fechaDesdeHistorial = new DateTime(fechaActual.Year, fechaActual.Month, 1);
+            }
+            DateTime fechaHastaHistorial = fechaDesdeHistorial.GetValueOrDefault().AddMonths(1).AddDays(-1);
+
+            // Se añade consulta para historial inferior mediante Task, para no detener las consultas asociadas a resumen semanal...
+            Task<List<CuotaUf>> taskValoresHistorial = cuotaUfComisionDAO.ObtenerCuotas(
+                inputAfp,
+                "A,B,C,D,E",
+                fechaDesdeHistorial.GetValueOrDefault().AddDays(-7), // Se consulta un rango mayor de dias en caso de necesitar rellenar fines de semana
+                fechaHastaHistorial.AddDays(7)
+            );
+
+            // Se arma objeto de salida...
             ResumenViewModel salida = new() {
-                Fechas = fechas,
                 Resumenes = [
                     new ResumenAfp {
                         Nombre = "Capital",
@@ -71,6 +113,51 @@ namespace QueTalMiAFPCdk.Controllers {
                 ]
             };
 
+            // Se preparan los datos para la grilla de historial de valores cuota...
+            List<int> listaAnnos = [.. Enumerable.Range(2002, fechaActual.Year + 1 - 2002)];
+            listaAnnos.Reverse();
+
+            salida.Historial = new HistorialAfp {
+                Afp = inputAfp,
+                ListaAfps = new SelectList(LISTA_AFPS.Select(l => new SelectListItem { Value = l.Key, Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
+                Mes = fechaDesdeHistorial.GetValueOrDefault().Month,
+                ListaMeses = new SelectList(LISTA_MESES.Select(l => new SelectListItem { Value = l.Key.ToString(), Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
+                Anno = fechaDesdeHistorial.GetValueOrDefault().Year,
+                ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString() }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text))
+            };
+
+            // Se graba en cookie última AFP seleccionada para usar como defecto en consultas posteriores...
+            HttpContext.Response.Cookies.Append("FiltroHistorialAfpSeleccionada", inputAfp, new CookieOptions {
+                Expires = DateTime.Now.AddDays(365)
+            });
+
+            // Se obtiene el filtro por defecto a mostrar en el resumen...
+            string? fondoSeleccionado = Request.Cookies["FiltroResumenFondoSeleccionado"];
+            fondoSeleccionado ??= "A";
+            ViewBag.FiltroResumenFondoSeleccionado = fondoSeleccionado;
+
+            // Se obtiene el filtro por defecto a mostrar en el historial...
+            string? fondoHistorialSeleccionado = Request.Cookies["FiltroHistorialFondoSeleccionado"];
+            fondoHistorialSeleccionado ??= "A";
+            ViewBag.FiltroHistorialFondoSeleccionado = fondoHistorialSeleccionado;
+
+            // Se espera a obtener por última fecha para usar resultado como parámetro de consulta de valores cuota...
+            DateTime? fechaHasta = await taskFechaHasta;
+            if (fechaHasta == null) {
+                fechaHasta = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+            }
+
+            // Se crea listado de fechas que será usado en la cabecera de la tabla de valores cuota...
+            List<DateTime> fechas = [fechaHasta.GetValueOrDefault()];
+            for (int i = -1; i >= -1 * (CANTIDAD_DIAS_RESUMEN - 1); i--) {
+                fechas.Add(fechaHasta.GetValueOrDefault().AddDays(i));
+            }
+
+            // Se añade listado de fechas a objeto de salida...
+            salida.Fechas = fechas;
+
+            List<CuotaUf> valoresCuota = await taskValoresCuota;
+
             // Se arman las listas de valores cuotas para cada AFP, según el listado de fechas...
             foreach (ResumenAfp resumenAfp in salida.Resumenes) {
                 foreach (string fondo in "A,B,C,D,E".Split(",")) {
@@ -92,74 +179,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            // Se obtiene el filtro por defecto a mostrar en el resumen...
-            string? fondoSeleccionado = Request.Cookies["FiltroResumenFondoSeleccionado"];
-            fondoSeleccionado ??= "A";
-            ViewBag.FiltroResumenFondoSeleccionado = fondoSeleccionado;
+            // Se espera por task en caso de que aún no haya terminado de procesar...
+            List<CuotaUf> valoresHistorial = await taskValoresHistorial;
 
-            // Se añade consulta para calendario inferior...
-            DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
-            inputAnno ??= fechaActual.Year;
-            inputMes ??= fechaActual.Month;
-            inputAfp ??= Request.Cookies["FiltroHistorialAfpSeleccionada"];
-            inputAfp ??= "CAPITAL";
-
-            HttpContext.Response.Cookies.Append("FiltroHistorialAfpSeleccionada", inputAfp, new CookieOptions {
-                Expires = DateTime.Now.AddDays(365)
-            });
-
-            DateTime? fechaDesdeHistorial = null;
-            try {
-                fechaDesdeHistorial = new DateTime(inputAnno.GetValueOrDefault(), inputMes.GetValueOrDefault(), 1);
-            } catch {
-                fechaDesdeHistorial = new DateTime(fechaActual.Year, fechaActual.Month, 1);
-            }
-            DateTime fechaHastaHistorial = fechaDesdeHistorial.GetValueOrDefault().AddMonths(1).AddDays(-1);
-
-            List<CuotaUf> valoresHistorial = await cuotaUfComisionDAO.ObtenerCuotas(
-                inputAfp,
-                "A,B,C,D,E",
-                fechaDesdeHistorial.GetValueOrDefault().AddDays(-7), // Se consulta un rango mayor de dias en caso de necesitar rellenar fines de semana
-                fechaHastaHistorial.AddDays(7)
-            );
-
-            Dictionary<string, string> listaAfps = new() {
-                { "CAPITAL", "Capital" },
-                { "CUPRUM", "Cuprum" },
-                { "HABITAT", "Habitat" },
-                { "MODELO", "Modelo" },
-                { "PLANVITAL", "PlanVital" },
-                { "PROVIDA", "ProVida" },
-                { "UNO", "Uno" },
-            };
-
-            Dictionary<int, string> listaMeses = new() {
-                { 1, "Enero" },
-                { 2, "Febrero" },
-                { 3, "Marzo" },
-                { 4, "Abril" },
-                { 5, "Mayo" },
-                { 6, "Junio" },
-                { 7, "Julio" },
-                { 8, "Agosto" },
-                { 9, "Septiembre" },
-                { 10, "Octubre" },
-                { 11, "Noviembre" },
-                { 12, "Diciembre" },
-            };
-
-            List<int> listaAnnos = [.. Enumerable.Range(2002, fechaActual.Year + 1 - 2002)];
-            listaAnnos.Reverse();
-
-            salida.Historial = new HistorialAfp {
-                Afp = inputAfp,
-                ListaAfps = new SelectList(listaAfps.Select(l => new SelectListItem { Value = l.Key, Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
-                Mes = fechaDesdeHistorial.GetValueOrDefault().Month,
-                ListaMeses = new SelectList(listaMeses.Select(l => new SelectListItem { Value = l.Key.ToString(), Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
-                Anno = fechaDesdeHistorial.GetValueOrDefault().Year,
-                ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString()}).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text))
-            };
-            
             foreach (string fondo in "A,B,C,D,E".Split(",")) {
                 DateTime fecha = fechaHastaHistorial;
                 while (fecha >= fechaDesdeHistorial) {
@@ -182,11 +204,6 @@ namespace QueTalMiAFPCdk.Controllers {
 
                 salida.Historial.ValoresCuota[fondo].Reverse();
             }
-
-            // Se obtiene el filtro por defecto a mostrar en el resumen...
-            string? fondoHistorialSeleccionado = Request.Cookies["FiltroHistorialFondoSeleccionado"];
-            fondoHistorialSeleccionado ??= "A";
-            ViewBag.FiltroHistorialFondoSeleccionado = fondoHistorialSeleccionado;
 
             return View(salida);
         }
