@@ -5,7 +5,7 @@
 #filtroFondos label {
     width: 10vw;
     max-width: 9rem;
-    min-width: 5.7rem;
+    min-width: 5.2rem;
 }
 
 div:has(> table.grillaLogos) {
@@ -76,7 +76,7 @@ div:has(> table.valoresCuota) {
 #filtroFondosHistorial label {
     width: 10vw;
     max-width: 9rem;
-    min-width: 5.7rem;
+    min-width: 5.2rem;
 }
 
 div:has(> table.grillaHistorial) {
@@ -130,5 +130,5 @@ div:has(> table.grillaHistorial) {
 form div.input-group {
     width: 50vw;
     max-width: calc(45rem - 4px);
-    min-width: 28.2rem;
+    min-width: 26rem;
 }
