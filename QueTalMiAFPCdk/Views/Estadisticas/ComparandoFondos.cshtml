@@ -13,7 +13,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p class="mt-3">
+<p class="mt-3 text-muted">
     Aquí podrás conocer la evolución histórica de la rentabilidad y los valores cuota
     de los fondos de pensiones para cada una de las AFP. Favor, ingresa a continuación 
     el rango de fechas que deseas graficar:
@@ -48,11 +48,11 @@
 
 <hr />
 
-<h6 class="mt-3">
+<p class="mt-3 text-muted">
     A continuación, se presentan las rentabilidades reales ajustadas según variación
     de la UF, de los diferentes fondos de pensiones, usando una fecha inicial
     como referencia:
-</h6>
+</p>
 @foreach (string afp in new List<string>() { "Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno" }) {
     <div class="card mb-3 @(afp == "Capital" ? "mt-3" : "")">
         <div class="card-header" id="headingRR@(afp)">
@@ -72,11 +72,11 @@
 
 <hr />
 
-<h6 class="mt-3">
+<p class="mt-3 text-muted">
     A continuación, se presentan las rentabilidades de los valores cuotas, sin aplicar
     ajustes por inflación, de los diferentes fondos de pensiones, usando una fecha
     inicial como referencia:
-</h6>
+</p>
 @foreach (string afp in new List<string>() { "Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno" }) {
     <div class="card mb-3 @(afp == "Capital" ? "mt-3" : "")">
         <div class="card-header" id="headingRT@(afp)">
@@ -96,10 +96,10 @@
 
 <hr />
 
-<h6 class="mt-3">
+<p class="mt-3 text-muted">
     A continuación, se presentan gráficos de la evolución histórica del valor cuota, de
     los diferentes fondos de pensiones:
-</h6>
+</p>
 @foreach (string afp in new List<string>() { "Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno" }) {
     <div class="card mb-3 @(afp == "Capital" ? "mt-3" : "")">
         <div class="card-header" id="headingVC@(afp)">

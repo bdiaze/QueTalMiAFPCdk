@@ -17,12 +17,12 @@
 
 <form method="post" class="conCargando">
     <h1>@ViewData["Title"]</h1>
-    <p>
+    <p class="text-muted">
         Aquí podrás solicitar la actualización de nuestra base de datos,
         lo que extraerá los valores cuotas provenientes de las distintas AFP,
         según la información que ellas presentan es sus propias páginas webs.
     </p>
-    <h6>Este proceso consulta las siguientes APIs al momento de solicitar la extracción:</h6>
+    <p class="text-muted">Este proceso consulta las siguientes APIs al momento de solicitar la extracción:</p>
     <table style="margin-top: 20px; margin-bottom: 20px; table-layout:fixed; width:100%;">
         <tr>
             <td style="width:9.5em;"><b>AFP Capital:</b></td>
@@ -65,7 +65,7 @@
             <td style="word-break:break-all;">https://www.spensiones.cl/apps/comisiones/getComisAV.php</td>
         </tr>
     </table>
-    <h6>A continuación selecciona el tipo de extracción que deseas efectuar:</h6>
+    <p class="text-muted">A continuación selecciona el tipo de extracción que deseas efectuar:</p>
 
     <div style="display: grid; grid-template-columns: auto auto" class="mb-3">
         <div class="pr-3">
