@@ -150,7 +150,7 @@
                         ResumenAfp datosAfpHistorial = Model.Resumenes.FirstOrDefault(r => r.Nombre.Equals(Model.Historial.Afp, StringComparison.InvariantCultureIgnoreCase));
                     }
                     <!--<img class="rounded d-block ml-4 my-auto" style="width: @(datosAfpHistorial.Ancho)vw; height: min(@(datosAfpHistorial.Alto)vw, 70px);" src="@(datosAfpHistorial.UrlLogo)" alt="AFP @(datosAfpHistorial.Nombre)"/>-->
-                    <span class="text-muted tituloHistorial">AFP @(datosAfpHistorial.Nombre) - @(primerDia.ToString("MMMM yyyy").ToUpper())</span>
+                    <span class="text-muted tituloHistorial">AFP @(datosAfpHistorial.Nombre) - @(primerDia.ToString("MMMM")[0].ToString().ToUpper() + primerDia.ToString("MMMM").Substring(1) + primerDia.ToString(" yyyy"))</span>
                 </td>
             </tr>    
             <tr>
