@@ -6,7 +6,7 @@ WorkingDirectory=/home/ec2-user/QueTalMiAFP
 ExecStart=/home/ec2-user/QueTalMiAFP/QueTalMiAFPCdk
 Restart=always
 User=ec2-user
-Environment=DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+Environment=DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
 
