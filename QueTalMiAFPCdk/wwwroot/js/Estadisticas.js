@@ -92,7 +92,7 @@ function marcarGraficoAbierto(grafico) {
     if (!graficosAbiertos.includes(grafico)) {
         graficosAbiertos.push(grafico);
     }
-    $.cookie("GraficosAbiertos", graficosAbiertos.join(","), { expires: 365, path: '/' });
+    $.cookie("GraficosAbiertos", graficosAbiertos.join(","), { expires: 365, path: '/Estadisticas' });
 }
 
 function marcarGraficoCerrado(grafico) {
@@ -109,9 +109,9 @@ function marcarGraficoCerrado(grafico) {
     }
 
     if (graficosAbiertos.length > 0) {
-        $.cookie("GraficosAbiertos", graficosAbiertos.join(","), { expires: 365, path: '/' });
+        $.cookie("GraficosAbiertos", graficosAbiertos.join(","), { expires: 365, path: '/Estadisticas' });
     } else {
-        $.removeCookie('GraficosAbiertos', { path: '/' });
+        $.removeCookie('GraficosAbiertos', { path: '/Estadisticas' });
     }
 }
 
