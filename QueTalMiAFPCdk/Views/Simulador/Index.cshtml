@@ -102,18 +102,18 @@
                 <tr>
                     <td class="w-50">
                         <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" for="ahorroInicialMaximo">Ahorro Inicial Máximo:</span>
+                            <div class="input-group-prepend w-50">
+                                <p class="input-group-text text-truncate" for="ahorroInicialMaximo">Ahorro Inicial Máximo:</p>
                             </div>
-                            <input value="@ViewBag.AhorroInicialMaximo" type="text" class="form-control" id="ahorroInicialMaximo" style="width: 5rem;">
+                            <input value="@ViewBag.AhorroInicialMaximo" type="text" class="form-control w-50" id="ahorroInicialMaximo" />
                         </div>
                     </td>
-                    <td>
+                    <td class="w-50">
                         <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" for="efectuarSimulacionCada">Efectuar Simulación Cada:</span>
+                            <div class="input-group-prepend w-50">
+                                <p class="input-group-text text-truncate" for="efectuarSimulacionCada">Efectuar Simulación Cada:</p>
                             </div>
-                            <input value="@ViewBag.EfectuarSimulacionCada" type="text" class="form-control" id="efectuarSimulacionCada" style="width: 5rem;">
+                            <input value="@ViewBag.EfectuarSimulacionCada" type="text" class="form-control w-50" id="efectuarSimulacionCada" />
                         </div>
                     </td>
                 </tr>
@@ -125,7 +125,7 @@
 @foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
     <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
         <div class="card-header" id="headingGPFondo@(fondo)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseGPFondo@(fondo)" aria-expanded="false" aria-controls="collapseGPFondo@(fondo)">
+            <button style="font-size: 0.9rem;" class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseGPFondo@(fondo)" aria-expanded="false" aria-controls="collapseGPFondo@(fondo)">
                 CUENTA DE COTIZACIONES OBLIGATORIAS - FONDO @(fondo)
                 <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
                 <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
