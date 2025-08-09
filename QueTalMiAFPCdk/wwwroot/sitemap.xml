@@ -2,32 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.quetalmiafp.cl/</loc>
-    <lastmod>2021-06-05T17:56:02+00:00</lastmod>
+    <lastmod>2025-08-09T17:56:02+00:00</lastmod>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://www.quetalmiafp.cl/Estadisticas/ComparandoFondos</loc>
-    <lastmod>2021-08-27T16:20:00+00:00</lastmod>
+    <lastmod>2025-08-09T16:20:00+00:00</lastmod>
     <priority>1.00</priority>
   </url>
   <url>
+	<loc>https://www.quetalmiafp.cl/Estadisticas</loc>
+	<lastmod>2025-08-09T16:20:00+00:00</lastmod>
+	<priority>1.00</priority>
+  </url>
+  <url>
     <loc>https://www.quetalmiafp.cl/Simulador</loc>
-    <lastmod>2021-06-05T17:56:02+00:00</lastmod>
+    <lastmod>2025-08-09T17:56:02+00:00</lastmod>
     <priority>0.90</priority>
   </url>
   <url>
     <loc>https://www.quetalmiafp.cl/AccederCuotas</loc>
-    <lastmod>2021-06-05T17:56:02+00:00</lastmod>
+    <lastmod>2025-08-09T17:56:02+00:00</lastmod>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://www.quetalmiafp.cl/Donacion</loc>
+    <lastmod>2025-08-09T22:23:02+00:00</lastmod>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://www.quetalmiafp.cl/Mensajes</loc>
-    <lastmod>2021-08-30T22:23:02+00:00</lastmod>
-    <priority>0.80</priority>
+	<lastmod>2025-08-09T22:23:02+00:00</lastmod>
+	<priority>0.80</priority>
   </url>
   <url>
     <loc>https://www.quetalmiafp.cl/Extractor</loc>
-    <lastmod>2021-06-05T17:56:02+00:00</lastmod>
+    <lastmod>2025-08-09T17:56:02+00:00</lastmod>
     <priority>0.70</priority>
   </url>
 </urlset>
