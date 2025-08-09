@@ -32,13 +32,14 @@
             $("#collapseGPFondo" + fondo).on("show.bs.collapse", function () {
                 $("#headingGPFondo" + fondo).find("i.fa-chevron-down").hide();
                 $("#headingGPFondo" + fondo).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("GPFondo" + fondo);
                 obtenerGananPesosSoloTipo(fondo);
             });
 
             $("#collapseGPFondo" + fondo).on("hide.bs.collapse", function () {
                 $("#headingGPFondo" + fondo).find("i.fa-chevron-down").show();
                 $("#headingGPFondo" + fondo).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("GPFondo" + fondo);
             });
         });
 
@@ -46,17 +47,27 @@
             $("#collapseCAVFondo" + fondo).on("show.bs.collapse", function () {
                 $("#headingCAVFondo" + fondo).find("i.fa-chevron-down").hide();
                 $("#headingCAVFondo" + fondo).find("i.fa-chevron-up").show();
-
+                marcarGraficoAbierto("CAVFondo" + fondo);
                 obtenerCAVSoloTipo(fondo);
             });
 
             $("#collapseCAVFondo" + fondo).on("hide.bs.collapse", function () {
                 $("#headingCAVFondo" + fondo).find("i.fa-chevron-down").show();
                 $("#headingCAVFondo" + fondo).find("i.fa-chevron-up").hide();
+                marcarGraficoCerrado("CAVFondo" + fondo);
             });
         });
 
-        $("#collapseGPFondoA").collapse("show");
+        // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
+        let graficosAbiertos = $.cookie("GraficosAbiertosSimulador");
+        if (graficosAbiertos == undefined) {
+            graficosAbiertos = ["GPFondoA"];
+        } else {
+            graficosAbiertos = graficosAbiertos.split(",");
+        }
+        graficosAbiertos.forEach(grafico => {
+            $("#collapse" + grafico).collapse("show");
+        });
     });
 });
 
@@ -119,6 +130,40 @@ $("#efectuarSimulacionCada").blur(function () {
     let formateador = new Intl.NumberFormat("es-ES");
     $("#efectuarSimulacionCada").val("$" + formateador.format(montoSinFormato));
 });
+
+function marcarGraficoAbierto(grafico) {
+    let graficosAbiertos = $.cookie("GraficosAbiertosSimulador");
+    if (graficosAbiertos == undefined) {
+        graficosAbiertos = [];
+    } else {
+        graficosAbiertos = graficosAbiertos.split(",");
+    }
+
+    if (!graficosAbiertos.includes(grafico)) {
+        graficosAbiertos.push(grafico);
+    }
+    $.cookie("GraficosAbiertosSimulador", graficosAbiertos.join(","), { expires: 365, path: '/Simulador' });
+}
+
+function marcarGraficoCerrado(grafico) {
+    let graficosAbiertos = $.cookie("GraficosAbiertosSimulador");
+    if (graficosAbiertos == undefined) {
+        graficosAbiertos = [];
+    } else {
+        graficosAbiertos = graficosAbiertos.split(",");
+    }
+
+    let posicion = graficosAbiertos.indexOf(grafico);
+    if (posicion >= 0) {
+        graficosAbiertos.splice(posicion, 1);
+    }
+
+    if (graficosAbiertos.length > 0) {
+        $.cookie("GraficosAbiertosSimulador", graficosAbiertos.join(","), { expires: 365, path: '/Simulador' });
+    } else {
+        $.removeCookie('GraficosAbiertosSimulador', { path: '/Simulador' });
+    }
+}
 
 function btnFiltrarGanancias() {
     // Registramos en las cookies el sueldo imponible y dia de cotizacion para facilitar experiencia del usuario...
