@@ -29,44 +29,36 @@
         });
 
         ["A", "B", "C", "D", "E"].forEach(fondo => {
-            $("#collapseGPFondo" + fondo).on("show.bs.collapse", function () {
-                $("#headingGPFondo" + fondo).find("i.fa-chevron-down").hide();
-                $("#headingGPFondo" + fondo).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("GPFondo" + fondo);
+            $("#TabGPFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabGPFondo" + fondo);
                 obtenerGananPesosSoloTipo(fondo);
             });
 
-            $("#collapseGPFondo" + fondo).on("hide.bs.collapse", function () {
-                $("#headingGPFondo" + fondo).find("i.fa-chevron-down").show();
-                $("#headingGPFondo" + fondo).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("GPFondo" + fondo);
+            $("#TabGPFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabGPFondo" + fondo);
             });
         });
 
         ["A", "B", "C", "D", "E"].forEach(fondo => {
-            $("#collapseCAVFondo" + fondo).on("show.bs.collapse", function () {
-                $("#headingCAVFondo" + fondo).find("i.fa-chevron-down").hide();
-                $("#headingCAVFondo" + fondo).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("CAVFondo" + fondo);
+            $("#TabCAVFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabCAVFondo" + fondo);
                 obtenerCAVSoloTipo(fondo);
             });
 
-            $("#collapseCAVFondo" + fondo).on("hide.bs.collapse", function () {
-                $("#headingCAVFondo" + fondo).find("i.fa-chevron-down").show();
-                $("#headingCAVFondo" + fondo).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("CAVFondo" + fondo);
+            $("#TabCAVFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabCAVFondo" + fondo);
             });
         });
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
         let graficosAbiertos = $.cookie("GraficosAbiertosSimulador");
-        if (graficosAbiertos == undefined) {
-            graficosAbiertos = ["GPFondoA"];
+        if (graficosAbiertos == undefined || graficosAbiertos.length == 0) {
+            graficosAbiertos = ["TabGPFondoA"];
         } else {
             graficosAbiertos = graficosAbiertos.split(",");
         }
         graficosAbiertos.forEach(grafico => {
-            $("#collapse" + grafico).collapse("show");
+            $("#" + grafico).tab('show');
         });
     });
 });
@@ -214,7 +206,7 @@ function btnFiltrarGanancias() {
     document.cookie = "EfectuarSimulacionCada=" + encodeURIComponent(efectuarSimulacionCada) + "; expires=" + date.toGMTString() + "; path=/Simulador";
 
     ["A", "B", "C", "D", "E"].forEach(fondo => {
-        if ($("#headingGPFondo" + fondo).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabGPFondo" + fondo).attr("aria-selected") == "true") {
             obtenerGananPesosSoloTipo(fondo);
         }
     });
@@ -696,8 +688,8 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
 
         // Add legend
         chart.legend = new am4charts.Legend();
-        chart.legend.maxHeight = 260;
-        chart.legend.scrollable = true;
+        // chart.legend.maxHeight = 260;
+        // chart.legend.scrollable = true;
         chart.legend.valueLabels.template.align = "right";
         chart.legend.valueLabels.template.textAlign = "end";
 

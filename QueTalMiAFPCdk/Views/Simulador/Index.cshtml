@@ -5,6 +5,7 @@
 @section Head {
     <meta name="description" content="Aquí podrás simular las ganancias en pesos que pudiste obtener
     según las rentabilidades resultantes de cada AFP en cierto periodo de tiempo." />
+    <link rel="stylesheet" href="~/css/Simulador.css" asp-append-version="true" />
 }
 
 @section Scripts {
@@ -19,6 +20,8 @@
 </p>
 
 <hr />
+
+<h5>Cuenta de Cotizaciones Obligatorias</h5>
 
 <p class="text-muted">
     Para obtener las ganancias o pérdidas que pudiste generar, favor ingresa
@@ -122,37 +125,54 @@
     </div>
 </div>
 
-@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
-    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
-        <div class="card-header" id="headingGPFondo@(fondo)">
-            <button style="font-size: 0.80rem;" class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseGPFondo@(fondo)" aria-expanded="false" aria-controls="collapseGPFondo@(fondo)">
-                CUENTA DE COTIZACIONES OBLIGATORIAS - FONDO @(fondo)
+<ul class="nav nav-tabs" id="TabGPFondos" role="tablist">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabGPFondo@(fondo)" data-toggle="tab" data-target="#ContGPFondo@(fondo)" type="button" role="tab" aria-controls="GPFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-1" id="TabContentGPFondos">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <div class="tab-pane fade" id="ContGPFondo@(fondo)" role="tabpanel" aria-labelledby="TabGPFondo@(fondo)">
+            <div class="chartSimulacion" id="chartGananPesos@(fondo)"></div>
+        </div>
+    }
+</div>
+<!--
+foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
+    <div class="card mb-3 (fondo == "A" ? "mt-3" : "")">
+        <div class="card-header" id="headingGPFondo(fondo)">
+            <button style="font-size: 0.80rem;" class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseGPFondo(fondo)" aria-expanded="false" aria-controls="collapseGPFondo(fondo)">
+                CUENTA DE COTIZACIONES OBLIGATORIAS - FONDO (fondo)
                 <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
                 <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
             </button>
         </div>
-        <div id="collapseGPFondo@(fondo)" class="collapse">
+        <div id="collapseGPFondo(fondo)" class="collapse">
             <div class="card-body pt-0">
-                <div class="chartSimulacion" id="chartGananPesos@(fondo)"></div>
+                <div class="chartSimulacion" id="chartGananPesos(fondo)"></div>
             </div>
         </div>
     </div>
 }
-
+-->
 <!--
 <hr />
-@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
-    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
-        <div class="card-header" id="headingCAVFondo@(fondo)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseCAVFondo@(fondo)" aria-expanded="false" aria-controls="collapseCAVFondo@(fondo)">
-                CUENTA DE AHORRO VOLUNTARIO - CUENTA 2 - FONDO @(fondo)
+foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
+    <div class="card mb-3 (fondo == "A" ? "mt-3" : "")">
+        <div class="card-header" id="headingCAVFondo(fondo)">
+            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseCAVFondo(fondo)" aria-expanded="false" aria-controls="collapseCAVFondo(fondo)">
+                CUENTA DE AHORRO VOLUNTARIO - CUENTA 2 - FONDO (fondo)
                 <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
                 <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
             </button>
         </div>
-        <div id="collapseCAVFondo@(fondo)" class="collapse">
+        <div id="collapseCAVFondo(fondo)" class="collapse">
             <div class="card-body pt-0">
-                <div class="chartSimulacion" id="chartCAV@(fondo)"></div>
+                <div class="chartSimulacion" id="chartCAV(fondo)"></div>
             </div>
         </div>
     </div>

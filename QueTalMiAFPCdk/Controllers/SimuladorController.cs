@@ -22,6 +22,16 @@ namespace QueTalMiAFPCdk.Controllers {
             efectuarSimulacionCada ??= "$500.000";
             ViewBag.EfectuarSimulacionCada = efectuarSimulacionCada;
 
+            //Se limpian gráficas de cookies que ya no existen...
+            string? graficosAbiertos = Request.Cookies["GraficosAbiertosSimulador"];
+            if (graficosAbiertos != null) {
+                graficosAbiertos = String.Join(",", graficosAbiertos.Split(",").Where(g => g.StartsWith("Tab")));
+
+                HttpContext.Response.Cookies.Append("GraficosAbiertosSimulador", graficosAbiertos, new CookieOptions {
+                    Expires = DateTime.Now.AddDays(365),
+                    Path = "/Simulador"
+                });
+            }
             return View();
 		}
 	}
