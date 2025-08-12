@@ -13,7 +13,19 @@ namespace QueTalMiAFPCdk.Controllers {
 				ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 			}
 			ViewBag.UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value;
-			return View();
+
+            //Se limpian gráficas de cookies que ya no existen...
+            string? graficosAbiertos = Request.Cookies["GraficosAbiertos"];
+			if (graficosAbiertos != null) {
+				graficosAbiertos = String.Join(",", graficosAbiertos.Split(",").Where(g => g.StartsWith("Tab")));
+
+                HttpContext.Response.Cookies.Append("GraficosAbiertos", graficosAbiertos, new CookieOptions {
+                    Expires = DateTime.Now.AddDays(365),
+					Path = "/Estadisticas"
+                });
+            }
+
+            return View();
 		}
 
 		public async Task<IActionResult> ComparandoFondos() {
@@ -22,7 +34,18 @@ namespace QueTalMiAFPCdk.Controllers {
 				ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 			}
 			ViewBag.UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value;
-			return View();
+
+            //Se limpian gráficas de cookies que ya no existen...
+            string? graficosAbiertos = Request.Cookies["GraficosAbiertosPorAFP"];
+            if (graficosAbiertos != null) {
+                graficosAbiertos = String.Join(",", graficosAbiertos.Split(",").Where(g => g.StartsWith("Tab")));
+
+                HttpContext.Response.Cookies.Append("GraficosAbiertosPorAFP", graficosAbiertos, new CookieOptions {
+                    Expires = DateTime.Now.AddDays(365),
+                    Path = "/Estadisticas/ComparandoFondos"
+                });
+            }
+            return View();
 		}
 
 		public async Task<IActionResult> PremioRentabilidad() {

@@ -5,6 +5,7 @@
 @section Head {
     <meta name="description" content="Aquí podrás conocer la evolución histórica de la rentabilidad 
           y los valores cuota de los fondos de pensiones para cada una de las AFP." />
+    <link rel="stylesheet" href="~/css/Estadisticas.css" asp-append-version="true" />
 }
 
 @section Scripts {
@@ -47,72 +48,80 @@
 </div>
 
 <hr />
+<h5>Rentabilidad Real</h5>
 
 <p class="mt-3 text-muted">
-    A continuación, se presentan las rentabilidades reales ajustadas según variación
-    de la UF, de los diferentes fondos de pensiones, usando una fecha inicial
+    A continuación, se presentan las rentabilidades reales <b>ajustadas según variación
+    de la UF</b>, de los diferentes fondos de pensiones, usando una fecha inicial
     como referencia:
 </p>
-@foreach (string afp in new List<string>() { "Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno" }) {
-    <div class="card mb-3 @(afp == "Capital" ? "mt-3" : "")">
-        <div class="card-header" id="headingRR@(afp)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseRR@(afp)" aria-expanded="false" aria-controls="collapseRR@(afp)">
-                RENTABILIDAD REAL - AFP @(afp.ToUpperInvariant())
-                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
-                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
-            </button>
+
+<ul class="nav nav-tabs" id="TabRRAfp" role="tablist">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabRR@(afp)" data-toggle="tab" data-target="#ContRR@(afp)" type="button" role="tab" aria-controls="RR@(afp)" aria-selected="false">@(afp)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-3" id="TabContentRRAfp">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <div class="tab-pane fade" id="ContRR@(afp)" role="tabpanel" aria-labelledby="TabRR@(afp)">
+            <div class="chartFondo" id="chartRentReal@(afp)"></div>
         </div>
-        <div id="collapseRR@(afp)" class="collapse">
-            <div class="card-body pt-0">
-                <div class="chartFondo" id="chartRentReal@(afp)"></div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>
 
 <hr />
+
+<h5>Rentabilidad</h5>
 
 <p class="mt-3 text-muted">
     A continuación, se presentan las rentabilidades de los valores cuotas, sin aplicar
     ajustes por inflación, de los diferentes fondos de pensiones, usando una fecha
     inicial como referencia:
 </p>
-@foreach (string afp in new List<string>() { "Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno" }) {
-    <div class="card mb-3 @(afp == "Capital" ? "mt-3" : "")">
-        <div class="card-header" id="headingRT@(afp)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseRT@(afp)" aria-expanded="false" aria-controls="collapseRT@(afp)">
-                RENTABILIDAD - AFP @(afp.ToUpperInvariant())
-                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
-                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
-            </button>
+
+<ul class="nav nav-tabs" id="TabRTAfp" role="tablist">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabRT@(afp)" data-toggle="tab" data-target="#ContRT@(afp)" type="button" role="tab" aria-controls="RT@(afp)" aria-selected="false">@(afp)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-3" id="TabContentRTAfp">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <div class="tab-pane fade" id="ContRT@(afp)" role="tabpanel" aria-labelledby="TabRT@(afp)">
+            <div class="chartFondo" id="chartRentabilidad@(afp)"></div>
         </div>
-        <div id="collapseRT@(afp)" class="collapse">
-            <div class="card-body pt-0">
-                <div class="chartFondo" id="chartRentabilidad@(afp)"></div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>
 
 <hr />
+
+<h5>Valor Cuota</h5>
 
 <p class="mt-3 text-muted">
     A continuación, se presentan gráficos de la evolución histórica del valor cuota, de
     los diferentes fondos de pensiones:
 </p>
-@foreach (string afp in new List<string>() { "Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno" }) {
-    <div class="card mb-3 @(afp == "Capital" ? "mt-3" : "")">
-        <div class="card-header" id="headingVC@(afp)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseVC@(afp)" aria-expanded="false" aria-controls="collapseVC@(afp)">
-                VALOR CUOTA - AFP @(afp.ToUpperInvariant())
-                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
-                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
-            </button>
+
+<ul class="nav nav-tabs" id="TabVCAfp" role="tablist">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabVC@(afp)" data-toggle="tab" data-target="#ContVC@(afp)" type="button" role="tab" aria-controls="VC@(afp)" aria-selected="false">@(afp)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-1" id="TabContentVCAfp">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <div class="tab-pane fade" id="ContVC@(afp)" role="tabpanel" aria-labelledby="TabVC@(afp)">
+            <div class="chartFondo" id="chartValor@(afp)"></div>
         </div>
-        <div id="collapseVC@(afp)" class="collapse">
-            <div class="card-body pt-0">
-                <div class="chartFondo" id="chartValor@(afp)"></div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>

@@ -5,6 +5,7 @@
 @section Head {
     <meta name="description" content="Aquí podrás conocer la evolución histórica de la rentabilidad 
           y los valores cuota de las AFP para cada uno de los fondos de pensiones." />
+    <link rel="stylesheet" href="~/css/Estadisticas.css" asp-append-version="true" />
 }
 
 @section Scripts {
@@ -47,72 +48,80 @@
 </div>
 
 <hr />
+<h5>Rentabilidad Real</h5>
 
 <p class="mt-3 text-muted">
-    A continuación, se presentan las rentabilidades reales ajustadas según variación
-    de la UF, de los diferentes fondos de pensiones, usando una fecha inicial
+    A continuación, se presentan las rentabilidades reales <b>ajustadas según variación
+    de la UF</b>, de los diferentes fondos de pensiones, usando una fecha inicial
     como referencia:
 </p>
-@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
-    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
-        <div class="card-header" id="headingRRFondo@(fondo)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseRRFondo@(fondo)" aria-expanded="false" aria-controls="collapseRRFondo@(fondo)">
-                RENTABILIDAD REAL - FONDO @(fondo)
-                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
-                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
-            </button>
+
+<ul class="nav nav-tabs" id="TabRRFondos" role="tablist">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabRRFondo@(fondo)" data-toggle="tab" data-target="#ContRRFondo@(fondo)" type="button" role="tab" aria-controls="RRFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-3" id="TabContentRRFondos">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <div class="tab-pane fade" id="ContRRFondo@(fondo)" role="tabpanel" aria-labelledby="TabRRFondo@(fondo)">
+            <div class="chartFondo" id="chartRentReal@(fondo)"></div>
         </div>
-        <div id="collapseRRFondo@(fondo)" class="collapse">
-            <div class="card-body pt-0">
-                <div class="chartFondo" id="chartRentReal@(fondo)"></div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>
 
 <hr />
+
+<h5>Rentabilidad</h5>
 
 <p class="mt-3 text-muted">
     A continuación, se presentan las rentabilidades de los valores cuotas, sin aplicar
     ajustes por inflación, de los diferentes fondos de pensiones, usando una fecha
     inicial como referencia:
 </p>
-@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
-    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
-        <div class="card-header" id="headingRTFondo@(fondo)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseRTFondo@(fondo)" aria-expanded="false" aria-controls="collapseRTFondo@(fondo)">
-                RENTABILIDAD - FONDO @(fondo)
-                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
-                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
-            </button>
+
+<ul class="nav nav-tabs" id="TabRTFondos" role="tablist">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabRTFondo@(fondo)" data-toggle="tab" data-target="#ContRTFondo@(fondo)" type="button" role="tab" aria-controls="RTFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-3" id="TabContentRTFondos">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <div class="tab-pane fade" id="ContRTFondo@(fondo)" role="tabpanel" aria-labelledby="TabRTFondo@(fondo)">
+            <div class="chartFondo" id="chartRentabilidad@(fondo)"></div>
         </div>
-        <div id="collapseRTFondo@(fondo)" class="collapse">
-            <div class="card-body pt-0">
-                <div class="chartFondo" id="chartRentabilidad@(fondo)"></div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>
 
 <hr />
+
+<h5>Valor Cuota</h5>
 
 <p class="mt-3 text-muted">
     A continuación, se presentan gráficos de la evolución histórica del valor cuota, de
     los diferentes fondos de pensiones:
 </p>
-@foreach (string fondo in new List<string>() { "A", "B", "C", "D", "E" }) {
-    <div class="card mb-3 @(fondo == "A" ? "mt-3" : "")">
-        <div class="card-header" id="headingVCFondo@(fondo)">
-            <button class="btn btn-block text-center btnNoShadow" type="button" data-toggle="collapse" data-target="#collapseVCFondo@(fondo)" aria-expanded="false" aria-controls="collapseVCFondo@(fondo)">
-                VALOR CUOTA - FONDO @(fondo)
-                <i class="fas fa-chevron-down float-right fa-lg" style="margin-top:0.3em;"></i>
-                <i class="fas fa-chevron-up float-right fa-lg" style="margin-top:0.2em; display:none;"></i>
-            </button>
+
+<ul class="nav nav-tabs" id="TabFondos" role="tablist">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabFondo@(fondo)" data-toggle="tab" data-target="#ContFondo@(fondo)" type="button" role="tab" aria-controls="Fondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content p-1 mb-1" id="TabContentFondos">
+    @foreach(string fondo in "A,B,C,D,E".Split(","))
+    {
+        <div class="tab-pane fade" id="ContFondo@(fondo)" role="tabpanel" aria-labelledby="TabFondo@(fondo)">
+            <div class="chartFondo" id="chartFondo@(fondo)"></div>
         </div>
-        <div id="collapseVCFondo@(fondo)" class="collapse">
-            <div class="card-body pt-0">
-                <div class="chartFondo" id="chartFondo@(fondo)"></div>
-            </div>
-        </div>
-    </div>
-}
+    }
+</div>

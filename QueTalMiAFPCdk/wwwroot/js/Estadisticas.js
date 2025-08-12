@@ -22,61 +22,49 @@
 
         // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de rentabilidad real...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
-            $("#collapseRRFondo" + fondo).on("shown.bs.collapse", function () {
-                $("#headingRRFondo" + fondo).find("i.fa-chevron-down").hide();
-                $("#headingRRFondo" + fondo).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("RRFondo" + fondo);
+            $("#TabRRFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRRFondo" + fondo);
                 obtenerRentRealSoloTipo(fondo);
             });
 
-            $("#collapseRRFondo" + fondo).on("hide.bs.collapse", function () {
-                $("#headingRRFondo" + fondo).find("i.fa-chevron-down").show();
-                $("#headingRRFondo" + fondo).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("RRFondo" + fondo);
+            $("#TabRRFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRRFondo" + fondo);
             });
         });
 
         // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de rentabilidad...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
-            $("#collapseRTFondo" + fondo).on("shown.bs.collapse", function () {
-                $("#headingRTFondo" + fondo).find("i.fa-chevron-down").hide();
-                $("#headingRTFondo" + fondo).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("RTFondo" + fondo);
+            $("#TabRTFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRTFondo" + fondo);
                 obtenerRentSoloTipo(fondo);
             });
 
-            $("#collapseRTFondo" + fondo).on("hide.bs.collapse", function () {
-                $("#headingRTFondo" + fondo).find("i.fa-chevron-down").show();
-                $("#headingRTFondo" + fondo).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("RTFondo" + fondo);
+            $("#TabRTFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRTFondo" + fondo);
             });
         });
 
         // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de valores cuota...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
-            $("#collapseVCFondo" + fondo).on("show.bs.collapse", function () {
-                $("#headingVCFondo" + fondo).find("i.fa-chevron-down").hide();
-                $("#headingVCFondo" + fondo).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("VCFondo" + fondo);
+            $("#TabFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabFondo" + fondo);
                 obtenerCuotaSoloTipo(fondo);
             });
 
-            $("#collapseVCFondo" + fondo).on("hide.bs.collapse", function () {
-                $("#headingVCFondo" + fondo).find("i.fa-chevron-down").show();
-                $("#headingVCFondo" + fondo).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("VCFondo" + fondo);
+            $("#TabFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabFondo" + fondo);
             });
         });
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
         let graficosAbiertos = $.cookie("GraficosAbiertos");
-        if (graficosAbiertos == undefined) {
-            graficosAbiertos = ["RRFondoA"];
+        if (graficosAbiertos == undefined || graficosAbiertos.length == 0) {
+            graficosAbiertos = ["TabRRFondoA", "TabRTFondoA", "TabFondoA"];
         } else {
             graficosAbiertos = graficosAbiertos.split(",");
         }
         graficosAbiertos.forEach(grafico => {
-            $("#collapse" + grafico).collapse("show");
+            $("#" + grafico).tab('show');
         });
     });
 });
@@ -117,15 +105,15 @@ function marcarGraficoCerrado(grafico) {
 
 function btnFiltrarRentabilidad() {
     ["A", "B", "C", "D", "E"].forEach(fondo => {
-        if ($("#headingRRFondo" + fondo).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabRRFondo" + fondo).attr("aria-selected") == "true") {
             obtenerRentRealSoloTipo(fondo);
         }
 
-        if ($("#headingRTFondo" + fondo).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabRTFondo" + fondo).attr("aria-selected") == "true") {
             obtenerRentSoloTipo(fondo);
         }
 
-        if ($("#headingVCFondo" + fondo).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabFondo" + fondo).attr("aria-selected") == "true") {
             obtenerCuotaSoloTipo(fondo);
         }
     });
@@ -376,11 +364,12 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
         chart.cursor.lineY.disabled = true;
 
         // Add legend
-        chart.legend = new am4charts.Legend();
-        chart.legend.maxHeight = 78;
-        chart.legend.scrollable = true;
-        chart.legend.valueLabels.template.align = "right";
-        chart.legend.valueLabels.template.textAlign = "end";
+        // chart.legend = new am4charts.Legend();
+        // chart.legend.labels.template.fontSize = 12;
+        // chart.legend.maxHeight = 100;
+        // chart.legend.scrollable = true;
+        // chart.legend.valueLabels.template.align = "right";
+        // chart.legend.valueLabels.template.textAlign = "end";
 
         // Create custom preloader
         let indicator = chart.tooltipContainer.createChild(am4core.Container);
@@ -412,7 +401,7 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
                 let last_data = chart.data[chart.data.length - 1];
                 let fechaInicio = new Date(last_data["fecha"].getTime());
                 let fechaFinal = new Date(last_data["fecha"].getTime());;
-                fechaInicio.setMonth(fechaInicio.getMonth() - 2);
+                fechaInicio.setMonth(fechaInicio.getMonth() - 3);
                 fechaFinal.setDate(fechaFinal.getDate() + 1);
 
                 dateAxis.zoomToDates(

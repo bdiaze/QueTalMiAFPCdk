@@ -1,0 +1,113 @@
+﻿#TabRRFondos li, #TabRTFondos li, #TabFondos li {
+    width: 20%;
+}
+
+#TabRRAfp li:first-child, #TabRTAfp li:first-child, #TabVCAfp li:first-child {
+    width: 16%;
+}
+
+#TabRRAfp li:not(:first-child), #TabRTAfp li:not(:first-child), #TabVCAfp li:not(:first-child) {
+    width: 14%;
+}
+
+#TabRRFondos li button, #TabRTFondos li button, #TabFondos li button, #TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button {
+    width: 100%;
+}
+
+#TabRRFondos li button.active, #TabRTFondos li button.active, #TabFondos li button.active, #TabRRAfp li button.active, #TabRTAfp li button.active, #TabVCAfp li button.active {
+    text-decoration: underline;
+}
+
+.tab-content {
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    border-bottom-left-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+}
+
+.nav-tabs .nav-link {
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+}
+
+#TabRRFondoA.active, #TabRTFondoA.active, #TabFondoA.active {
+    background-color: #c23b33;
+    border-bottom-color: #c23b33;
+    color: #fff;
+}
+
+#TabRRFondoB.active, #TabRTFondoB.active, #TabFondoB.active {
+    background-color: #f2af32;
+    border-bottom-color: #f2af32;
+    color: #fff;
+}
+
+#TabRRFondoC.active, #TabRTFondoC.active, #TabFondoC.active {
+    background-color: #72b500;
+    border-bottom-color: #72b500;
+    color: #fff;
+}
+
+#TabRRFondoD.active, #TabRTFondoD.active, #TabFondoD.active {
+    background-color: #2E8ECD;
+    border-bottom-color: #2E8ECD;
+    color: #fff;
+}
+
+#TabRRFondoE.active, #TabRTFondoE.active, #TabFondoE.active {
+    background-color: #0061a0;
+    border-bottom-color: #0061a0;
+    color: #fff;
+}
+
+#TabRRCapital.active, #TabRTCapital.active, #TabVCCapital.active {
+    background-color: #E3E829;
+    border-bottom-color: #E3E829;
+}
+
+#TabRRCuprum.active, #TabRTCuprum.active, #TabVCCuprum.active {
+    background-color: #f2af32;
+    border-bottom-color: #f2af32;
+}
+
+#TabRRHabitat.active, #TabRTHabitat.active, #TabVCHabitat.active {
+    background-color: #2E8ECD;
+    border-bottom-color: #2E8ECD;
+    color: #fff;
+}
+
+#TabRRModelo.active, #TabRTModelo.active, #TabVCModelo.active {
+    background-color: #72b500;
+    border-bottom-color: #72b500;
+    color: #fff;
+}
+
+#TabRRPlanVital.active, #TabRTPlanVital.active, #TabVCPlanVital.active {
+    background-color: #c23b33;
+    border-bottom-color: #c23b33;
+    color: #fff;
+}
+
+#TabRRProVida.active, #TabRTProVida.active, #TabVCProVida.active {
+    background-color: #0061a0;
+    border-bottom-color: #0061a0;
+    color: #fff;
+}
+
+#TabRRUno.active, #TabRTUno.active, #TabVCUno.active {
+    background-color: #e3007d;
+    border-bottom-color: #e3007d;
+    color: #fff;
+}
+
+#TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRRFondos li button, #TabRTFondos li button, #TabFondos li button {
+    font-size: 0.8rem;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.chartFondo {
+    width: 100%;
+    height: 40rem;
+}

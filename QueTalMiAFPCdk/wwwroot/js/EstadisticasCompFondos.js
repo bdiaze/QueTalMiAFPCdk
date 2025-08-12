@@ -21,59 +21,47 @@
         am4core.options.queue = true;
 
         ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
-            $("#collapseRR" + afp).on("shown.bs.collapse", function () {
-                $("#headingRR" + afp).find("i.fa-chevron-down").hide();
-                $("#headingRR" + afp).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("RR" + afp);
+            $("#TabRR" + afp).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRR" + afp);
                 obtenerRentRealSoloTipo(afp);
             });
 
-            $("#collapseRR" + afp).on("hide.bs.collapse", function () {
-                $("#headingRR" + afp).find("i.fa-chevron-down").show();
-                $("#headingRR" + afp).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("RR" + afp);
+            $("#TabRR" + afp).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRR" + afp);
             });
         });
 
         ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
-            $("#collapseRT" + afp).on("shown.bs.collapse", function () {
-                $("#headingRT" + afp).find("i.fa-chevron-down").hide();
-                $("#headingRT" + afp).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("RT" + afp);
+            $("#TabRT" + afp).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRT" + afp);
                 obtenerRentSoloTipo(afp);
             });
 
-            $("#collapseRT" + afp).on("hide.bs.collapse", function () {
-                $("#headingRT" + afp).find("i.fa-chevron-down").show();
-                $("#headingRT" + afp).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("RT" + afp);
+            $("#TabRT" + afp).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRT" + afp);
             });
         });
 
         ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
-            $("#collapseVC" + afp).on("show.bs.collapse", function () {
-                $("#headingVC" + afp).find("i.fa-chevron-down").hide();
-                $("#headingVC" + afp).find("i.fa-chevron-up").show();
-                marcarGraficoAbierto("VC" + afp);
+            $("#TabVC" + afp).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabVC" + afp);
                 obtenerCuotaSoloTipo(afp);
             });
 
-            $("#collapseVC" + afp).on("hide.bs.collapse", function () {
-                $("#headingVC" + afp).find("i.fa-chevron-down").show();
-                $("#headingVC" + afp).find("i.fa-chevron-up").hide();
-                marcarGraficoCerrado("VC" + afp);
+            $("#TabVC" + afp).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabVC" + afp);
             });
         });
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
         let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
-        if (graficosAbiertos == undefined) {
-            graficosAbiertos = ["RRCapital"];
+        if (graficosAbiertos == undefined || graficosAbiertos.length == 0) {
+            graficosAbiertos = ["TabRRCapital", "TabRTCapital", "TabVCCapital"];
         } else {
             graficosAbiertos = graficosAbiertos.split(",");
         }
         graficosAbiertos.forEach(grafico => {
-            $("#collapse" + grafico).collapse("show");
+            $("#" + grafico).tab('show');
         });
     });
 });
@@ -114,15 +102,15 @@ function marcarGraficoCerrado(grafico) {
 
 function btnFiltrarRentabilidad() {
     ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
-        if ($("#headingRR" + afp).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabRR" + afp).attr("aria-selected") == "true") {
             obtenerRentRealSoloTipo(afp);
         }
 
-        if ($("#headingRT" + afp).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabRT" + afp).attr("aria-selected") == "true") {
             obtenerRentSoloTipo(afp);
         }
 
-        if ($("#headingVC" + afp).children("button").attr("aria-expanded") == "true") {
+        if ($("#TabVC" + afp).attr("aria-selected") == "true") {
             obtenerCuotaSoloTipo(afp);
         }
     });
@@ -371,11 +359,11 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
         chart.cursor.lineY.disabled = true;
 
         // Add legend
-        chart.legend = new am4charts.Legend();
-        chart.legend.maxHeight = 78;
-        chart.legend.scrollable = true;
-        chart.legend.valueLabels.template.align = "right";
-        chart.legend.valueLabels.template.textAlign = "end";
+        // chart.legend = new am4charts.Legend();
+        // chart.legend.maxHeight = 78;
+        // chart.legend.scrollable = true;
+        // chart.legend.valueLabels.template.align = "right";
+        // chart.legend.valueLabels.template.textAlign = "end";
 
         // Create custom preloader
         let indicator = chart.tooltipContainer.createChild(am4core.Container);
@@ -407,7 +395,7 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
                 let last_data = chart.data[chart.data.length - 1];
                 let fechaInicio = new Date(last_data["fecha"].getTime());
                 let fechaFinal = new Date(last_data["fecha"].getTime());;
-                fechaInicio.setMonth(fechaInicio.getMonth() - 2);
+                fechaInicio.setMonth(fechaInicio.getMonth() - 3);
                 fechaFinal.setDate(fechaFinal.getDate() + 1);
 
                 dateAxis.zoomToDates(
