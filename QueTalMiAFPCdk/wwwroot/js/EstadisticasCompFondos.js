@@ -389,6 +389,38 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
 
         chart["customPreloader"] = indicator;
 
+        // Se configura la opción de congelar los datos al hacer click...
+        chart.cursor.behavior = "none";
+        let cursorFixed = false;
+        chart.plotContainer.events.on("hit", function (ev) {
+            if (!cursorFixed) {
+                chart.cursor.triggerMove(
+                    dateAxis.renderer.positionToPoint(dateAxis.toAxisPosition(chart.cursor.xPosition)),
+                    "hard",
+                    true
+                );
+                cursorFixed = true;
+            } else {
+                chart.cursor.triggerMove(
+                    dateAxis.renderer.positionToPoint(dateAxis.toAxisPosition(chart.cursor.xPosition)),
+                    "none",
+                    true
+                );
+                cursorFixed = false;
+            }
+        });
+        chart.scrollbarX.events.on("rangechanged", function (ev) {
+            if (cursorFixed) {
+                chart.cursor.triggerMove(
+                    { x: 0, y: 0 },
+                    "none",
+                    true
+                );
+                chart.cursor.hide();
+                cursorFixed = false;
+            }
+        });
+
         // Config initial zoom
         chart.events.on("datavalidated", function () {
             if (chart.data != null && chart.data.length > 0) {
