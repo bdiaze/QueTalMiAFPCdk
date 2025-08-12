@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
     public class ResumenController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
-        private const int CANTIDAD_DIAS_RESUMEN = 7;
+        private const int CANTIDAD_DIAS_RESUMEN = 7; 
 
         private static readonly Dictionary<string, string> LISTA_AFPS = new() {
             { "CAPITAL", "Capital" },
@@ -80,33 +80,33 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se arma objeto de salida...
             ResumenViewModel salida = new() {
-                Resumenes = [
-                    new ResumenAfp {
+                UltimaSemana = [
+                    new UltimaSemanaAfp {
                         Nombre = "Capital",
                         UrlLogo = "/images/logos_afps/LogoAFPCapital.svg"
                     },
-                    new ResumenAfp {
+                    new UltimaSemanaAfp {
                         Nombre = "Cuprum",
                         UrlLogo = "/images/logos_afps/LogoAFPCuprum.svg"
                     },
-                    new ResumenAfp {
+                    new UltimaSemanaAfp {
                         Nombre = "Habitat",
                         UrlLogo = "/images/logos_afps/LogoAFPHabitat.svg"
                     },
-                    new ResumenAfp {
+                    new UltimaSemanaAfp {
                         Nombre = "Modelo",
                         UrlLogo = "/images/logos_afps/LogoAFPModelo.svg"
                     },
-                    new ResumenAfp {
+                    new UltimaSemanaAfp {
                         Nombre = "PlanVital",
                         UrlLogo = "/images/logos_afps/LogoAFPPlanvital.svg",
                         Alto = 10
                     },
-                    new ResumenAfp {
+                    new UltimaSemanaAfp {
                         Nombre = "ProVida",
                         UrlLogo = "/images/logos_afps/LogoAFPProvida.png"
                     },
-                    new ResumenAfp {
+                    new UltimaSemanaAfp {
                         Nombre = "Uno",
                         UrlLogo = "/images/logos_afps/LogoAFPUno.png"
                     },
@@ -154,26 +154,36 @@ namespace QueTalMiAFPCdk.Controllers {
             }
 
             // Se añade listado de fechas a objeto de salida...
-            salida.Fechas = fechas;
+            salida.FechasUltimaSemana = fechas;
 
             List<CuotaUf> valoresCuota = await taskValoresCuota;
 
             // Se arman las listas de valores cuotas para cada AFP, según el listado de fechas...
-            foreach (ResumenAfp resumenAfp in salida.Resumenes) {
+            foreach (UltimaSemanaAfp ultimaSemanaAfp in salida.UltimaSemana) {
                 foreach (string fondo in "A,B,C,D,E".Split(",")) {
-                    foreach (DateTime fecha in salida.Fechas) {
-                        CuotaUf? cuotaUf = valoresCuota.FirstOrDefault(c => c.Afp.Equals(resumenAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && c.Fecha == fecha.ToString("yyyy-MM-dd"));
+                    foreach (DateTime fecha in salida.FechasUltimaSemana) {
+                        CuotaUf? cuotaUf = valoresCuota.FirstOrDefault(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) == fecha);
 
                         // Si no tenemos valor cuota para la fecha indicada, se marca como null o con la valor cuota anterior.
                         if (cuotaUf == null) {
-                            if (resumenAfp.ValoresCuota[fondo].Count > 0 && resumenAfp.ValoresCuota[fondo].Last() != null) {
-                                cuotaUf = valoresCuota.Where(c => c.Afp.Equals(resumenAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) <= fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
-                                resumenAfp.ValoresCuota[fondo].Add(cuotaUf?.Valor);
+                            if (ultimaSemanaAfp.ValoresCuota[fondo].Count > 0 && ultimaSemanaAfp.ValoresCuota[fondo].Last() != null) {
+                                cuotaUf = valoresCuota.Where(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) < fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                                ultimaSemanaAfp.ValoresCuota[fondo].Add(new CuotaRentabilidadDia {
+                                    ValorCuota = cuotaUf!.Valor,
+                                    Fecha = DateTime.ParseExact(cuotaUf.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                    RentabilidadDia = 0 // Rentabilidad 0 ya que se está usando el valor cuota heredado de un día anterior (sin variación)...
+                                });
                             } else {
-                                resumenAfp.ValoresCuota[fondo].Add(null);
+                                ultimaSemanaAfp.ValoresCuota[fondo].Add(null);
                             }
                         } else {
-                            resumenAfp.ValoresCuota[fondo].Add(cuotaUf.Valor);
+                            CuotaUf? cuotaUfAnterior = valoresCuota.Where(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) < fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
+
+                            ultimaSemanaAfp.ValoresCuota[fondo].Add(new CuotaRentabilidadDia {
+                                ValorCuota = cuotaUf.Valor,
+                                Fecha = DateTime.ParseExact(cuotaUf.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                RentabilidadDia = cuotaUfAnterior != null ? 100 * (cuotaUf.Valor - cuotaUfAnterior!.Valor) / cuotaUfAnterior.Valor : 0
+                            });
                         }
                     }
                 }

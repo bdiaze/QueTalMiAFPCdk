@@ -69,8 +69,19 @@ div:has(> table.valoresCuota) {
 }
 
 .valoresCuota tr:not(:first-child) td {
-    font-size: 0.80rem;
     border-left: none;
+}
+
+.valoresCuota tr:not(:first-child) td p:first-child{
+    font-size: 0.80rem;
+}
+
+.valoresCuota tr:not(:first-child) td p:not(:first-child) {
+    font-size: 0.70rem;
+}
+
+.valoresCuota tr:not(:first-child) td p:not(:first-child) b {
+    font-size: 0.80rem;
 }
 
 #filtroFondosHistorial label {

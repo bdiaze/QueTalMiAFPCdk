@@ -65,7 +65,7 @@
                 <td></td>
             </tr>
 
-            @foreach(ResumenAfp resumenAfp in Model.Resumenes)
+            @foreach(UltimaSemanaAfp resumenAfp in Model.UltimaSemana)
             {
                 <tr>
                     <th class="align-middle p-0 text-center">
@@ -80,7 +80,7 @@
         <div style="display:@(fondo == ViewBag.FiltroResumenFondoSeleccionado ? "" : "none");" id="resumen@(fondo)">
             <table class="table table-bordered text-center m-0 mb-1 valoresCuota">
                 <tr>
-                    @foreach(DateTime fecha in Model.Fechas)
+                    @foreach(DateTime fecha in Model.FechasUltimaSemana)
                     {
                         <td class="p-0 align-middle">
                             <p class="m-0 text-center text-muted text-truncate">@fecha.ToString("dddd", cultureInfo).ToUpper()</p>
@@ -89,12 +89,18 @@
                     }
                 </tr>
 
-                @foreach(ResumenAfp resumenAfp in Model.Resumenes)
+                @foreach(UltimaSemanaAfp resumenAfp in Model.UltimaSemana)
                 {
                     <tr>
-                        @foreach(decimal? cuota in resumenAfp.ValoresCuota[fondo])
+                        @foreach(CuotaRentabilidadDia? cuota in resumenAfp.ValoresCuota[fondo])
                         {
-                            <td class="m-0 text-center text-muted align-middle">@(cuota != null ? cuota.GetValueOrDefault().ToString("N2", cultureInfo) : "")</td>
+                            <td class="m-0 text-muted align-middle p-0">
+                                <p class="mb-1 text-center">@(cuota != null ? cuota.ValorCuota.ToString("N2", cultureInfo) : "")</p>
+                                <p class="m-0 text-center @(cuota?.RentabilidadDia > 0 ? "text-success": (cuota?.RentabilidadDia < 0 ? "text-danger" : ""))">
+                                    <b>@(cuota?.RentabilidadDia > 0 ? "⇧" : (cuota?.RentabilidadDia < 0 ? "⇩" : ""))</b>
+                                    @(cuota != null ? (cuota.RentabilidadDia != 0 ? cuota.RentabilidadDia.ToString("N5", cultureInfo) + "%" : "0,0%") : "")
+                                </p>
+                            </td>
                         }
                     </tr>
                 }
@@ -145,7 +151,7 @@
 </div>
 
 @{
-    ResumenAfp datosAfpHistorial = Model.Resumenes.FirstOrDefault(r => r.Nombre.Equals(Model.Historial!.Afp, StringComparison.InvariantCultureIgnoreCase))!;
+    UltimaSemanaAfp datosAfpHistorial = Model.UltimaSemana.FirstOrDefault(r => r.Nombre.Equals(Model.Historial!.Afp, StringComparison.InvariantCultureIgnoreCase))!;
     DateTime primerDia = new DateTime(Model.Historial!.Anno.GetValueOrDefault(), Model.Historial!.Mes.GetValueOrDefault(), 1);
     int diasPrevios = ((int)primerDia.DayOfWeek) - 1;
     int cantDiasMes = primerDia.AddMonths(1).AddDays(-1).Day;

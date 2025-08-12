@@ -5,26 +5,32 @@ using System.Security.Policy;
 
 namespace QueTalMiAFPCdk.Models.ViewModels {
     public class ResumenViewModel {
-        public required List<ResumenAfp> Resumenes { get; set; }
+        public required List<UltimaSemanaAfp> UltimaSemana { get; set; }
 
-        public List<DateTime>? Fechas { get; set; }
+        public List<DateTime>? FechasUltimaSemana { get; set; }
 
         public HistorialAfp? Historial { get; set; }
     }
 
-    public class ResumenAfp {
+    public class UltimaSemanaAfp {
         public required string Nombre { get; set; }
         public required string UrlLogo { get; set; }
         public int Ancho { get; set; } = 20;
         public int? Alto { get; set; } = null;
 
-        public Dictionary<string, List<decimal?>> ValoresCuota { get; set; } = new Dictionary<string, List<decimal?>> {
+        public Dictionary<string, List<CuotaRentabilidadDia?>> ValoresCuota { get; set; } = new Dictionary<string, List<CuotaRentabilidadDia?>> {
             { "A", [] },
             { "B", [] },
             { "C", [] },
             { "D", [] },
             { "E", [] },
         };
+    }
+
+    public class CuotaRentabilidadDia {
+        public required decimal ValorCuota { get; set; }
+        public required decimal RentabilidadDia { get; set; }
+        public required DateTime Fecha { get; set; }
     }
 
     public class HistorialAfp {
