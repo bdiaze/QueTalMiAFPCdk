@@ -109,7 +109,7 @@
     }
 </div>
 
-<hr />
+<hr id="historialValoresCuota" />
 
 <h5>Historial de los Valores Cuota</h5>
 
@@ -119,7 +119,7 @@
 @{
     DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 }
-<form method="get">
+<form method="get" asp-controller="Resumen" asp-action="Index" asp-fragment="historialValoresCuota">
     <div class="input-group mx-auto">
         <select asp-for="Historial.Afp" asp-items="@Model.Historial?.ListaAfps" class="custom-select"></select>
         <select asp-for="Historial.Mes" asp-items="@Model.Historial?.ListaMeses" class="custom-select"></select>
