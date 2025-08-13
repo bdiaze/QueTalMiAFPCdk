@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Services;
 using System.Globalization;
+using System.Net;
+using System.Text;
 using System.Text.Json;
 
 namespace QueTalMiAFPCdk.Repositories {
@@ -13,7 +15,7 @@ namespace QueTalMiAFPCdk.Repositories {
 		Task<DateTime?> UltimaFechaAlgunaConTimeout();
 		Task<List<RentabilidadReal>> ObtenerRentabilidadReal(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
 		Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
-
+		Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision);
     }
 
 	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
@@ -101,6 +103,22 @@ namespace QueTalMiAFPCdk.Repositories {
             } else {
                 return JsonConvert.DeserializeObject<List<CuotaUf>>(await s3BucketHelper.GetFile(retornoConsulta!.S3Url))!;
             }
+        }
+
+		public async Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision) {
+            EntObtenerUltimaCuota entradaSanitizada = new() {
+                ListaAFPs = WebUtility.HtmlEncode(listaAFPs),
+                ListaFondos = WebUtility.HtmlEncode(listaFondos),
+                ListaFechas = WebUtility.HtmlEncode(listaFechas),
+                TipoComision = tipoComision
+            };
+
+            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
+            client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
+            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
+            string responseString = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<SalObtenerUltimaCuota>>(responseString)!;
         }
 	}
 }

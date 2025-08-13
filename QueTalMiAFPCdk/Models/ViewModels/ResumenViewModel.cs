@@ -10,6 +10,8 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
         public List<DateTime>? FechasUltimaSemana { get; set; }
 
         public HistorialAfp? Historial { get; set; }
+
+        public PremiosRentabilidad Premios { get; set; } = new PremiosRentabilidad();
     }
 
     public class UltimaSemanaAfp {
@@ -47,5 +49,17 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
             { "D", [] },
             { "E", [] },
         };
+    }
+
+    public class PremiosRentabilidad {
+        public Dictionary<int, GanadorMes> Ganadores { set; get; } = [];
+    }
+
+    public class GanadorMes {
+        public string? Afp { get; set; }
+        public string? Fondo { get; set; }
+        public decimal? Rentabilidad { get; set; }
+        public DateTime FechaDesde { get; set; }
+        public DateTime FechaHasta { get; set; }
     }
 }

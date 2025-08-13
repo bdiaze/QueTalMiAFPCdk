@@ -10,7 +10,8 @@ using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
     public class ResumenController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
-        private const int CANTIDAD_DIAS_RESUMEN = 7; 
+        private const int CANTIDAD_DIAS_RESUMEN = 7;
+        private const int CANTIDAD_MESES_PREMIO = 6;
 
         private static readonly Dictionary<string, string> LISTA_AFPS = new() {
             { "CAPITAL", "Capital" },
@@ -37,6 +38,16 @@ namespace QueTalMiAFPCdk.Controllers {
             { 12, "Diciembre" },
         };
 
+        private static readonly Dictionary<string, string> IMAGENES_AFP = new() {
+            { "CAPITAL", "/images/logos_afps/LogoAFPCapital.svg" },
+            { "CUPRUM", "/images/logos_afps/LogoAFPCuprum.svg" },
+            { "HABITAT", "/images/logos_afps/LogoAFPHabitat.svg" },
+            { "MODELO", "/images/logos_afps/LogoAFPModelo.svg" },
+            { "PLANVITAL", "/images/logos_afps/LogoAFPPlanvital.svg" },
+            { "PROVIDA", "/images/logos_afps/LogoAFPProvida.png" },
+            { "UNO", "/images/logos_afps/LogoAFPUno.png" },
+        };
+
         public async Task<IActionResult> Index(ResumenViewModel modeloEntrada) {
             string? inputAfp = modeloEntrada.Historial?.Afp;
             int? inputMes = modeloEntrada.Historial?.Mes;
@@ -44,6 +55,7 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se comienza con consulta de última fecha, mediante Task para poder avanzar en las otras tareas...
             Task<DateTime> taskFechaHasta = cuotaUfComisionDAO.UltimaFechaAlguna();
+            Task<DateTime> taskFechaTodas = cuotaUfComisionDAO.UltimaFechaTodas();
 
             DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 
@@ -80,38 +92,10 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se arma objeto de salida...
             ResumenViewModel salida = new() {
-                UltimaSemana = [
-                    new UltimaSemanaAfp {
-                        Nombre = "Capital",
-                        UrlLogo = "/images/logos_afps/LogoAFPCapital.svg"
-                    },
-                    new UltimaSemanaAfp {
-                        Nombre = "Cuprum",
-                        UrlLogo = "/images/logos_afps/LogoAFPCuprum.svg"
-                    },
-                    new UltimaSemanaAfp {
-                        Nombre = "Habitat",
-                        UrlLogo = "/images/logos_afps/LogoAFPHabitat.svg"
-                    },
-                    new UltimaSemanaAfp {
-                        Nombre = "Modelo",
-                        UrlLogo = "/images/logos_afps/LogoAFPModelo.svg"
-                    },
-                    new UltimaSemanaAfp {
-                        Nombre = "PlanVital",
-                        UrlLogo = "/images/logos_afps/LogoAFPPlanvital.svg",
-                        Alto = 10
-                    },
-                    new UltimaSemanaAfp {
-                        Nombre = "ProVida",
-                        UrlLogo = "/images/logos_afps/LogoAFPProvida.png"
-                    },
-                    new UltimaSemanaAfp {
-                        Nombre = "Uno",
-                        UrlLogo = "/images/logos_afps/LogoAFPUno.png"
-                    },
-                ]
+                UltimaSemana = IMAGENES_AFP.Keys.ToList().OrderBy(c => c.ToString()).Select(c => new UltimaSemanaAfp { Nombre = LISTA_AFPS[c], UrlLogo = IMAGENES_AFP[c] }).ToList(),
             };
+
+            salida.UltimaSemana.First(u => u.Nombre == "PlanVital").Alto = 10;
 
             // Se preparan los datos para la grilla de historial de valores cuota...
             List<int> listaAnnos = [.. Enumerable.Range(2002, fechaActual.Year + 1 - 2002)];
@@ -140,6 +124,32 @@ namespace QueTalMiAFPCdk.Controllers {
             string? fondoHistorialSeleccionado = Request.Cookies["FiltroHistorialFondoSeleccionado"];
             fondoHistorialSeleccionado ??= "A";
             ViewBag.FiltroHistorialFondoSeleccionado = fondoHistorialSeleccionado;
+
+            // Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
+            DateTime fechasTodas = await taskFechaTodas;
+
+            // Se arma listado de fechas que se necesitan para calcular las rentabilidades de los últimos 6 meses...
+            List<DateTime> listaFechasPremios = [];
+            DateTime fechaHastaRentMensual = fechasTodas;
+            listaFechasPremios.Add(fechaHastaRentMensual);
+            for (int i = 0; i < CANTIDAD_MESES_PREMIO; i++) {
+                DateTime fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+
+                salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
+                    FechaDesde = fechaDesdeRentMensual,
+                    FechaHasta = fechaHastaRentMensual
+                });
+                listaFechasPremios.Add(fechaDesdeRentMensual);
+
+                fechaHastaRentMensual = fechaDesdeRentMensual;
+            }
+
+            Task<List<SalObtenerUltimaCuota>> taskCuotasPremio = cuotaUfComisionDAO.ObtenerUltimaCuota(
+                "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
+                "A,B,C,D,E",
+                String.Join(",", listaFechasPremios.Select(f => f.ToString("dd/MM/yyyy"))),
+                1
+            );
 
             // Se espera a obtener por última fecha para usar resultado como parámetro de consulta de valores cuota...
             DateTime? fechaHasta = await taskFechaHasta;
@@ -214,6 +224,33 @@ namespace QueTalMiAFPCdk.Controllers {
 
                 salida.Historial.ValoresCuota[fondo].Reverse();
             }
+
+            ViewBag.FechasTodas = fechasTodas;
+
+
+            List<SalObtenerUltimaCuota> cuotasPremio = await taskCuotasPremio;
+            foreach (int periodo in salida.Premios.Ganadores.Keys) {
+                List<GanadorMes> candidatos = [];
+                foreach (string afp in "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO".Split(",")) {
+                    foreach (string fondo in "A,B,C,D,E".Split(",")) {
+                        SalObtenerUltimaCuota? cuotaDesde = cuotasPremio.Where(c => c.Afp == afp && c.Fondo == fondo && c.Fecha <= salida.Premios.Ganadores[periodo].FechaDesde).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                        SalObtenerUltimaCuota? cuotaHasta = cuotasPremio.Where(c => c.Afp == afp && c.Fondo == fondo && c.Fecha <= salida.Premios.Ganadores[periodo].FechaHasta).OrderByDescending(c => c.Fecha).FirstOrDefault();
+
+                        candidatos.Add(new GanadorMes {
+                            Afp = afp,
+                            Fondo = fondo,
+                            FechaDesde = salida.Premios.Ganadores[periodo].FechaDesde,
+                            FechaHasta = salida.Premios.Ganadores[periodo].FechaHasta,
+                            Rentabilidad = 100 * (cuotaHasta?.Valor - cuotaDesde?.Valor) / cuotaDesde?.Valor
+                        });
+                    }
+                }
+                GanadorMes ganador = candidatos.OrderByDescending(g => g.Rentabilidad).First();
+                salida.Premios.Ganadores[periodo].Afp = ganador.Afp;
+                salida.Premios.Ganadores[periodo].Fondo = ganador.Fondo;
+                salida.Premios.Ganadores[periodo].Rentabilidad = ganador.Rentabilidad;
+            }
+
 
             return View(salida);
         }

@@ -143,3 +143,41 @@ form div.input-group {
     max-width: calc(45rem - 4px);
     min-width: 26rem;
 }
+
+div:has(> table.grillaPremioRentabilidad) {
+    overflow: auto;
+}
+
+p.rentActual {
+    font-size: 0.9rem;
+    display: inline;
+    position: relative;
+    top: -0.15rem;
+}
+
+b.rentActual {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.fondoActual {
+    font-weight: 500;
+    font-size: 2rem;
+}
+
+.periodoActual {
+    font-size: 0.9rem;
+}
+
+.mensajeActual {
+    font-size: 0.8rem;
+}
+
+.grillaPremioRentabilidad .fondoAnterior {
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.grillaPremioRentabilidad .periodoAnterior {
+    font-size: 0.8rem;
+}
