@@ -145,6 +145,27 @@
             @(Model.Premios.Ganadores[periodoActual].Rentabilidad > 0 ? "⇧" : (Model.Premios.Ganadores[periodoActual].Rentabilidad < 0 ? "⇩" : "")) 
             @(Model.Premios.Ganadores[periodoActual].Rentabilidad?.ToString("N2", cultureInfo))%</b>
     </div>
+    <div class="align-top text-center w-100 mb-0 progresoMesPremio">
+        <p class="text-center m-0 mt-2">Avance del Mes</p>
+        <p class="w-25 d-inline-block m-0 text-right pr-2">
+            @(ViewBag.PrimerDiaMesPremio.ToString("dddd d").Substring(0, 1).ToUpper() + ViewBag.PrimerDiaMesPremio.ToString("dddd d").Substring(1))
+        </p>
+        <div class="d-inline-block m-0" style="width:calc(50% - 1rem)">
+            <div class="progress">
+                <div class="progress-bar @(Model.Premios.Ganadores[periodoActual].Rentabilidad > 0 ? "bg-success": (Model.Premios.Ganadores[periodoActual].Rentabilidad < 0 ? "bg-danger" : ""))" 
+                     role="progressbar" 
+                     style="width: @(ViewBag.PorcMesPremio)%" 
+                     aria-valuenow="@(ViewBag.PorcMesPremio)" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                     @(ViewBag.PorcMesPremio.ToString("N0", cultureInfo))%
+                 </div>
+            </div>
+        </div>
+        <p class="w-25 d-inline-block m-0 pl-2">
+            @(ViewBag.UltimoDiaMesPremio.ToString("dddd d").Substring(0, 1).ToUpper() + ViewBag.UltimoDiaMesPremio.ToString("dddd d").Substring(1))
+        </p>
+    </div>
     <p class="text-center mb-1 periodoActual">
         @(Model.Premios.Ganadores[periodoActual].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.Ganadores[periodoActual].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
     </p>

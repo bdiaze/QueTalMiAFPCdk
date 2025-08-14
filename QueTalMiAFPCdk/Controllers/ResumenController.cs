@@ -227,6 +227,14 @@ namespace QueTalMiAFPCdk.Controllers {
 
             ViewBag.FechasTodas = fechasTodas;
 
+            // Se calcula porcentaje que se lleva del mes para el premio de la rentabilidad del mes...
+            DateTime primerDiaMes = new DateTime(fechasTodas.Year, fechasTodas.Month, 1);
+            DateTime ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
+            decimal porcMesPremio = 100 * fechasTodas.Day / ultimoDiaMes.Day;
+            ViewBag.PorcMesPremio = porcMesPremio;
+            ViewBag.PrimerDiaMesPremio = primerDiaMes;
+            ViewBag.UltimoDiaMesPremio = ultimoDiaMes;
+
 
             List<SalObtenerUltimaCuota> cuotasPremio = await taskCuotasPremio;
             foreach (int periodo in salida.Premios.Ganadores.Keys) {

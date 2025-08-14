@@ -181,3 +181,11 @@ b.rentActual {
 .grillaPremioRentabilidad .periodoAnterior {
     font-size: 0.8rem;
 }
+
+.progresoMesPremio p:first-child {
+    font-size: 0.9rem;
+}
+
+.progresoMesPremio p:not(:first-child) {
+    font-size: 0.8rem;
+}
