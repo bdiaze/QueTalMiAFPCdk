@@ -245,7 +245,7 @@ function consultarFondo(tipoFondo, fechaInicial, fechaFinal) {
     crearGrafica(
         "chartFondo" + tipoFondo,
         null,
-        "Valor Cuota ($)",
+        "Valor Cuota (miles de pesos)",
         "$"
     );
 
@@ -451,6 +451,15 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
                 );
             }
         });
+
+        // Se configura adapter para formatear glosas del eje vertical...
+        if (charPrepend == "$") {
+            let formateador = new Intl.NumberFormat("es-ES");
+            valueAxis.renderer.labels.template.adapter.add("text", function (text, target) {
+                let cantMiles = Math.round(target.dataItem.value / 10) / 100;
+                return formateador.format(cantMiles);
+            });
+        }
 
         graficos[idDiv] = chart;
     }
