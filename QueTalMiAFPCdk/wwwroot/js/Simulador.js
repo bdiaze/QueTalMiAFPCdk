@@ -598,7 +598,7 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
         // xAxis.skipEmptyPeriods = true;
 
         let yAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        yAxis.title.text = "Ganancias/Perdidas ($)";
+        yAxis.title.text = "Ganancias/Perdidas (millones de pesos)";
         yAxis.title.valign = "top";
         yAxis.title.dy = 55;
         yAxis.cursorTooltipEnabled = false;
@@ -747,6 +747,13 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
                 chart.cursor.hide();
                 cursorFixed = false;
             }
+        });
+
+        // Se configura adapter para formatear glosas del eje vertical...
+        let formateador = new Intl.NumberFormat("es-ES");
+        yAxis.renderer.labels.template.adapter.add("text", function (text, target) {
+            let cantMillones = Math.round(target.dataItem.value / 10000) / 100;
+            return formateador.format(cantMillones);
         });
 
         graficos[idDiv] = chart;

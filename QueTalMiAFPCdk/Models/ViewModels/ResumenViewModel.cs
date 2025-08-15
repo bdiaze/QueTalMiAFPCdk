@@ -5,11 +5,11 @@ using System.Security.Policy;
 
 namespace QueTalMiAFPCdk.Models.ViewModels {
     public class ResumenViewModel {
-        public required List<UltimaSemanaAfp> UltimaSemana { get; set; }
-
         public List<DateTime>? FechasUltimaSemana { get; set; }
 
-        public HistorialAfp? Historial { get; set; }
+        public required List<UltimaSemanaAfp> UltimaSemana { get; set; }
+
+        public PremiosRentabilidad Premios { get; set; } = new PremiosRentabilidad();
     }
 
     public class UltimaSemanaAfp {
@@ -33,19 +33,17 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
         public required DateTime Fecha { get; set; }
     }
 
-    public class HistorialAfp {
-        public string? Afp { get; set; }
-        public SelectList? ListaAfps { get; set; }
-        public int? Mes { get; set; }
-        public SelectList? ListaMeses { get; set; }
+    public class PremiosRentabilidad {
         public int? Anno { get; set; }
         public SelectList? ListaAnnos { get; set; }
-        public Dictionary<string, List<decimal?>> ValoresCuota { get; set; } = new Dictionary<string, List<decimal?>> {
-            { "A", [] },
-            { "B", [] },
-            { "C", [] },
-            { "D", [] },
-            { "E", [] },
-        };
+        public Dictionary<int, GanadorMes> Ganadores { set; get; } = [];
+    }
+
+    public class GanadorMes {
+        public string? Afp { get; set; }
+        public string? Fondo { get; set; }
+        public decimal? Rentabilidad { get; set; }
+        public DateTime FechaDesde { get; set; }
+        public DateTime FechaHasta { get; set; }
     }
 }

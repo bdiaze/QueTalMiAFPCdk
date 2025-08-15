@@ -15,6 +15,19 @@
         }
     });
 
+    $("#filtroFondosHistorial").on("change", "input[name='resumenFondoHistorial']", function () {
+        let fondo = $(this).val();
+
+        // Se graba en cookie el último fondo seleccionado...
+        $.cookie("FiltroHistorialFondoSeleccionado", fondo, { expires: 365, path: '/' });
+
+        ["A", "B", "C", "D", "E"].forEach(function (value, index, array) {
+            $("#historial" + value).hide();
+        });
+
+        $("#historial" + fondo).show();
+    });
+
     actualizarUrlEjemplo();
 });
 

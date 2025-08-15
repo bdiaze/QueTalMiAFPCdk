@@ -22,6 +22,10 @@
     CultureInfo cultureInfo = new CultureInfo("es-CL");
 }
 
+@{
+    DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+}
+
 <h1>@ViewData["Title"]</h1>
 
 <p class="mt-3 text-muted">
@@ -32,7 +36,7 @@
 
 <hr />
 
-<h5>Valores Cuota de la Semana</h5>
+<h5>¡Llegaron nuevos valores cuota!</h5>
 
 <p class="mt-3 text-muted">
     A continuación, te presentamos los valores cuota de la última semana para cada AFP, puedes seleccionar el fondo deseado en el filtro superior.
@@ -80,7 +84,7 @@
         <div style="display:@(fondo == ViewBag.FiltroResumenFondoSeleccionado ? "" : "none");" id="resumen@(fondo)">
             <table class="table table-bordered text-center m-0 mb-1 valoresCuota">
                 <tr>
-                    @foreach(DateTime fecha in Model.FechasUltimaSemana)
+                    @foreach(DateTime fecha in Model.FechasUltimaSemana!)
                     {
                         <td class="p-0 align-middle">
                             <p class="m-0 text-center text-muted text-truncate">@fecha.ToString("dddd", cultureInfo).ToUpper()</p>
@@ -109,90 +113,102 @@
     }
 </div>
 
-<hr />
+<hr id="premioRentabilidad"/>
 
-<h5>Historial de los Valores Cuota</h5>
+<h5>¡La AFP más rentable de @(ViewBag.FechasTodas.ToString("MMMM", cultureInfo))!</h5>
 
 <p class="mt-3 text-muted">
-    A continuación, te presentamos todos los valores cuota del mes que tu desees para la AFP y fondo que tu elijas.
+    ¡Y comenzó la carrera! la AFP con mejor rentabilidad durante @(ViewBag.FechasTodas.ToString("MMMM", cultureInfo)) es:
 </p>
+
 @{
-    DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+    List<int> listaPeriodo = Model.Premios.Ganadores.Keys.ToList();
+    listaPeriodo.Sort();
+    listaPeriodo.Reverse();
+    int periodoActual = listaPeriodo[0];
 }
-<form method="get">
-    <div class="input-group mx-auto">
-        <select asp-for="Historial.Afp" asp-items="@Model.Historial?.ListaAfps" class="custom-select"></select>
-        <select asp-for="Historial.Mes" asp-items="@Model.Historial?.ListaMeses" class="custom-select"></select>
-        <select asp-for="Historial.Anno" asp-items="@Model.Historial?.ListaAnnos" class="custom-select"></select>
-        <div class="input-group-append">
-            <button type="submit" class="px-4 btn btn-primary">Buscar</button>
+
+<div class="m-0 text-muted align-middle pb-2">
+    @{
+        UltimaSemanaAfp afpLogo = Model.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodoActual].Afp);
+    }
+    <img class="rounded mx-auto d-block" 
+            style="width: 12rem;" 
+            src="@(afpLogo.UrlLogo)" 
+            alt="AFP @(Model.Premios.Ganadores[periodoActual].Afp) "/>
+    <p class="text-center m-0 fondoActual">
+        Fondo @(Model.Premios.Ganadores[periodoActual].Fondo)
+    </p>
+    <div class="text-center">
+        <p class="m-0 mr-2 rentActual">Rentabilidad:</p>
+        <b class="rentActual @(Model.Premios.Ganadores[periodoActual].Rentabilidad > 0 ? "text-success": (Model.Premios.Ganadores[periodoActual].Rentabilidad < 0 ? "text-danger" : ""))">
+            @(Model.Premios.Ganadores[periodoActual].Rentabilidad > 0 ? "⇧" : (Model.Premios.Ganadores[periodoActual].Rentabilidad < 0 ? "⇩" : "")) 
+            @(Model.Premios.Ganadores[periodoActual].Rentabilidad?.ToString("N2", cultureInfo))%</b>
+    </div>
+    <div class="align-top text-center w-100 mb-0 progresoMesPremio">
+        <p class="text-center m-0 mt-2">Avance del Mes</p>
+        <p class="w-25 d-inline-block m-0 text-right pr-2">
+            @(ViewBag.PrimerDiaMesPremio.ToString("dddd d").Substring(0, 1).ToUpper() + ViewBag.PrimerDiaMesPremio.ToString("dddd d").Substring(1))
+        </p>
+        <div class="d-inline-block m-0" style="width:calc(50% - 1rem)">
+            <div class="progress">
+                <div class="progress-bar @(Model.Premios.Ganadores[periodoActual].Rentabilidad > 0 ? "bg-success": (Model.Premios.Ganadores[periodoActual].Rentabilidad < 0 ? "bg-danger" : ""))" 
+                     role="progressbar" 
+                     style="width: @(ViewBag.PorcMesPremio)%" 
+                     aria-valuenow="@(ViewBag.PorcMesPremio)" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                     @(ViewBag.PorcMesPremio.ToString("N0", cultureInfo))%
+                 </div>
+            </div>
         </div>
+        <p class="w-25 d-inline-block m-0 pl-2">
+            @(ViewBag.UltimoDiaMesPremio.ToString("dddd d").Substring(0, 1).ToUpper() + ViewBag.UltimoDiaMesPremio.ToString("dddd d").Substring(1))
+        </p>
+    </div>
+    <p class="text-center mb-1 periodoActual">
+        @(Model.Premios.Ganadores[periodoActual].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.Ganadores[periodoActual].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
+    </p>
+    <p class="text-center m-0 mensajeActual">
+        (Rentabilidad calculada al @(ViewBag.FechasTodas.ToString("dddd d 'de' MMMM", cultureInfo)))
+    </p>
+</div>
+
+<form method="get" asp-controller="Resumen" asp-action="Index" asp-fragment="premioRentabilidad" class="mt-3 mb-1">
+    <p class="d-inline-block my-0 text-muted mr-1" style="font-size: 0.9rem; position:relative; top: 0.1rem;">Meses anteriores</p>
+    <div class="input-group input-group-sm d-inline-block" style="width: 5rem;">
+        <select asp-for="Premios.Anno" asp-items="@Model.Premios?.ListaAnnos" class="custom-select w-100 text-muted" id="selectPremioRentabilidad"></select>
     </div>
 </form>
 
-<div class="text-center mb-3 mt-2" id="filtroFondosHistorial">
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-outline-danger @(ViewBag.FiltroHistorialFondoSeleccionado == "A" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="A" @(ViewBag.FiltroHistorialFondoSeleccionado == "A" ? "checked='checked'" : "")>A
-        </label>
-        <label class="btn btn-outline-warning @(ViewBag.FiltroHistorialFondoSeleccionado == "B" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="B" @(ViewBag.FiltroHistorialFondoSeleccionado == "B" ? "checked='checked'" : "")>B
-        </label>
-        <label class="btn btn-outline-success @(ViewBag.FiltroHistorialFondoSeleccionado == "C" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="C" @(ViewBag.FiltroHistorialFondoSeleccionado == "C" ? "checked='checked'" : "")>C
-        </label>
-        <label class="btn btn-outline-info @(ViewBag.FiltroHistorialFondoSeleccionado == "D" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="D" @(ViewBag.FiltroHistorialFondoSeleccionado == "D" ? "checked='checked'" : "")>D
-        </label>
-        <label class="btn btn-outline-primary @(ViewBag.FiltroHistorialFondoSeleccionado == "E" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="E" @(ViewBag.FiltroHistorialFondoSeleccionado == "E" ? "checked='checked'" : "")>E
-        </label>
-    </div>
-</div>
-
-@{
-    UltimaSemanaAfp datosAfpHistorial = Model.UltimaSemana.FirstOrDefault(r => r.Nombre.Equals(Model.Historial!.Afp, StringComparison.InvariantCultureIgnoreCase))!;
-    DateTime primerDia = new DateTime(Model.Historial!.Anno.GetValueOrDefault(), Model.Historial!.Mes.GetValueOrDefault(), 1);
-    int diasPrevios = ((int)primerDia.DayOfWeek) - 1;
-    int cantDiasMes = primerDia.AddMonths(1).AddDays(-1).Day;
-}
-@foreach(string fondo in "A,B,C,D,E".Split(",")) {
-    int diaAux = 1;
-
-    <div class="p-0 m-0 mb-3" style="display:@(fondo == ViewBag.FiltroHistorialFondoSeleccionado ? "block" : "none");" id="historial@(fondo)"Historial>
-        <table class="table table-bordered text-center mb-1 grillaHistorial">
-            <tr>
-                <td class="px-0 pt-0" colspan="7" style="border: none;">
-                    <!--<img class="rounded d-block ml-4 my-auto" style="width: @(datosAfpHistorial.Ancho)vw; height: min(@(datosAfpHistorial.Alto)vw, 70px);" src="@(datosAfpHistorial.UrlLogo)" alt="AFP @(datosAfpHistorial.Nombre)"/>-->
-                    <span class="text-muted tituloHistorial">AFP @(datosAfpHistorial.Nombre) - @(primerDia.ToString("MMMM", cultureInfo)[0].ToString().ToUpper() + primerDia.ToString("MMMM", cultureInfo).Substring(1) + primerDia.ToString(" yyyy"))</span>
-                </td>
-            </tr>    
-            <tr>
-                <td><p class="text-center m-0 text-muted text-truncate">Lunes</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Martes</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Miércoles</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Jueves</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Viernes</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Sábado</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Domingo</p></td>
-            </tr>
-            @for (int semana = 1; semana <= Math.Ceiling((cantDiasMes + diasPrevios) / 7f); semana++)
+<div class="mb-1">
+    <table class="table table-borderless text-center mt-0 w-100 grillaPremioRentabilidad">
+        <tr>
+            @foreach(int periodo in listaPeriodo.Skip(1))
             {
-                <tr>
-                    @for (int dia = 1; dia <= 7; dia++)
-                    {
-                        <td>
-                            @if ((semana != 1 && diaAux <= cantDiasMes) || (semana == 1 && dia > diasPrevios))
-                            {
-                                decimal? valor = (Model.Historial?.ValoresCuota[fondo])?[diaAux - 1];
-                                <p class="m-0 text-muted">@diaAux</p>
-                                <p class="text-center m-0 text-muted">@(valor != null ? valor.GetValueOrDefault().ToString("N2", cultureInfo) : "")</p>
-                                diaAux++;
-                            }
-                        </td>
-                    }
-                </tr>
+                @if (Model.Premios.Ganadores[periodo].Rentabilidad != null)
+                {
+                    <td class="m-0 text-muted align-middle py-2 px-3" style="width: 7rem;">
+                        @{
+                            afpLogo = Model.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodo].Afp);
+                        }
+                        <img class="rounded mx-auto d-block mb-2" 
+                             style="width: 7rem;" 
+                             src="@(afpLogo.UrlLogo)" 
+                             alt="AFP @(Model.Premios.Ganadores[periodoActual].Afp) "/>
+                        <p class="text-center m-0 fondoAnterior">
+                            Fondo @(Model.Premios.Ganadores[periodo].Fondo)
+                        </p>
+                        <p class="text-center m-0 fondoAnterior @(Model.Premios.Ganadores[periodo].Rentabilidad > 0 ? "text-success": (Model.Premios.Ganadores[periodo].Rentabilidad < 0 ? "text-danger" : ""))">
+                            <b>@(Model.Premios.Ganadores[periodo].Rentabilidad > 0 ? "⇧" : (Model.Premios.Ganadores[periodo].Rentabilidad < 0 ? "⇩" : ""))</b>
+                            @(Model.Premios.Ganadores[periodo].Rentabilidad?.ToString("N2", cultureInfo))%
+                        </p>
+                        <p class="text-center m-0 periodoAnterior">
+                            @(Model.Premios.Ganadores[periodo].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.Ganadores[periodo].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
+                        </p>
+                    </td>
+                }
             }
-        </table>
-    </div>
-}
+        </tr>
+    </table>
+</div>
