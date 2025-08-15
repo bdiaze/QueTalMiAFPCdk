@@ -74,7 +74,7 @@ namespace QueTalMiAFPCdk.Controllers {
             listaAnnos.Reverse();
             salida.Premios.ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString() }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text));
 
-            // Se arma listado de fechas que se necesitan para calcular las rentabilidades de los últimos 6 meses...
+            // Se arma listado de fechas que se necesitan para calcular las rentabilidades mensuales...
             List <DateTime> listaFechasPremios = [];
             DateTime fechaHastaRentMensual = fechasTodas;
             listaFechasPremios.Add(fechaHastaRentMensual);
@@ -85,33 +85,29 @@ namespace QueTalMiAFPCdk.Controllers {
                 FechaHasta = fechaHastaRentMensual
             });
 
-            if (modeloEntrada.Premios.Anno == fechasTodas.Year) {
+            // Si estamos cargando los premios del mismo año actual, se cargan desde la fecha actual hasta enero...
+            if (salida.Premios.Anno == fechasTodas.Year) {
                 fechaHastaRentMensual = fechaDesdeRentMensual;
-                for (int i = 0; i < CANTIDAD_MESES_PREMIO - 1; i++) {
-                    fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
-                    listaFechasPremios.Add(fechaDesdeRentMensual);
-
-                    salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
-                        FechaDesde = fechaDesdeRentMensual,
-                        FechaHasta = fechaHastaRentMensual
-                    });
-
-                    fechaHastaRentMensual = fechaDesdeRentMensual;
+                // Pero si justo coincide con que la fecha actual es Enero (es decir, la nueva fecha "hasta" quedará en el año anterior), se muestra el año anterior...
+                if (salida.Premios.Anno != fechaHastaRentMensual.Year) {
+                    salida.Premios.Anno = fechaHastaRentMensual.Year;
                 }
+            // En su defecto, se carga el año completo desde diciembre hasta enero...
             } else {
-                fechaHastaRentMensual = new DateTime(modeloEntrada.Premios.Anno.GetValueOrDefault(), 12, 31);
+                fechaHastaRentMensual = new DateTime(salida.Premios.Anno.GetValueOrDefault(), 12, 31);
                 listaFechasPremios.Add(fechaHastaRentMensual);
-                while (fechaHastaRentMensual.Year >= modeloEntrada.Premios.Anno) {
-                    fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
-                    listaFechasPremios.Add(fechaDesdeRentMensual);
+            }
 
-                    salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
-                        FechaDesde = fechaDesdeRentMensual,
-                        FechaHasta = fechaHastaRentMensual
-                    });
+            while (fechaHastaRentMensual.Year >= salida.Premios.Anno) {
+                fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+                listaFechasPremios.Add(fechaDesdeRentMensual);
 
-                    fechaHastaRentMensual = fechaDesdeRentMensual;
-                }
+                salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
+                    FechaDesde = fechaDesdeRentMensual,
+                    FechaHasta = fechaHastaRentMensual
+                });
+
+                fechaHastaRentMensual = fechaDesdeRentMensual;
             }
 
             Task<List<SalObtenerUltimaCuota>> taskCuotasPremio = cuotaUfComisionDAO.ObtenerUltimaCuota(
