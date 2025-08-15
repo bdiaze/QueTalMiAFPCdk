@@ -174,7 +174,7 @@
     </p>
 </div>
 
-<div>
+<div class="mb-1">
     <table class="table table-borderless text-center mt-1 w-100 grillaPremioRentabilidad">
         <tr>
             <td class="text-muted" colspan="@(listaPeriodo.Count - 1)">
@@ -207,89 +207,3 @@
         </tr>
     </table>
 </div>
-
-<hr id="historialValoresCuota" />
-
-<h5>Historial de los Valores Cuota</h5>
-
-<p class="mt-3 text-muted">
-    A continuación, te presentamos todos los valores cuota del mes que tu desees para la AFP y fondo que tu elijas.
-</p>
-
-<form method="get" asp-controller="Resumen" asp-action="Index" asp-fragment="historialValoresCuota">
-    <div class="input-group mx-auto">
-        <select asp-for="Historial.Afp" asp-items="@Model.Historial?.ListaAfps" class="custom-select"></select>
-        <select asp-for="Historial.Mes" asp-items="@Model.Historial?.ListaMeses" class="custom-select"></select>
-        <select asp-for="Historial.Anno" asp-items="@Model.Historial?.ListaAnnos" class="custom-select"></select>
-        <div class="input-group-append">
-            <button type="submit" class="px-4 btn btn-primary">Buscar</button>
-        </div>
-    </div>
-</form>
-
-<div class="text-center mb-3 mt-2" id="filtroFondosHistorial">
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-outline-danger @(ViewBag.FiltroHistorialFondoSeleccionado == "A" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="A" @(ViewBag.FiltroHistorialFondoSeleccionado == "A" ? "checked='checked'" : "")>A
-        </label>
-        <label class="btn btn-outline-warning @(ViewBag.FiltroHistorialFondoSeleccionado == "B" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="B" @(ViewBag.FiltroHistorialFondoSeleccionado == "B" ? "checked='checked'" : "")>B
-        </label>
-        <label class="btn btn-outline-success @(ViewBag.FiltroHistorialFondoSeleccionado == "C" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="C" @(ViewBag.FiltroHistorialFondoSeleccionado == "C" ? "checked='checked'" : "")>C
-        </label>
-        <label class="btn btn-outline-info @(ViewBag.FiltroHistorialFondoSeleccionado == "D" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="D" @(ViewBag.FiltroHistorialFondoSeleccionado == "D" ? "checked='checked'" : "")>D
-        </label>
-        <label class="btn btn-outline-primary @(ViewBag.FiltroHistorialFondoSeleccionado == "E" ? "active" : "")">
-            <input type="radio" name="resumenFondoHistorial" value="E" @(ViewBag.FiltroHistorialFondoSeleccionado == "E" ? "checked='checked'" : "")>E
-        </label>
-    </div>
-</div>
-
-@{
-    UltimaSemanaAfp datosAfpHistorial = Model.UltimaSemana.FirstOrDefault(r => r.Nombre.Equals(Model.Historial!.Afp, StringComparison.InvariantCultureIgnoreCase))!;
-    DateTime primerDia = new DateTime(Model.Historial!.Anno.GetValueOrDefault(), Model.Historial!.Mes.GetValueOrDefault(), 1);
-    int diasPrevios = ((int)primerDia.DayOfWeek) - 1;
-    int cantDiasMes = primerDia.AddMonths(1).AddDays(-1).Day;
-}
-@foreach(string fondo in "A,B,C,D,E".Split(",")) {
-    int diaAux = 1;
-
-    <div class="p-0 m-0 mb-3" style="display:@(fondo == ViewBag.FiltroHistorialFondoSeleccionado ? "block" : "none");" id="historial@(fondo)"Historial>
-        <table class="table table-bordered text-center mb-1 grillaHistorial">
-            <tr>
-                <td class="px-0 pt-0" colspan="7" style="border: none;">
-                    <!--<img class="rounded d-block ml-4 my-auto" style="width: @(datosAfpHistorial.Ancho)vw; height: min(@(datosAfpHistorial.Alto)vw, 70px);" src="@(datosAfpHistorial.UrlLogo)" alt="AFP @(datosAfpHistorial.Nombre)"/>-->
-                    <span class="text-muted tituloHistorial">AFP @(datosAfpHistorial.Nombre) - @(primerDia.ToString("MMMM", cultureInfo)[0].ToString().ToUpper() + primerDia.ToString("MMMM", cultureInfo).Substring(1) + primerDia.ToString(" yyyy"))</span>
-                </td>
-            </tr>    
-            <tr>
-                <td><p class="text-center m-0 text-muted text-truncate">Lunes</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Martes</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Miércoles</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Jueves</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Viernes</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Sábado</p></td>
-                <td><p class="text-center m-0 text-muted text-truncate">Domingo</p></td>
-            </tr>
-            @for (int semana = 1; semana <= Math.Ceiling((cantDiasMes + diasPrevios) / 7f); semana++)
-            {
-                <tr>
-                    @for (int dia = 1; dia <= 7; dia++)
-                    {
-                        <td>
-                            @if ((semana != 1 && diaAux <= cantDiasMes) || (semana == 1 && dia > diasPrevios))
-                            {
-                                decimal? valor = (Model.Historial?.ValoresCuota[fondo])?[diaAux - 1];
-                                <p class="m-0 text-muted">@diaAux</p>
-                                <p class="text-center m-0 text-muted">@(valor != null ? valor.GetValueOrDefault().ToString("N2", cultureInfo) : "")</p>
-                                diaAux++;
-                            }
-                        </td>
-                    }
-                </tr>
-            }
-        </table>
-    </div>
-}

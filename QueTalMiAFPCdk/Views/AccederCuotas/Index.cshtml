@@ -1,23 +1,120 @@
-﻿@model bool
+﻿@using QueTalMiAFPCdk.Models.ViewModels
+@using System.Globalization
+@model AccederCuotasViewModel
 
 @{
-    ViewData["Title"] = "Obtén los Valores Cuota";
+    ViewData["Title"] = "Valores Cuota";
 }
 
 @section Head {
-    <meta name="description" content="Aquí podrás descargar o consultar los valores cuotas que se encuentran registrados en nuestro sistema." />
+    <meta name="description" content="Aquí podrás consultar o descargar los valores cuotas que se encuentran registrados en nuestro sistema." />
+    <link rel="stylesheet" href="~/css/AccederCuotas.css" asp-append-version="true" />
 }
 
 @section Scripts {
     <script src="~/js/AccederCuotas.js" asp-append-version="true"></script>
 }
 
+@{
+    CultureInfo cultureInfo = new CultureInfo("es-CL");
+}
+
 <h1>@ViewData["Title"]</h1>
 <p class="text-muted">
-    Aquí podrás descargar o consultar los valores cuotas que se encuentran registrados en nuestro sistema.
+    Aquí podrás consultar o descargar los valores cuotas que se encuentran registrados en nuestro sistema.
 </p>
+
+<hr id="historialValoresCuota" />
+
+<h5>¡Calendario histórico!</h5>
+
+<p class="mt-3 text-muted">
+    A continuación, te presentamos todos los valores cuota del mes que tu desees para la AFP y fondo que tu elijas.
+</p>
+
+<form method="get" asp-controller="AccederCuotas" asp-action="Index" asp-fragment="historialValoresCuota">
+    <div class="input-group mx-auto">
+        <select asp-for="Historial.Afp" asp-items="@Model.Historial?.ListaAfps" class="custom-select"></select>
+        <select asp-for="Historial.Mes" asp-items="@Model.Historial?.ListaMeses" class="custom-select"></select>
+        <select asp-for="Historial.Anno" asp-items="@Model.Historial?.ListaAnnos" class="custom-select"></select>
+        <div class="input-group-append">
+            <button type="submit" class="px-4 btn btn-primary">Buscar</button>
+        </div>
+    </div>
+</form>
+
+<div class="text-center mb-3 mt-2" id="filtroFondosHistorial">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-outline-danger @(Model.Historial?.FiltroHistorialFondoSeleccionado == "A" ? "active" : "")">
+            <input type="radio" name="resumenFondoHistorial" value="A" @(Model.Historial?.FiltroHistorialFondoSeleccionado == "A" ? "checked='checked'" : "")>A
+        </label>
+        <label class="btn btn-outline-warning @(Model.Historial?.FiltroHistorialFondoSeleccionado == "B" ? "active" : "")">
+            <input type="radio" name="resumenFondoHistorial" value="B" @(Model.Historial?.FiltroHistorialFondoSeleccionado == "B" ? "checked='checked'" : "")>B
+        </label>
+        <label class="btn btn-outline-success @(Model.Historial?.FiltroHistorialFondoSeleccionado == "C" ? "active" : "")">
+            <input type="radio" name="resumenFondoHistorial" value="C" @(Model.Historial?.FiltroHistorialFondoSeleccionado == "C" ? "checked='checked'" : "")>C
+        </label>
+        <label class="btn btn-outline-info @(Model.Historial?.FiltroHistorialFondoSeleccionado == "D" ? "active" : "")">
+            <input type="radio" name="resumenFondoHistorial" value="D" @(Model.Historial?.FiltroHistorialFondoSeleccionado == "D" ? "checked='checked'" : "")>D
+        </label>
+        <label class="btn btn-outline-primary @(Model.Historial?.FiltroHistorialFondoSeleccionado == "E" ? "active" : "")">
+            <input type="radio" name="resumenFondoHistorial" value="E" @(Model.Historial?.FiltroHistorialFondoSeleccionado == "E" ? "checked='checked'" : "")>E
+        </label>
+    </div>
+</div>
+
+@{
+    DateTime primerDia = new DateTime(Model.Historial!.Anno.GetValueOrDefault(), Model.Historial!.Mes.GetValueOrDefault(), 1);
+    int diasPrevios = ((int)primerDia.DayOfWeek) - 1;
+    int cantDiasMes = primerDia.AddMonths(1).AddDays(-1).Day;
+}
+@foreach(string fondo in "A,B,C,D,E".Split(",")) {
+    int diaAux = 1;
+
+    <div class="p-0 m-0 mb-3" style="display:@(fondo == Model.Historial?.FiltroHistorialFondoSeleccionado ? "block" : "none");" id="historial@(fondo)"Historial>
+        <table class="table table-bordered text-center mb-1 grillaHistorial">
+            <tr>
+                <td class="px-0 pt-0" colspan="7" style="border: none;">
+                    <span class="text-muted tituloHistorial">AFP @(Model.Historial?.NombreAfp) - @(primerDia.ToString("MMMM", cultureInfo)[0].ToString().ToUpper() + primerDia.ToString("MMMM", cultureInfo).Substring(1) + primerDia.ToString(" yyyy"))</span>
+                </td>
+            </tr>    
+            <tr>
+                <td><p class="text-center m-0 text-muted text-truncate">Lunes</p></td>
+                <td><p class="text-center m-0 text-muted text-truncate">Martes</p></td>
+                <td><p class="text-center m-0 text-muted text-truncate">Miércoles</p></td>
+                <td><p class="text-center m-0 text-muted text-truncate">Jueves</p></td>
+                <td><p class="text-center m-0 text-muted text-truncate">Viernes</p></td>
+                <td><p class="text-center m-0 text-muted text-truncate">Sábado</p></td>
+                <td><p class="text-center m-0 text-muted text-truncate">Domingo</p></td>
+            </tr>
+            @for (int semana = 1; semana <= Math.Ceiling((cantDiasMes + diasPrevios) / 7f); semana++)
+            {
+                <tr>
+                    @for (int dia = 1; dia <= 7; dia++)
+                    {
+                        <td>
+                            @if ((semana != 1 && diaAux <= cantDiasMes) || (semana == 1 && dia > diasPrevios))
+                            {
+                                decimal? valor = (Model.Historial?.ValoresCuota[fondo])?[diaAux - 1];
+                                <p class="m-0 text-muted">@diaAux</p>
+                                <p class="text-center m-0 text-muted">@(valor != null ? valor.GetValueOrDefault().ToString("N2", cultureInfo) : "")</p>
+                                diaAux++;
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
 <hr />
-<p class="text-muted">A continuación podrás descargar la información en un archivo CSV:</p>
+
+<h5>¡Descarga un archivo!</h5>
+
+<p class="text-muted mt-3">Y si amas los Excel, descarga la información en un archivo CSV:</p>
+
 <table class="table table-bordered sinBordeInterno" style="margin-top: 20px; margin-bottom: 1rem; table-layout:fixed; width:100%; text-align:center;">
     <tr>
         <th style="text-align:center; width:50%;">AFP</th>
@@ -175,47 +272,49 @@
 
 <hr />
 
-<p class="text-muted">
+<h5>Y para los computines... ¡Una API!</h5>
+
+<p class="text-muted mt-3">
     Si lo que requieres no es un archivo sino acceso a una API de consulta, puedes utilizar la siguiente
     configuración:
 </p>
 <table class="table table-bordered mt-3 mb-3">
     <tr>
         <th style="text-align: center; min-width: 9em;">URL API</th>
-        @if (Model) {
-            <td id="urlAPI" class="text-break">https://localhost:44332/api/Cuota/ObtenerCuotas</td>
+        @if (Model.AmbienteDesarrollo) {
+            <td id="urlAPI" class="text-break text-muted">https://localhost:44332/api/Cuota/ObtenerCuotas</td>
         } else {
-            <td id="urlAPI" class="text-break">https://www.quetalmiafp.cl/api/Cuota/ObtenerCuotas</td>
+            <td id="urlAPI" class="text-break text-muted">https://www.quetalmiafp.cl/api/Cuota/ObtenerCuotas</td>
         }
     </tr>
     <tr>
         <th style="text-align: center;">Método HTTP</th>
-        <td>GET</td>
+        <td class="text-muted">GET</td>
     </tr>
     <tr>
         <th colspan="2" style="text-align: center;">Parámetros</th>
     </tr>
     <tr>
         <th style="text-align: center;">listaAFPs</th>
-        <td>
+        <td class="text-muted">
             Lista de los nombres de las AFPs que se desean consultar separados por coma ",". Ejemplo: CAPITAL,CUPRUM,HABITAT
         </td>
     </tr>
     <tr>
         <th style="text-align: center;">listaFondos</th>
-        <td>
+        <td class="text-muted">
             Lista de los fondos que se desean consultar separados por coma ",". Ejemplo: A,B,C
         </td>
     </tr>
     <tr>
         <th style="text-align: center;">fechaInicial</th>
-        <td>
+        <td class="text-muted">
             Fecha con formato dd/mm/aaaa para indicar el rango inicial de la consulta. Ejemplo: 01/01/2020
         </td>
     </tr>
     <tr>
         <th style="text-align: center;">fechaFinal</th>
-        <td>
+        <td class="text-muted">
             Fecha con formato dd/mm/aaaa para indicar el rango final de la consulta. Ejemplo: 31/12/2020
         </td>
     </tr>

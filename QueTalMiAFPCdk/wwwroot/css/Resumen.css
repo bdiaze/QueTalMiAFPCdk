@@ -1,8 +1,4 @@
-﻿#filtroFondos {
-    /* padding-left: min(calc(120px + 1.5rem), calc(20vw + 1.5rem)); */
-}
-
-#filtroFondos label {
+﻿#filtroFondos label {
     width: 10vw;
     max-width: 9rem;
     min-width: 5.2rem;
@@ -82,66 +78,6 @@ div:has(> table.valoresCuota) {
 
 .valoresCuota tr:not(:first-child) td p:not(:first-child) b {
     font-size: 0.80rem;
-}
-
-#filtroFondosHistorial label {
-    width: 10vw;
-    max-width: 9rem;
-    min-width: 5.2rem;
-}
-
-div:has(> table.grillaHistorial) {
-    overflow: auto;
-}
-
-.grillaHistorial {
-    table-layout: fixed;
-    min-width: 40rem;
-    width: calc(100% - 10px);
-    border: none;
-}
-
-.grillaHistorial img {
-    float: left;
-    max-width: 160px;
-}
-
-.grillaHistorial .tituloHistorial {
-    /* margin-right: calc(min(20vw, 160px) + 1.5rem); */
-    font-size: 1.3rem;
-}
-
-.grillaHistorial tr td {
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.grillaHistorial tr:nth-child(-n + 2) {
-    height: 3.0rem;
-    vertical-align: middle;
-}
-
-.grillaHistorial tr:not(:nth-child(-n + 2)) td {
-    height: 4.2rem;
-}
-
-.grillaHistorial tr:not(:nth-child(-n + 2)) td p:first-child {
-    font-size: 0.7rem;
-    position: relative;
-    top: -0.4rem;
-    left: 0.7rem;
-}
-
-.grillaHistorial tr:not(:nth-child(-n + 2)) td p:not(:first-child) {
-    position: relative;
-    top: -0.3rem;
-    font-size: 0.85rem;
-}
-
-form div.input-group {
-    width: 50vw;
-    max-width: calc(45rem - 4px);
-    min-width: 26rem;
 }
 
 div:has(> table.grillaPremioRentabilidad) {
