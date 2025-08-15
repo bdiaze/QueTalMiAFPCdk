@@ -23,21 +23,6 @@ namespace QueTalMiAFPCdk.Controllers {
             { "UNO", "Uno" },
         };
 
-        private static readonly Dictionary<int, string> LISTA_MESES = new() {
-            { 1, "Enero" },
-            { 2, "Febrero" },
-            { 3, "Marzo" },
-            { 4, "Abril" },
-            { 5, "Mayo" },
-            { 6, "Junio" },
-            { 7, "Julio" },
-            { 8, "Agosto" },
-            { 9, "Septiembre" },
-            { 10, "Octubre" },
-            { 11, "Noviembre" },
-            { 12, "Diciembre" },
-        };
-
         private static readonly Dictionary<string, string> IMAGENES_AFP = new() {
             { "CAPITAL", "/images/logos_afps/LogoAFPCapital.svg" },
             { "CUPRUM", "/images/logos_afps/LogoAFPCuprum.svg" },
@@ -56,7 +41,7 @@ namespace QueTalMiAFPCdk.Controllers {
             DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 
             // Se obtienen los valores cuota de todas las AFP y fondo seleccionado, para el rango de fechas a mostrar en la tabla, mediante Task...
-            Task<List<CuotaUf>> taskValoresCuota = cuotaUfComisionDAO.ObtenerCuotas(
+            Task <List<CuotaUf>> taskValoresCuota = cuotaUfComisionDAO.ObtenerCuotas(
                 "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
                 "A,B,C,D,E",
                 fechaActual.AddDays(-14), // Se consulta un rango mayor de dias en caso de necesitar rellenar fines de semana
@@ -77,21 +62,54 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
             DateTime fechasTodas = await taskFechaTodas;
+            modeloEntrada.Premios.Anno ??= fechasTodas.Year;
+            modeloEntrada.Premios.Anno = modeloEntrada.Premios.Anno < 2002 ? fechasTodas.Year : modeloEntrada.Premios.Anno;
+            modeloEntrada.Premios.Anno = modeloEntrada.Premios.Anno > fechasTodas.Year ? fechasTodas.Year : modeloEntrada.Premios.Anno;
+            salida.Premios.Anno = modeloEntrada.Premios.Anno;
+
+            // Se preparan los datos para la grilla de historial de valores cuota...
+            List<int> listaAnnos = [.. Enumerable.Range(2002, fechasTodas.Year + 1 - 2002)];
+            listaAnnos.Reverse();
+            salida.Premios.ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString() }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text));
 
             // Se arma listado de fechas que se necesitan para calcular las rentabilidades de los últimos 6 meses...
-            List<DateTime> listaFechasPremios = [];
+            List <DateTime> listaFechasPremios = [];
             DateTime fechaHastaRentMensual = fechasTodas;
             listaFechasPremios.Add(fechaHastaRentMensual);
-            for (int i = 0; i < CANTIDAD_MESES_PREMIO; i++) {
-                DateTime fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+            DateTime fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+            listaFechasPremios.Add(fechaDesdeRentMensual);
+            salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
+                FechaDesde = fechaDesdeRentMensual,
+                FechaHasta = fechaHastaRentMensual
+            });
 
-                salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
-                    FechaDesde = fechaDesdeRentMensual,
-                    FechaHasta = fechaHastaRentMensual
-                });
-                listaFechasPremios.Add(fechaDesdeRentMensual);
-
+            if (modeloEntrada.Premios.Anno == fechasTodas.Year) {
                 fechaHastaRentMensual = fechaDesdeRentMensual;
+                for (int i = 0; i < CANTIDAD_MESES_PREMIO - 1; i++) {
+                    fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+                    listaFechasPremios.Add(fechaDesdeRentMensual);
+
+                    salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
+                        FechaDesde = fechaDesdeRentMensual,
+                        FechaHasta = fechaHastaRentMensual
+                    });
+
+                    fechaHastaRentMensual = fechaDesdeRentMensual;
+                }
+            } else {
+                fechaHastaRentMensual = new DateTime(modeloEntrada.Premios.Anno.GetValueOrDefault(), 12, 31);
+                listaFechasPremios.Add(fechaHastaRentMensual);
+                while (fechaHastaRentMensual.Year >= modeloEntrada.Premios.Anno) {
+                    fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+                    listaFechasPremios.Add(fechaDesdeRentMensual);
+
+                    salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
+                        FechaDesde = fechaDesdeRentMensual,
+                        FechaHasta = fechaHastaRentMensual
+                    });
+
+                    fechaHastaRentMensual = fechaDesdeRentMensual;
+                }
             }
 
             Task<List<SalObtenerUltimaCuota>> taskCuotasPremio = cuotaUfComisionDAO.ObtenerUltimaCuota(

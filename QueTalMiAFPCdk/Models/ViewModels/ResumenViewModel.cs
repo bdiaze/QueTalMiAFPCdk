@@ -5,9 +5,9 @@ using System.Security.Policy;
 
 namespace QueTalMiAFPCdk.Models.ViewModels {
     public class ResumenViewModel {
-        public required List<UltimaSemanaAfp> UltimaSemana { get; set; }
-
         public List<DateTime>? FechasUltimaSemana { get; set; }
+
+        public required List<UltimaSemanaAfp> UltimaSemana { get; set; }
 
         public PremiosRentabilidad Premios { get; set; } = new PremiosRentabilidad();
     }
@@ -34,6 +34,8 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
     }
 
     public class PremiosRentabilidad {
+        public int? Anno { get; set; }
+        public SelectList? ListaAnnos { get; set; }
         public Dictionary<int, GanadorMes> Ganadores { set; get; } = [];
     }
 

@@ -11,4 +11,8 @@
 
         $("#resumen" + fondo).show();
     });
+
+    $("#selectPremioRentabilidad").on("change", function () {
+        this.form.submit();
+    });
 });

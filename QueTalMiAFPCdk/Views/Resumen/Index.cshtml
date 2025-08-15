@@ -113,7 +113,7 @@
     }
 </div>
 
-<hr />
+<hr id="premioRentabilidad"/>
 
 <h5>¡La AFP más rentable de @(ViewBag.FechasTodas.ToString("MMMM", cultureInfo))!</h5>
 
@@ -174,35 +174,40 @@
     </p>
 </div>
 
+<form method="get" asp-controller="Resumen" asp-action="Index" asp-fragment="premioRentabilidad" class="mt-3">
+    <p class="d-inline-block my-0 text-muted mr-1" style="font-size: 0.9rem; position:relative; top: 0.1rem;">Meses anteriores</p>
+    <div class="input-group input-group-sm d-inline-block" style="width: 5rem;">
+        <select asp-for="Premios.Anno" asp-items="@Model.Premios?.ListaAnnos" class="custom-select w-100" id="selectPremioRentabilidad"></select>
+    </div>
+</form>
+
 <div class="mb-1">
-    <table class="table table-borderless text-center mt-1 w-100 grillaPremioRentabilidad">
-        <tr>
-            <td class="text-muted" colspan="@(listaPeriodo.Count - 1)">
-                <p class="my-0">Meses anteriores:</p>
-            </td>
-        </tr>
+    <table class="table table-borderless text-center mt-0 w-100 grillaPremioRentabilidad">
         <tr>
             @foreach(int periodo in listaPeriodo.Skip(1))
             {
-                <td class="m-0 text-muted align-middle py-2 px-3" style="width: 7rem;">
-                    @{
-                        afpLogo = Model.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodo].Afp);
-                    }
-                    <img class="rounded mx-auto d-block mb-2" 
-                         style="width: 7rem;" 
-                         src="@(afpLogo.UrlLogo)" 
-                         alt="AFP @(Model.Premios.Ganadores[periodoActual].Afp) "/>
-                    <p class="text-center m-0 fondoAnterior">
-                        Fondo @(Model.Premios.Ganadores[periodo].Fondo)
-                    </p>
-                    <p class="text-center m-0 fondoAnterior @(Model.Premios.Ganadores[periodo].Rentabilidad > 0 ? "text-success": (Model.Premios.Ganadores[periodo].Rentabilidad < 0 ? "text-danger" : ""))">
-                        <b>@(Model.Premios.Ganadores[periodo].Rentabilidad > 0 ? "⇧" : (Model.Premios.Ganadores[periodo].Rentabilidad < 0 ? "⇩" : ""))</b>
-                        @(Model.Premios.Ganadores[periodo].Rentabilidad?.ToString("N2", cultureInfo))%
-                    </p>
-                    <p class="text-center m-0 periodoAnterior">
-                        @(Model.Premios.Ganadores[periodo].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.Ganadores[periodo].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
-                    </p>
-                </td>
+                @if (Model.Premios.Ganadores[periodo].Rentabilidad != null)
+                {
+                    <td class="m-0 text-muted align-middle py-2 px-3" style="width: 7rem;">
+                        @{
+                            afpLogo = Model.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodo].Afp);
+                        }
+                        <img class="rounded mx-auto d-block mb-2" 
+                             style="width: 7rem;" 
+                             src="@(afpLogo.UrlLogo)" 
+                             alt="AFP @(Model.Premios.Ganadores[periodoActual].Afp) "/>
+                        <p class="text-center m-0 fondoAnterior">
+                            Fondo @(Model.Premios.Ganadores[periodo].Fondo)
+                        </p>
+                        <p class="text-center m-0 fondoAnterior @(Model.Premios.Ganadores[periodo].Rentabilidad > 0 ? "text-success": (Model.Premios.Ganadores[periodo].Rentabilidad < 0 ? "text-danger" : ""))">
+                            <b>@(Model.Premios.Ganadores[periodo].Rentabilidad > 0 ? "⇧" : (Model.Premios.Ganadores[periodo].Rentabilidad < 0 ? "⇩" : ""))</b>
+                            @(Model.Premios.Ganadores[periodo].Rentabilidad?.ToString("N2", cultureInfo))%
+                        </p>
+                        <p class="text-center m-0 periodoAnterior">
+                            @(Model.Premios.Ganadores[periodo].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.Ganadores[periodo].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
+                        </p>
+                    </td>
+                }
             }
         </tr>
     </table>
