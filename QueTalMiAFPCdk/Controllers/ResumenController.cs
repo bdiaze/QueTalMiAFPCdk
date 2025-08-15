@@ -50,15 +50,17 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se arma objeto de salida...
             ResumenViewModel salida = new() {
-                UltimaSemana = IMAGENES_AFP.Keys.ToList().OrderBy(c => c.ToString()).Select(c => new UltimaSemanaAfp { Nombre = LISTA_AFPS[c], UrlLogo = IMAGENES_AFP[c] }).ToList(),
+                Resumen = {
+                    UltimaSemana = IMAGENES_AFP.Keys.ToList().OrderBy(c => c.ToString()).Select(c => new UltimaSemanaAfp { Nombre = LISTA_AFPS[c], UrlLogo = IMAGENES_AFP[c] }).ToList(),
+                }
             };
 
-            salida.UltimaSemana.First(u => u.Nombre == "PlanVital").Alto = 10;
+            salida.Resumen.UltimaSemana.First(u => u.Nombre == "PlanVital").Alto = 10;
 
             // Se obtiene el filtro por defecto a mostrar en el resumen...
             string? fondoSeleccionado = Request.Cookies["FiltroResumenFondoSeleccionado"];
             fondoSeleccionado ??= "A";
-            ViewBag.FiltroResumenFondoSeleccionado = fondoSeleccionado;
+            salida.Resumen.FiltroResumenFondoSeleccionado = fondoSeleccionado;
 
             // Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
             DateTime fechasTodas = await taskFechaTodas;
@@ -132,14 +134,14 @@ namespace QueTalMiAFPCdk.Controllers {
             }
 
             // Se añade listado de fechas a objeto de salida...
-            salida.FechasUltimaSemana = fechas;
+            salida.Resumen.FechasUltimaSemana = fechas;
 
             List<CuotaUf> valoresCuota = await taskValoresCuota;
 
             // Se arman las listas de valores cuotas para cada AFP, según el listado de fechas...
-            foreach (UltimaSemanaAfp ultimaSemanaAfp in salida.UltimaSemana) {
+            foreach (UltimaSemanaAfp ultimaSemanaAfp in salida.Resumen.UltimaSemana) {
                 foreach (string fondo in "A,B,C,D,E".Split(",")) {
-                    foreach (DateTime fecha in salida.FechasUltimaSemana) {
+                    foreach (DateTime fecha in salida.Resumen.FechasUltimaSemana) {
                         CuotaUf? cuotaUf = valoresCuota.FirstOrDefault(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) == fecha);
 
                         // Si no tenemos valor cuota para la fecha indicada, se marca como null o con la valor cuota anterior.
@@ -167,15 +169,15 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            ViewBag.FechasTodas = fechasTodas;
+            salida.Premios.FechasTodas = fechasTodas;
 
             // Se calcula porcentaje que se lleva del mes para el premio de la rentabilidad del mes...
             DateTime primerDiaMes = new DateTime(fechasTodas.Year, fechasTodas.Month, 1);
             DateTime ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
             decimal porcMesPremio = 100 * fechasTodas.Day / ultimoDiaMes.Day;
-            ViewBag.PorcMesPremio = porcMesPremio;
-            ViewBag.PrimerDiaMesPremio = primerDiaMes;
-            ViewBag.UltimoDiaMesPremio = ultimoDiaMes;
+            salida.Premios.PorcMesPremio = porcMesPremio;
+            salida.Premios.PrimerDiaMesPremio = primerDiaMes;
+            salida.Premios.UltimoDiaMesPremio = ultimoDiaMes;
 
 
             List<SalObtenerUltimaCuota> cuotasPremio = await taskCuotasPremio;
