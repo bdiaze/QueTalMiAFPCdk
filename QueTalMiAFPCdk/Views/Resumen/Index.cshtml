@@ -174,7 +174,7 @@
     </p>
 </div>
 
-<form method="get" asp-controller="Resumen" asp-action="Index" asp-fragment="premioRentabilidad" class="mt-3">
+<form method="get" asp-controller="Resumen" asp-action="Index" asp-fragment="premioRentabilidad" class="mt-3 mb-1">
     <p class="d-inline-block my-0 text-muted mr-1" style="font-size: 0.9rem; position:relative; top: 0.1rem;">Meses anteriores</p>
     <div class="input-group input-group-sm d-inline-block" style="width: 5rem;">
         <select asp-for="Premios.Anno" asp-items="@Model.Premios?.ListaAnnos" class="custom-select w-100" id="selectPremioRentabilidad"></select>
