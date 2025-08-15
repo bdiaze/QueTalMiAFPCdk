@@ -98,6 +98,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 listaFechasPremios.Add(fechaHastaRentMensual);
             }
 
+            // Se añaden los meses anteriores asociados al año deseado...
             while (fechaHastaRentMensual.Year >= salida.Premios.Anno) {
                 fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
                 listaFechasPremios.Add(fechaDesdeRentMensual);
@@ -175,7 +176,7 @@ namespace QueTalMiAFPCdk.Controllers {
             salida.Premios.PrimerDiaMesPremio = primerDiaMes;
             salida.Premios.UltimoDiaMesPremio = ultimoDiaMes;
 
-
+            // Se calculan las rentabilidades de todos los meses...
             List<SalObtenerUltimaCuota> cuotasPremio = await taskCuotasPremio;
             foreach (int periodo in salida.Premios.Ganadores.Keys) {
                 List<GanadorMes> candidatos = [];
