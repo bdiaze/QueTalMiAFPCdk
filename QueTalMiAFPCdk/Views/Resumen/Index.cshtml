@@ -44,20 +44,20 @@
 
 <div class="text-center my-3" id="filtroFondos">
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-outline-danger @(ViewBag.FiltroResumenFondoSeleccionado == "A" ? "active" : "")">
-            <input type="radio" name="resumenFondo" value="A" @(ViewBag.FiltroResumenFondoSeleccionado == "A" ? "checked='checked'" : "")>A
+        <label class="btn btn-outline-danger @(Model.Resumen.FiltroResumenFondoSeleccionado == "A" ? "active" : "")">
+            <input type="radio" name="resumenFondo" value="A" @(Model.Resumen.FiltroResumenFondoSeleccionado == "A" ? "checked='checked'" : "")>A
         </label>
-        <label class="btn btn-outline-warning @(ViewBag.FiltroResumenFondoSeleccionado == "B" ? "active" : "")">
-            <input type="radio" name="resumenFondo" value="B" @(ViewBag.FiltroResumenFondoSeleccionado == "B" ? "checked='checked'" : "")>B
+        <label class="btn btn-outline-warning @(Model.Resumen.FiltroResumenFondoSeleccionado == "B" ? "active" : "")">
+            <input type="radio" name="resumenFondo" value="B" @(Model.Resumen.FiltroResumenFondoSeleccionado == "B" ? "checked='checked'" : "")>B
         </label>
-        <label class="btn btn-outline-success @(ViewBag.FiltroResumenFondoSeleccionado == "C" ? "active" : "")">
-            <input type="radio" name="resumenFondo" value="C" @(ViewBag.FiltroResumenFondoSeleccionado == "C" ? "checked='checked'" : "")>C
+        <label class="btn btn-outline-success @(Model.Resumen.FiltroResumenFondoSeleccionado == "C" ? "active" : "")">
+            <input type="radio" name="resumenFondo" value="C" @(Model.Resumen.FiltroResumenFondoSeleccionado == "C" ? "checked='checked'" : "")>C
         </label>
-        <label class="btn btn-outline-info @(ViewBag.FiltroResumenFondoSeleccionado == "D" ? "active" : "")">
-            <input type="radio" name="resumenFondo" value="D" @(ViewBag.FiltroResumenFondoSeleccionado == "D" ? "checked='checked'" : "")>D
+        <label class="btn btn-outline-info @(Model.Resumen.FiltroResumenFondoSeleccionado == "D" ? "active" : "")">
+            <input type="radio" name="resumenFondo" value="D" @(Model.Resumen.FiltroResumenFondoSeleccionado == "D" ? "checked='checked'" : "")>D
         </label>
-        <label class="btn btn-outline-primary @(ViewBag.FiltroResumenFondoSeleccionado == "E" ? "active" : "")">
-            <input type="radio" name="resumenFondo" value="E" @(ViewBag.FiltroResumenFondoSeleccionado == "E" ? "checked='checked'" : "")>E
+        <label class="btn btn-outline-primary @(Model.Resumen.FiltroResumenFondoSeleccionado == "E" ? "active" : "")">
+            <input type="radio" name="resumenFondo" value="E" @(Model.Resumen.FiltroResumenFondoSeleccionado == "E" ? "checked='checked'" : "")>E
         </label>
     </div>
 </div>
@@ -69,7 +69,7 @@
                 <td></td>
             </tr>
 
-            @foreach(UltimaSemanaAfp resumenAfp in Model.UltimaSemana)
+            @foreach(UltimaSemanaAfp resumenAfp in Model.Resumen.UltimaSemana)
             {
                 <tr>
                     <th class="align-middle p-0 text-center">
@@ -81,10 +81,10 @@
     </div>
 
     @foreach(string fondo in "A,B,C,D,E".Split(",")) {
-        <div style="display:@(fondo == ViewBag.FiltroResumenFondoSeleccionado ? "" : "none");" id="resumen@(fondo)">
+        <div style="display:@(fondo == Model.Resumen.FiltroResumenFondoSeleccionado ? "" : "none");" id="resumen@(fondo)">
             <table class="table table-bordered text-center m-0 mb-1 valoresCuota">
                 <tr>
-                    @foreach(DateTime fecha in Model.FechasUltimaSemana!)
+                    @foreach(DateTime fecha in Model.Resumen.FechasUltimaSemana!)
                     {
                         <td class="p-0 align-middle">
                             <p class="m-0 text-center text-muted text-truncate">@fecha.ToString("dddd", cultureInfo).ToUpper()</p>
@@ -93,7 +93,7 @@
                     }
                 </tr>
 
-                @foreach(UltimaSemanaAfp resumenAfp in Model.UltimaSemana)
+                @foreach(UltimaSemanaAfp resumenAfp in Model.Resumen.UltimaSemana)
                 {
                     <tr>
                         @foreach(CuotaRentabilidadDia? cuota in resumenAfp.ValoresCuota[fondo])
@@ -115,10 +115,10 @@
 
 <hr id="premioRentabilidad"/>
 
-<h5>¡La AFP más rentable de @(ViewBag.FechasTodas.ToString("MMMM", cultureInfo))!</h5>
+<h5>¡La AFP más rentable de @(Model.Premios.FechasTodas.ToString("MMMM", cultureInfo))!</h5>
 
 <p class="mt-3 text-muted">
-    ¡Y comenzó la carrera! la AFP con mejor rentabilidad durante @(ViewBag.FechasTodas.ToString("MMMM", cultureInfo)) es:
+    ¡Y comenzó la carrera! la AFP con mejor rentabilidad durante @(Model.Premios.FechasTodas.ToString("MMMM", cultureInfo)) es:
 </p>
 
 @{
@@ -130,7 +130,7 @@
 
 <div class="m-0 text-muted align-middle pb-2">
     @{
-        UltimaSemanaAfp afpLogo = Model.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodoActual].Afp);
+        UltimaSemanaAfp afpLogo = Model.Resumen.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodoActual].Afp);
     }
     <img class="rounded mx-auto d-block" 
             style="width: 12rem;" 
@@ -148,29 +148,29 @@
     <div class="align-top text-center w-100 mb-0 progresoMesPremio">
         <p class="text-center m-0 mt-2">Avance del Mes</p>
         <p class="w-25 d-inline-block m-0 text-right pr-2">
-            @(ViewBag.PrimerDiaMesPremio.ToString("dddd d").Substring(0, 1).ToUpper() + ViewBag.PrimerDiaMesPremio.ToString("dddd d").Substring(1))
+            @(Model.Premios.PrimerDiaMesPremio.ToString("dddd d", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.PrimerDiaMesPremio.ToString("dddd d", cultureInfo).Substring(1))
         </p>
         <div class="d-inline-block m-0" style="width:calc(50% - 1rem)">
             <div class="progress">
                 <div class="progress-bar @(Model.Premios.Ganadores[periodoActual].Rentabilidad > 0 ? "bg-success": (Model.Premios.Ganadores[periodoActual].Rentabilidad < 0 ? "bg-danger" : ""))" 
                      role="progressbar" 
-                     style="width: @(ViewBag.PorcMesPremio)%" 
-                     aria-valuenow="@(ViewBag.PorcMesPremio)" 
+                     style="width: @(Model.Premios.PorcMesPremio)%" 
+                     aria-valuenow="@(Model.Premios.PorcMesPremio)" 
                      aria-valuemin="0" 
                      aria-valuemax="100">
-                     @(ViewBag.PorcMesPremio.ToString("N0", cultureInfo))%
+                     @(Model.Premios.PorcMesPremio.ToString("N0", cultureInfo))%
                  </div>
             </div>
         </div>
         <p class="w-25 d-inline-block m-0 pl-2">
-            @(ViewBag.UltimoDiaMesPremio.ToString("dddd d").Substring(0, 1).ToUpper() + ViewBag.UltimoDiaMesPremio.ToString("dddd d").Substring(1))
+            @(Model.Premios.UltimoDiaMesPremio.ToString("dddd d", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.UltimoDiaMesPremio.ToString("dddd d", cultureInfo).Substring(1))
         </p>
     </div>
     <p class="text-center mb-1 periodoActual">
         @(Model.Premios.Ganadores[periodoActual].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpper() + Model.Premios.Ganadores[periodoActual].FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
     </p>
     <p class="text-center m-0 mensajeActual">
-        (Rentabilidad calculada al @(ViewBag.FechasTodas.ToString("dddd d 'de' MMMM", cultureInfo)))
+        (Rentabilidad calculada al @(Model.Premios.FechasTodas.ToString("dddd d 'de' MMMM", cultureInfo)))
     </p>
 </div>
 
@@ -190,7 +190,7 @@
                 {
                     <td class="m-0 text-muted align-middle py-2 px-3" style="width: 7rem;">
                         @{
-                            afpLogo = Model.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodo].Afp);
+                            afpLogo = Model.Resumen.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodo].Afp);
                         }
                         <img class="rounded mx-auto d-block mb-2" 
                              style="width: 7rem;" 
