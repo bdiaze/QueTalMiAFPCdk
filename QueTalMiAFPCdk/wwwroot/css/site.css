@@ -213,3 +213,7 @@ p, h6 {
 .boton-completo:not(:hover) {
     background-color: #f8f9fa;
 }
+
+.datepicker {
+    z-index: 1000 !important;
+}
