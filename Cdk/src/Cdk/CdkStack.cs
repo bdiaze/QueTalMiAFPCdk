@@ -62,8 +62,9 @@ namespace Cdk
             string gmailPrivateKey = System.Environment.GetEnvironmentVariable("GMAIL_PRIVATE_KEY") ?? throw new ArgumentNullException("GMAIL_PRIVATE_KEY");
             string gmailClientEmail = System.Environment.GetEnvironmentVariable("GMAIL_CLIENT_EMAIL") ?? throw new ArgumentNullException("GMAIL_CLIENT_EMAIL");
 
-            string arnParameterOAuth2TokenUrl = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_OAUTH2_TOKEN_URL") ?? throw new ArgumentNullException("ARN_PARAMETER_OAUTH2_TOKEN_URL");
+            string arnParameterUserPoolId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_ID");
             string arnParameterUserPoolClientId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_CLIENT_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_CLIENT_ID");
+            string arnParameterCognitoRegion = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_REGION") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_REGION");
 
             IHostedZone hostedZone = HostedZone.FromLookup(this, $"{appName}WebServerHostedZone", new HostedZoneProviderProps {
                 DomainName = domainName
@@ -347,8 +348,9 @@ namespace Cdk
                                         strParMercadoPagoUrlFailure.ParameterArn,
                                         strParMercadoPagoUrlPending.ParameterArn,
                                         strParMercadoPagoUrlSuccess.ParameterArn,
-                                        arnParameterOAuth2TokenUrl,
+                                        arnParameterUserPoolId,
                                         arnParameterUserPoolClientId,
+                                        arnParameterCognitoRegion,
                                     ],
                                 }),
                             ]

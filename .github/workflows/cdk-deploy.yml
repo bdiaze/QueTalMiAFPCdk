@@ -58,8 +58,9 @@ jobs:
             GMAIL_NOMBRE_NOTIFICACION: ${{ vars.GMAIL_NOMBRE_NOTIFICACION }}
             GMAIL_PRIVATE_KEY: ${{ secrets.GMAIL_PRIVATE_KEY }}
             GMAIL_CLIENT_EMAIL: ${{ vars.GMAIL_CLIENT_EMAIL }}
-            ARN_PARAMETER_OAUTH2_TOKEN_URL: ${{ vars.ARN_PARAMETER_OAUTH2_TOKEN_URL }}
+            ARN_PARAMETER_USER_POOL_ID: ${{ vars.ARN_PARAMETER_USER_POOL_ID }}
             ARN_PARAMETER_USER_POOL_CLIENT_ID: ${{ vars.ARN_PARAMETER_USER_POOL_CLIENT_ID }}
+            ARN_PARAMETER_COGNITO_REGION: ${{ vars.ARN_PARAMETER_COGNITO_REGION }}
                         
         steps:
             - name: Checkout Repositorio
