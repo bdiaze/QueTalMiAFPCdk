@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Se obtienen parámetros para configurar cognito...
 ParameterStoreHelper parameterStoreHelper = new(builder.Configuration);
+string cognitoBaseUrl = await parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/BaseUrl");
 string cognitoRegion = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/Region").Result;
 string userPoolId = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/UserPoolId").Result;
 string userPoolClientId = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/UserPoolClientId").Result;
@@ -31,7 +32,8 @@ builder.Services.AddAuthentication(options => {
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
-    options.Authority = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}";
+    options.Authority = cognitoBaseUrl;
+    options.MetadataAddress = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
     options.ClientId = userPoolClientId;
     options.ResponseType = "code";
     options.SaveTokens = true;
@@ -41,7 +43,7 @@ builder.Services.AddAuthentication(options => {
     options.CallbackPath = callbackPath;
     options.TokenValidationParameters = new TokenValidationParameters {
         ValidateIssuer = true,
-        ValidIssuer = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}",
+        ValidIssuer = cognitoBaseUrl,
         ValidateAudience = true,
         ValidAudience = userPoolClientId,
         ValidateLifetime = true,
