@@ -217,3 +217,7 @@ p, h6 {
 .datepicker {
     z-index: 1000 !important;
 }
+
+.linkSesion {
+    font-size: 0.9rem;
+}

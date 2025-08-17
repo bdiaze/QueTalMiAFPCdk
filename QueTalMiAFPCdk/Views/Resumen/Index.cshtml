@@ -2,9 +2,15 @@
 @using QueTalMiAFPCdk.Models.Others
 @using QueTalMiAFPCdk.Models.ViewModels
 @using System.Globalization
+@using System.Security.Claims
 @model ResumenViewModel
 @{
-    ViewData["Title"] = "Bienvenido a ¿Qué tal mi AFP?";
+    string? mensajeBienvenida = "¡Bienvenid@!";
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        mensajeBienvenida = $"¡Bienvenid@ { User.FindFirstValue(ClaimTypes.GivenName) }! 😊";
+    }
+    ViewData["Title"] = mensajeBienvenida;
 }
 
 @section Head {
