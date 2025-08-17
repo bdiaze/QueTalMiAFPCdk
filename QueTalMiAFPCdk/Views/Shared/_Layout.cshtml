@@ -19,7 +19,7 @@
     <header class="mb-3">
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow">
             <div class="container" style="z-index: 1000;">
-                <a class="navbar-brand text-muted" asp-controller="Resumen" asp-action="Index">
+                <a class="navbar-brand text-muted px-1" asp-controller="Resumen" asp-action="Index">
                     <img src="~/flavicon.svg" width="30" class="mr-2" />
                     ¿Qué tal mi AFP?
                 </a>
@@ -29,30 +29,31 @@
                 </button>
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav w-100">
-                        <li class="nav-item  w-100 text-center">
+                        <div class="dropdown-divider"></div>
+                        <li class="nav-item text-center d-flex align-items-center px-1">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="Estadisticas" asp-action="ComparandoFondos">Rentabilidad por AFP</a>
                         </li>
-                        <li class="nav-item  w-100 text-center">
+                        <li class="nav-item text-center d-flex align-items-center px-1">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="Estadisticas" asp-action="Index">Rentabilidad por Fondo</a>
                         </li>
-                        <li class="nav-item  w-100 text-center">
+                        <li class="nav-item text-center d-flex align-items-center px-1">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="Simulador" asp-action="Index">Simula tus Ganancias</a>
                         </li>
-                        <li class="nav-item  w-100 text-center">
+                        <li class="nav-item text-center d-flex align-items-center px-1">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="AccederCuotas" asp-action="Index">Consulta los Valores Cuota</a>
                         </li>
                         @if (environment.IsDevelopment()) {
                             @if (User.Identity == null || !User.Identity.IsAuthenticated) {
-                                <li class="nav-item  w-100 text-center">
+                                <li class="nav-item text-center d-flex align-items-center px-1">
                                     <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">¡Iniciar Sesión!</a>
                                 </li>
                             } else {
                                 <!--
-                                <li class="nav-item  w-100 text-center">
+                                <li class="nav-item text-center d-flex align-items-center px-1">
                                     <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">Mis Notificaciones</a>
                                 </li>
                                 -->
-                                <li class="nav-item  w-100 text-center">
+                                <li class="nav-item text-center d-flex align-items-center px-1">
                                     <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
                                 </li>
                             }
