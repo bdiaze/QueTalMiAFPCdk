@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@inject IWebHostEnvironment environment
 <!DOCTYPE html>
 <html lang="es-cl">
 <head>
@@ -40,20 +41,21 @@
                         <li class="nav-item  w-100 text-center">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="AccederCuotas" asp-action="Index">Consulta los Valores Cuota</a>
                         </li>
-                        @if (User.Identity == null || !User.Identity.IsAuthenticated) {
-                            <li class="nav-item  w-100 text-center">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">¡Iniciar Sesión!</a>
-                            </li>
-                        } else
-                        {
-                            <!--
-                            <li class="nav-item  w-100 text-center">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">Mis Notificaciones</a>
-                            </li>
-                            -->
-                            <li class="nav-item  w-100 text-center">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
-                            </li>
+                        @if (environment.IsDevelopment()) {
+                            @if (User.Identity == null || !User.Identity.IsAuthenticated) {
+                                <li class="nav-item  w-100 text-center">
+                                    <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">¡Iniciar Sesión!</a>
+                                </li>
+                            } else {
+                                <!--
+                                <li class="nav-item  w-100 text-center">
+                                    <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">Mis Notificaciones</a>
+                                </li>
+                                -->
+                                <li class="nav-item  w-100 text-center">
+                                    <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>
