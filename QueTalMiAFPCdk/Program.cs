@@ -1,8 +1,59 @@
 using Amazon.S3;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
+using System;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Se obtienen parámetros para configurar cognito...
+ParameterStoreHelper parameterStoreHelper = new(builder.Configuration);
+string cognitoRegion = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/Region").Result;
+string userPoolId = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/UserPoolId").Result;
+string userPoolClientId = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/UserPoolClientId").Result;
+string[] cognitoCallbacks = parameterStoreHelper.ObtenerParametro("/QueTalMiAFP/Cognito/Callbacks").Result.Split(",");
+
+string callbackUrl = cognitoCallbacks.First(l => !l.Contains("localhost"));
+if (builder.Environment.IsDevelopment()) {
+    callbackUrl = cognitoCallbacks.First(l => l.Contains("localhost"));
+}
+
+Uri uri = new(callbackUrl);
+string callbackPath = uri.AbsolutePath;
+
+builder.Services.AddAuthentication(options => {
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
+    options.Authority = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}";
+    options.ClientId = userPoolClientId;
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.Scope.Add("openid");
+    options.Scope.Add("email");
+    options.Scope.Add("profile");
+    options.CallbackPath = callbackPath;
+    options.TokenValidationParameters = new TokenValidationParameters {
+        ValidateIssuer = true,
+        ValidIssuer = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}",
+        ValidateAudience = true,
+        ValidAudience = userPoolClientId,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+    };
+    options.Events = new OpenIdConnectEvents { 
+        OnRedirectToIdentityProvider = context => {
+            context.ProtocolMessage.SetParameter("lang", "es");
+            return Task.CompletedTask;
+        }
+    };
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -30,6 +81,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
