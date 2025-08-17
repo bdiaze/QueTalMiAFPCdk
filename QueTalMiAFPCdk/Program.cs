@@ -50,6 +50,7 @@ builder.Services.AddAuthentication(options => {
     options.Events = new OpenIdConnectEvents { 
         OnRedirectToIdentityProvider = context => {
             context.ProtocolMessage.SetParameter("lang", "es");
+            context.ProtocolMessage.RedirectUri = callbackUrl;
             return Task.CompletedTask;
         }
     };
