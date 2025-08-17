@@ -83,19 +83,22 @@
 
     <footer class="border-top footer">
         <div class="container">
-            <nav class="navbar navbar-expand navbar-light bg-white my-2">
+            <nav class="navbar navbar-expand navbar-light bg-white my-3 p-0">
                 <div class="w-100">
                     <ul class="navbar-nav">
-                        <li class="nav-item mx-auto text-center">
-                            <a class="text-muted" asp-controller="Resumen" asp-action="Index">
-                                <img src="~/flavicon.svg" width="25" class="mr-2" />
+                        <li class="nav-item mx-auto px-1 text-center d-flex align-items-center" style="font-size: 0.75rem;">
+                            <a class="text-muted d-flex align-items-center" asp-controller="Resumen" asp-action="Index">
+                                <img src="~/flavicon.svg" width="25" class="mr-1" />
                                 ¿Qué tal mi AFP?
                             </a>
                         </li>
-                        <li class="nav-item mx-auto text-center">
+                        <li class="nav-item mx-auto px-1 text-center d-flex align-items-center" style="font-size: 0.75rem;">
                             <a class="text-muted" asp-controller="Mensajes" asp-action="Index">Contáctate con Nosotros</a>
                         </li>
-                        <li class="nav-item mx-auto text-center">
+                        <li class="nav-item mx-auto px-1 text-center d-flex align-items-center" style="font-size: 0.75rem;">
+                            <a class="text-muted" asp-controller="Autenticacion" asp-action="PoliticaPrivacidad">Política de Privacidad</a>
+                        </li>
+                        <li class="nav-item mx-auto px-1 text-center d-flex align-items-center" style="font-size: 0.75rem;">
                             <a class="text-muted" asp-controller="Extractor" asp-action="Index">Actualizar Valores Registrados</a>
                         </li>
                     </ul>
