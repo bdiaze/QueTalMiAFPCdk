@@ -54,13 +54,8 @@ namespace Cdk
             string googleRecaptchaClientKey = System.Environment.GetEnvironmentVariable("GOOGLE_RECAPTCHA_CLIENT_KEY") ?? throw new ArgumentNullException("GOOGLE_RECAPTCHA_CLIENT_KEY");
             string googleRecaptchaSecretKey = System.Environment.GetEnvironmentVariable("GOOGLE_RECAPTCHA_SECRET_KEY") ?? throw new ArgumentNullException("GOOGLE_RECAPTCHA_SECRET_KEY");
             
-            string gmailDireccion = System.Environment.GetEnvironmentVariable("GMAIL_DIRECCION") ?? throw new ArgumentNullException("GMAIL_DIRECCION");
-            string gmailDireccionAlias = System.Environment.GetEnvironmentVariable("GMAIL_DIRECCION_ALIAS") ?? throw new ArgumentNullException("GMAIL_DIRECCION_ALIAS");
-            string gmailNombre = System.Environment.GetEnvironmentVariable("GMAIL_NOMBRE") ?? throw new ArgumentNullException("GMAIL_NOMBRE");
-            string gmailDireccionNotificacion = System.Environment.GetEnvironmentVariable("GMAIL_DIRECCION_NOTIFICACION") ?? throw new ArgumentNullException("GMAIL_DIRECCION_NOTIFICACION");
-            string gmailNombreNotificacion = System.Environment.GetEnvironmentVariable("GMAIL_NOMBRE_NOTIFICACION") ?? throw new ArgumentNullException("GMAIL_NOMBRE_NOTIFICACION");
-            string gmailPrivateKey = System.Environment.GetEnvironmentVariable("GMAIL_PRIVATE_KEY") ?? throw new ArgumentNullException("GMAIL_PRIVATE_KEY");
-            string gmailClientEmail = System.Environment.GetEnvironmentVariable("GMAIL_CLIENT_EMAIL") ?? throw new ArgumentNullException("GMAIL_CLIENT_EMAIL");
+            string emailDireccionNotificacion = System.Environment.GetEnvironmentVariable("EMAIL_DIRECCION_NOTIFICACION") ?? throw new ArgumentNullException("EMAIL_DIRECCION_NOTIFICACION");
+            string emailNombreNotificacion = System.Environment.GetEnvironmentVariable("EMAIL_NOMBRE_NOTIFICACION") ?? throw new ArgumentNullException("EMAIL_NOMBRE_NOTIFICACION");
 
             string arnParameterUserPoolId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_ID");
             string arnParameterUserPoolClientId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_CLIENT_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_CLIENT_ID");
@@ -233,41 +228,17 @@ namespace Cdk
                 Tier = ParameterTier.STANDARD,
             });
 
-            // Se crean todos los parámetros de Gmail...
-            StringParameter strParGmailDireccion = new(this, $"{appName}StringParameterGmailDireccion", new StringParameterProps {
-                ParameterName = $"/{appName}/Gmail/Direccion",
-                Description = $"Direccion de Gmail desde donde se mandan las notificaciones - {appName}",
-                StringValue = gmailDireccion,
+            // Se crean todos los parámetros de Email...
+            StringParameter strParEmailDireccionNotif = new(this, $"{appName}StringParameterEmailDireccionNotificacion", new StringParameterProps {
+                ParameterName = $"/{appName}/Email/DireccionNotificacion",
+                Description = $"Direccion a la que se envia notificacion de email - {appName}",
+                StringValue = emailDireccionNotificacion,
                 Tier = ParameterTier.STANDARD,
             });
-            StringParameter strParGmailDireccionAlias = new(this, $"{appName}StringParameterGmailDireccionAlias", new StringParameterProps {
-                ParameterName = $"/{appName}/Gmail/DireccionAlias",
-                Description = $"Alias de la direccion de Gmail desde donde se mandan las notificaciones  - {appName}",
-                StringValue = gmailDireccionAlias,
-                Tier = ParameterTier.STANDARD,
-            });
-            StringParameter strParGmailNombre = new(this, $"{appName}StringParameterGmailNombre", new StringParameterProps {
-                ParameterName = $"/{appName}/Gmail/Nombre",
-                Description = $"Nombre a mostrarse como remitente de la notificacion - {appName}",
-                StringValue = gmailNombre,
-                Tier = ParameterTier.STANDARD,
-            });
-            StringParameter strParGmailDireccionNotif = new(this, $"{appName}StringParameterGmailDireccionNotificacion", new StringParameterProps {
-                ParameterName = $"/{appName}/Gmail/DireccionNotificacion",
-                Description = $"Direccion a la que se envia notificacion de Gmail - {appName}",
-                StringValue = gmailDireccionNotificacion,
-                Tier = ParameterTier.STANDARD,
-            });
-            StringParameter strParGmailNombreNotif = new(this, $"{appName}StringParameterGmailNombreNotificacion", new StringParameterProps {
-                ParameterName = $"/{appName}/Gmail/NombreNotificacion",
-                Description = $"Nombre del receptor de la notificacion de Gmail - {appName}",
-                StringValue = gmailNombreNotificacion,
-                Tier = ParameterTier.STANDARD,
-            });
-            StringParameter strParGmailClientEmail = new(this, $"{appName}StringParameterGmailClientEmail", new StringParameterProps {
-                ParameterName = $"/{appName}/Gmail/ClientEmail",
-                Description = $"Client Email de Gmail - {appName}",
-                StringValue = gmailClientEmail,
+            StringParameter strParEmailNombreNotif = new(this, $"{appName}StringParameterEmailNombreNotificacion", new StringParameterProps {
+                ParameterName = $"/{appName}/Email/NombreNotificacion",
+                Description = $"Nombre del receptor de la notificacion de email - {appName}",
+                StringValue = emailNombreNotificacion,
                 Tier = ParameterTier.STANDARD,
             });
 
@@ -280,7 +251,6 @@ namespace Cdk
                     { "ApiKey", SecretValue.UnsafePlainText(queTalMiAfpApiKey) },
                     { "MercadoPagoAccessToken", SecretValue.UnsafePlainText(mercadoPagoAccessToken) },
                     { "GoogleRecaptchaSecretKey", SecretValue.UnsafePlainText(googleRecaptchaSecretKey) },
-                    { "GmailPrivateKey", SecretValue.UnsafePlainText(gmailPrivateKey) },
                 },
             });
 
@@ -340,12 +310,8 @@ namespace Cdk
                                         strParApiMilisegForzarTimeout.ParameterArn,
                                         strParApiS3BucketName.ParameterArn,
                                         strParApiUrl.ParameterArn,
-                                        strParGmailClientEmail.ParameterArn,
-                                        strParGmailDireccion.ParameterArn,
-                                        strParGmailDireccionAlias.ParameterArn,
-                                        strParGmailDireccionNotif.ParameterArn,
-                                        strParGmailNombre.ParameterArn,
-                                        strParGmailNombreNotif.ParameterArn,
+                                        strParEmailDireccionNotif.ParameterArn,
+                                        strParEmailNombreNotif.ParameterArn,
                                         strParGoogleRecaptchaClientKey.ParameterArn,
                                         strParMercadoPagoPublicKey.ParameterArn,
                                         strParMercadoPagoUrlFailure.ParameterArn,
