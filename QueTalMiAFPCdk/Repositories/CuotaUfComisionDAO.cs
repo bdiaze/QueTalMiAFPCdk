@@ -16,6 +16,7 @@ namespace QueTalMiAFPCdk.Repositories {
 		Task<List<RentabilidadReal>> ObtenerRentabilidadReal(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
 		Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
 		Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision);
+        Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo);
     }
 
 	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
@@ -120,5 +121,34 @@ namespace QueTalMiAFPCdk.Repositories {
 
             return JsonConvert.DeserializeObject<List<SalObtenerUltimaCuota>>(responseString)!;
         }
-	}
+
+		public async Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo) {
+            EntCorreoEnviar entradaSanitizada = new() {
+				Para = [
+					new EntCorreoDireccion {
+						Nombre = nombrePara,
+						Correo = correoPara,
+					}
+                ],
+				Asunto = asunto,
+				Cuerpo = cuerpo,
+			};
+
+			if (correoResponderA != null) {
+				entradaSanitizada.ResponderA = [
+					new EntCorreoDireccion {
+						Nombre = nombreResponderA,
+						Correo = correoResponderA,
+					}
+				];
+            }
+
+            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
+            client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
+            var response = await client.PostAsync(_baseUrl + "Correo/Enviar", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
+            string responseString = await response.Content.ReadAsStringAsync();
+
+			return JsonConvert.DeserializeObject<SalCorreoEnviar>(responseString)!;
+        }
+    }
 }

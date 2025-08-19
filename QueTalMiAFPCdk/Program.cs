@@ -67,6 +67,7 @@ builder.Services.AddSingleton<SecretManagerHelper, SecretManagerHelper>();
 builder.Services.AddSingleton<S3BucketHelper, S3BucketHelper>();
 builder.Services.AddSingleton<MercadoPagoHelper, MercadoPagoHelper>();
 builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
+builder.Services.AddSingleton<EnvioCorreo, EnvioCorreo>();
 
 var app = builder.Build();
 
