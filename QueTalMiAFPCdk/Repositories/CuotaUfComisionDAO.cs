@@ -153,6 +153,10 @@ namespace QueTalMiAFPCdk.Repositories {
             var response = await client.PostAsync(_hermesBaseUrl + "Correo/Enviar", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
             string responseString = await response.Content.ReadAsStringAsync();
 
+			if (response.StatusCode != HttpStatusCode.OK) {
+				throw new Exception($"StatusCode: {response.StatusCode}");
+			}
+
 			return JsonConvert.DeserializeObject<SalCorreoEnviar>(responseString)!;
         }
     }

@@ -31,7 +31,7 @@ namespace QueTalMiAFPCdk.Services {
 		}
 
 		public async Task Notificar(string subject, string body, string? responderADireccion = null, string? responderANombre = null) {
-			SalCorreoEnviar salida = await cuotaUfComisionDAO.EnviarCorreo(
+			await cuotaUfComisionDAO.EnviarCorreo(
 				_nombreNotificacion, 
 				_direccionNotificacion,
 				responderANombre,
@@ -39,10 +39,6 @@ namespace QueTalMiAFPCdk.Services {
                 subject,
                 body
             );
-
-			if (salida.CodigoEstado != 200) {
-				throw new Exception("Ocurrió un error al enviar correo informando el mensaje de un usuario mediante el formulario de contacto.");
-			}
         }
 	}
 }
