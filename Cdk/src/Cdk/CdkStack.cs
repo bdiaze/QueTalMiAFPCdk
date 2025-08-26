@@ -260,9 +260,7 @@ namespace Cdk
             });
 
             // Se obtiene ARN del API Key...
-            IStringParameter strParHermesApiKeyId = StringParameter.FromStringParameterAttributes(this, $"{appName}StringParameterHermesApiKeyId", new StringParameterAttributes {
-                ParameterName = arnParameterHermesApiKeyId,
-            });
+            IStringParameter strParHermesApiKeyId = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterHermesApiKeyId", arnParameterHermesApiKeyId);
 
             // Se crea rol de la subapp que asumirá la instancia web server...
             Role assumeRole = new(this, $"{appName}WebServerRole", new RoleProps {
