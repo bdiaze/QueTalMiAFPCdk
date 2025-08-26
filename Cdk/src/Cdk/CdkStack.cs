@@ -56,13 +56,18 @@ namespace Cdk
             
             string emailDireccionNotificacion = System.Environment.GetEnvironmentVariable("EMAIL_DIRECCION_NOTIFICACION") ?? throw new ArgumentNullException("EMAIL_DIRECCION_NOTIFICACION");
             string emailNombreNotificacion = System.Environment.GetEnvironmentVariable("EMAIL_NOMBRE_NOTIFICACION") ?? throw new ArgumentNullException("EMAIL_NOMBRE_NOTIFICACION");
-
+            
             string arnParameterUserPoolId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_ID");
             string arnParameterUserPoolClientId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_CLIENT_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_CLIENT_ID");
             string arnParameterCognitoRegion = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_REGION") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_REGION");
             string arnParameterCognitoBaseUrl = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_BASE_URL") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_BASE_URL");
             string arnParameterCognitoCallbacks = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_CALLBACKS") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_CALLBACKS");
             string arnParameterCognitoLogouts = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_LOGOUTS") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_LOGOUTS");
+
+            string arnParameterSesDireccionDeDefecto = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_SES_DIRECCION_DE_DEFECTO") ?? throw new ArgumentNullException("ARN_PARAMETER_SES_DIRECCION_DE_DEFECTO");
+
+            string arnParameterHermesApiUrl = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_HERMES_API_URL") ?? throw new ArgumentNullException("ARN_PARAMETER_HERMES_API_URL");
+            string arnParameterHermesApiKeyId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_HERMES_API_KEY_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_HERMES_API_KEY_ID");
 
             IHostedZone hostedZone = HostedZone.FromLookup(this, $"{appName}WebServerHostedZone", new HostedZoneProviderProps {
                 DomainName = domainName
@@ -254,6 +259,11 @@ namespace Cdk
                 },
             });
 
+            // Se obtiene ARN del API Key...
+            IStringParameter strParHermesApiKeyId = StringParameter.FromStringParameterAttributes(this, $"{appName}StringParameterHermesApiKeyId", new StringParameterAttributes {
+                ParameterName = arnParameterHermesApiKeyId,
+            });
+
             // Se crea rol de la subapp que asumirá la instancia web server...
             Role assumeRole = new(this, $"{appName}WebServerRole", new RoleProps {
                 RoleName = $"{prefixRolesWebServer}{appName}",
@@ -323,6 +333,18 @@ namespace Cdk
                                         arnParameterCognitoBaseUrl,
                                         arnParameterCognitoCallbacks,
                                         arnParameterCognitoLogouts,
+                                        arnParameterSesDireccionDeDefecto,
+                                        arnParameterHermesApiUrl,
+                                        arnParameterHermesApiKeyId,
+                                    ],
+                                }),
+                                new PolicyStatement(new PolicyStatementProps{
+                                    Sid = $"{appName}AccessToApiKey",
+                                    Actions = [
+                                        "apigateway:GET"
+                                    ],
+                                    Resources = [
+                                        $"arn:aws:apigateway:{this.Region}::/apikeys/{strParHermesApiKeyId.StringValue}",
                                     ],
                                 }),
                             ]

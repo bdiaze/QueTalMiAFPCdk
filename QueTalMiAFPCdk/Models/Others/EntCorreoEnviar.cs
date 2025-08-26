@@ -1,5 +1,6 @@
 ﻿namespace QueTalMiAFPCdk.Models.Others {
     public class EntCorreoEnviar {
+        public required EntCorreoDireccion De { get; set; }
         public required List<EntCorreoDireccion> Para { get; set; }
         public List<EntCorreoDireccion>? ResponderA { get; set; }
         public required string Asunto { get; set; }

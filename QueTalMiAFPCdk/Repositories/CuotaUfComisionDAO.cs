@@ -19,12 +19,16 @@ namespace QueTalMiAFPCdk.Repositories {
         Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo);
     }
 
-	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
+	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
 		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
 		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
 		private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
 
-		public async Task<DateTime> UltimaFechaTodas() {
+		private readonly EntCorreoDireccion _direccionDeDefecto = JsonConvert.DeserializeObject<EntCorreoDireccion>(parameterStore.ObtenerParametro("/QueTalMiAFP/SES/DireccionDeDefecto").Result)!;
+		private readonly string _hermesBaseUrl = parameterStore.ObtenerParametro("/Hermes/Api/Url").Result;
+		private readonly string _hermesApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/Hermes/Api/KeyId").Result).Result;
+
+        public async Task<DateTime> UltimaFechaTodas() {
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
@@ -124,6 +128,7 @@ namespace QueTalMiAFPCdk.Repositories {
 
 		public async Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo) {
             EntCorreoEnviar entradaSanitizada = new() {
+				De = _direccionDeDefecto,
 				Para = [
 					new EntCorreoDireccion {
 						Nombre = nombrePara,
@@ -144,8 +149,8 @@ namespace QueTalMiAFPCdk.Repositories {
             }
 
             using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
-            client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-            var response = await client.PostAsync(_baseUrl + "Correo/Enviar", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
+            client.DefaultRequestHeaders.Add("x-api-key", _hermesApiKey);
+            var response = await client.PostAsync(_hermesBaseUrl + "Correo/Enviar", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
             string responseString = await response.Content.ReadAsStringAsync();
 
 			return JsonConvert.DeserializeObject<SalCorreoEnviar>(responseString)!;
