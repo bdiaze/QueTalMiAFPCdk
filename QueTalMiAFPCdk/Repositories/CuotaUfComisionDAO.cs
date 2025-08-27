@@ -92,8 +92,8 @@ namespace QueTalMiAFPCdk.Repositories {
             Dictionary<string, string?> parameters = new() {
                 { "listaAFPs", listaAFPs },
                 { "listaFondos", listaFondos },
-                { "fechaInicial", fechaInicial.ToString("dd/MM/yyyy") },
-                { "fechaFinal", fechaFinal.ToString("dd/MM/yyyy") }
+                { "fechaInicial", fechaInicial.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) },
+                { "fechaFinal", fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) }
             };
 
             using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));

@@ -37,7 +37,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 fechaInicial = "01/08/2002";
             }
             if (fechaFinal == null || fechaFinal.Trim().Length == 0) {
-                fechaFinal = DateTime.Now.ToString("dd/MM/yyyy");
+                fechaFinal = DateTime.Now.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
             }
             string[] diaMesAnnoInicio = fechaInicial.Split("/");
             string[] diaMesAnnoFinal = fechaFinal.Split("/");
@@ -87,8 +87,8 @@ namespace QueTalMiAFPCdk.Controllers {
             Dictionary<string, string?> parameters = new() {
                 { "listaAFPs", listaAFPs },
                 { "listaFondos", listaFondos },
-                { "fechaInicial", dtFechaInicio.ToString("dd/MM/yyyy") },
-                { "fechaFinal", dtFechaFinal.ToString("dd/MM/yyyy") }
+                { "fechaInicial", dtFechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) },
+                { "fechaFinal", dtFechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) }
             };
 
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));

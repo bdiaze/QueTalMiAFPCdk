@@ -59,8 +59,8 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_MODELO,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpModeloUrlApiBase;
 				string url_api = string.Format(url_api_base,
@@ -69,8 +69,8 @@ namespace QueTalMiAFPCdk.Services {
 					fondo == "C" || fondo == null ? 1 : 0,
 					fondo == "D" || fondo == null ? 1 : 0,
 					fondo == "E" || fondo == null ? 1 : 0,
-					fechaInicio.ToString("yyyy-MM-dd"),
-					fechaFinal.ToString("yyyy-MM-dd"));
+					fechaInicio.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
                 HttpClient request = new(new HttpClientHandler {
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -100,8 +100,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                     NOMBRE_MODELO,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -120,14 +120,14 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_MODELO,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpModeloV2UrlApiBase;
 
                 var objParametros = new {
-                    fechaIni = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
-                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd")
+                    fechaIni = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                 };
                 string parametros = JsonConvert.SerializeObject(objParametros);
 
@@ -167,8 +167,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                     NOMBRE_MODELO,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -188,16 +188,16 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
                     NOMBRE_MODELO,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy")));
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
                 string url_api_base = _afpModeloV3UrlApiBase;
 				string base64Key = _afpModeloV3Base64Key;
                 string base64IV = _afpModeloV3Base64IV;
 
                 var objParametros = new {
-                    fechaIni = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
-                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd")
+                    fechaIni = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                 };
                 string parametros = Aes256Cbc.Encriptar(JsonConvert.SerializeObject(objParametros), base64Key, base64IV);
                 var objParametrosEnc = new {
@@ -245,8 +245,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                     NOMBRE_MODELO,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -266,8 +266,8 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_CUPRUM,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpCuprumUrlApiBase;
 
@@ -307,8 +307,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                     NOMBRE_CUPRUM,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -327,14 +327,14 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_CAPITAL,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpCapitalUrlApiBase;
 				string url_api = string.Format(url_api_base,
 					HttpUtility.UrlEncode(fondo ?? "A;B;C;D;E"),
-					HttpUtility.UrlEncode(fechaInicio.ToString("dd/MM/yyyy")),
-					HttpUtility.UrlEncode(fechaFinal.ToString("dd/MM/yyyy")));
+					HttpUtility.UrlEncode(fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)),
+					HttpUtility.UrlEncode(fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
                 HttpClient request = new(new HttpClientHandler {
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -376,8 +376,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                     NOMBRE_CAPITAL,
                     fondo,
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -397,13 +397,13 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
                     NOMBRE_CAPITAL,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy")));
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
                 await RandomWait();
 
                 string url_api_base = _afpCapitalV2UrlApiBase;
-                string url_api = string.Format(url_api_base, fechaFinal.Year, fondo, fechaFinal.ToString("yyyyMMdd"));
+                string url_api = string.Format(url_api_base, fechaFinal.Year, fondo, fechaFinal.ToString("yyyyMMdd", CultureInfo.InvariantCulture));
 
                 HttpClient request = new(new HttpClientHandler {
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -463,8 +463,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                         NOMBRE_CAPITAL,
                         fondo ?? "*",
-                        fechaInicio.ToString("dd/MM/yyyy"),
-                        fechaFinal.ToString("dd/MM/yyyy"),
+                        fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                         retorno.Count));
 
                 return retorno;
@@ -483,8 +483,8 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_HABITAT,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpHabitatUrlApiBase;
 				string parametros = string.Format("mesdesde={0}&anodesde={1}&meshasta={2}&anohasta={3}&fondoa={4}&fondob={5}&fondoc={6}&fondod={7}&fondoe={8}",
@@ -570,8 +570,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                         NOMBRE_HABITAT,
                         fondo ?? "*",
-                        fechaInicio.ToString("dd/MM/yyyy"),
-                        fechaFinal.ToString("dd/MM/yyyy"),
+                        fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                         retorno.Count));
 
                 return retorno;
@@ -590,13 +590,13 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}", 
 					NOMBRE_PLANVITAL,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpPlanvitalUrlApiBase;
 				string url_api = string.Format(url_api_base,
-					fechaInicio.ToString("yyyy-MM-dd"),
-					fechaFinal.ToString("yyyy-MM-dd"));
+					fechaInicio.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
                 HttpClient request = new(new HttpClientHandler {
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -633,8 +633,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                         NOMBRE_PLANVITAL,
                         fondo ?? "*",
-                        fechaInicio.ToString("dd/MM/yyyy"),
-                        fechaFinal.ToString("dd/MM/yyyy"),
+                        fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                         retorno.Count));
 
                 return retorno;
@@ -653,9 +653,9 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Mes/Año {2} - Fecha Inicio {3} - Fecha Final {4}",
 					NOMBRE_PROVIDA,
                     fondo ?? "*",
-					mesAnno.ToString("MM/yyyy"),
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					mesAnno.ToString("MM/yyyy", CultureInfo.InvariantCulture),
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpProvidaUrlApiBase;
 
@@ -670,7 +670,7 @@ namespace QueTalMiAFPCdk.Services {
 						</tem:histquotavalue>
 					</soapenv:Body>
 				</soapenv:Envelope>";
-				body = string.Format(body, mesAnno.ToString("yyyyMM"));
+				body = string.Format(body, mesAnno.ToString("yyyyMM", CultureInfo.InvariantCulture));
 
                 HttpClient request = new(new HttpClientHandler {
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -717,9 +717,9 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Mes/Año {2} - Fecha Inicio {3} - Fecha Final {4} - {5} Valores Cuota",
                     NOMBRE_PROVIDA,
                     fondo ?? "*",
-                    mesAnno.ToString("MM/yyyy"),
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    mesAnno.ToString("MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -738,14 +738,14 @@ namespace QueTalMiAFPCdk.Services {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_UNO,
                     fondo ?? "*",
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _afpUnoUrlApiBase;
 
                 var objParametros = new {
-                    fechaInicio = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd"),
-                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd")
+                    fechaInicio = fechaInicio.AddDays(-7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    fechaFin = fechaFinal.AddDays(7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                 };
                 string parametros = JsonConvert.SerializeObject(objParametros);
 
@@ -786,8 +786,8 @@ namespace QueTalMiAFPCdk.Services {
                 RegistrarLog(string.Format("Terminó extracción de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3} - {4} Valores Cuota",
                     NOMBRE_UNO,
                     fondo ?? "*",
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -805,8 +805,8 @@ namespace QueTalMiAFPCdk.Services {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores UF de Mindicador - Año: {0} - Fecha Inicio {1} - Fecha Final {2}",
 					anno.Year,
-					fechaInicio.ToString("dd/MM/yyyy"),
-					fechaFinal.ToString("dd/MM/yyyy")));
+					fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+					fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
 				string url_api_base = _valoresUfUrlApiBase;
 				string url_api = string.Format(url_api_base, anno.Year);
@@ -848,8 +848,8 @@ namespace QueTalMiAFPCdk.Services {
 
                 RegistrarLog(string.Format("Terminó extracción de Mindicador - Año {0} - Fecha Inicio {1} - Fecha Final {2} - {3} Valores UF",
                     anno.Year,
-                    fechaInicio.ToString("dd/MM/yyyy"),
-                    fechaFinal.ToString("dd/MM/yyyy"),
+                    fechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     retorno.Count));
 
                 return retorno;
@@ -865,12 +865,12 @@ namespace QueTalMiAFPCdk.Services {
 			try {
 				RegistrarLog(string.Format("Extrayendo comisiones de SPensiones - {0} - Mes/Año {1}",
 						Afp ?? "Todas las AFPs",
-						mesAnno.ToString("MM/yyyy")));
+						mesAnno.ToString("MM/yyyy", CultureInfo.InvariantCulture)));
 
 				await RandomWait();
 
 				string url_api_base = _comisionesUrlApiBase; // 20210201
-				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMMdd"));
+				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMMdd", CultureInfo.InvariantCulture));
 
                 HttpClient request = new(new HttpClientHandler {
                     AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -924,7 +924,7 @@ namespace QueTalMiAFPCdk.Services {
 				}
 				RegistrarLog(string.Format("Terminó extracción de SPensiones - {0} - Mes/Año {1} - {2} Comisiones AFP",
 								Afp ?? "Todas las AFPs",
-								mesAnno.ToString("MM/yyyy"),
+								mesAnno.ToString("MM/yyyy", CultureInfo.InvariantCulture),
 								retorno.Count));
 
 				return retorno;
@@ -940,12 +940,12 @@ namespace QueTalMiAFPCdk.Services {
 			try {
 				RegistrarLog(string.Format("Extrayendo comisiones CAV de SPensiones - {0} - Mes/Año {1}",
 						Afp ?? "Todas las AFPs",
-						mesAnno.ToString("MM/yyyy")));
+						mesAnno.ToString("MM/yyyy", CultureInfo.InvariantCulture)));
 
 				await RandomWait();
 
 				string url_api_base = _comisionesCavUrlApiBase; // 202102
-				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMM"));
+				string url_api = string.Format(url_api_base, mesAnno.ToString("yyyyMM", CultureInfo.InvariantCulture));
 
 				HttpClient request = new(new HttpClientHandler {
 					AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
@@ -1003,7 +1003,7 @@ namespace QueTalMiAFPCdk.Services {
 				}
 				RegistrarLog(string.Format("Terminó extracción CAV - SPensiones - {0} - Mes/Año {1} - {2} Comisiones CAV AFP",
 								Afp ?? "Todas las AFPs",
-								mesAnno.ToString("MM/yyyy"),
+								mesAnno.ToString("MM/yyyy", CultureInfo.InvariantCulture),
 								retorno.Count));
 
 				return retorno;

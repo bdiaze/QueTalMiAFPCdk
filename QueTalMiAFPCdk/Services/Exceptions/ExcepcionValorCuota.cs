@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
@@ -14,8 +15,8 @@ namespace QueTalMiAFPCdk.Services.Exceptions {
 			return string.Format("Error al extraer valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}:\n{4}", 
 				Afp,
                 Fondo ?? "*",
-				FechaInicio.ToString("dd/MM/yyyy"),
-				FechaFinal.ToString("dd/MM/yyyy"),
+				FechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+				FechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
 				InnerException!.Message);
 		}
 	}

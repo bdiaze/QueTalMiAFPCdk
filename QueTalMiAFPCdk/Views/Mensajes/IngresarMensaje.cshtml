@@ -1,4 +1,5 @@
 ﻿@using QueTalMiAFPCdk.Models.Entities
+@using System.Globalization
 @model MensajeUsuario
 @{
     ViewData["Title"] = "¡Mensaje recibido!";
@@ -24,7 +25,7 @@
     <tbody>
         <tr>
             <td class="w-25"><b>Fecha ingreso</b></td>
-            <td>@Model.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss")</td>
+            <td>@Model.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture)</td>
         </tr>
         <tr>
             <td><b>Nombre</b></td>

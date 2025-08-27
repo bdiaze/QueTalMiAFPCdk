@@ -95,7 +95,7 @@ namespace QueTalMiAFPCdk.Controllers {
             foreach (string fondo in "A,B,C,D,E".Split(",")) {
                 DateTime fecha = fechaHastaHistorial;
                 while (fecha >= fechaDesdeHistorial) {
-                    CuotaUf? cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha == fecha.ToString("yyyy-MM-dd")).FirstOrDefault();
+                    CuotaUf? cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha == fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).FirstOrDefault();
 
                     // Si no tenemos valor cuota para la fecha indicada, se marca como null o con la valor cuota anterior.
                     if (cuotaUf == null) {

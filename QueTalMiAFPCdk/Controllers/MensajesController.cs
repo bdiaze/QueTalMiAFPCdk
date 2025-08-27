@@ -5,11 +5,12 @@ using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
+using System.Globalization;
 using System.Net;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class MensajesController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, ICuotaUfComisionDAO cuotaUfComisionDAO, EnvioCorreo envioCorreo) : Controller {
+	public class MensajesController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, EnvioCorreo envioCorreo) : Controller {
 		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
 		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
 		private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
@@ -51,7 +52,7 @@ namespace QueTalMiAFPCdk.Controllers {
 
             Dictionary<string, string> datos = new() {
                 { "[IdMensaje]", WebUtility.HtmlEncode(mensajeResultado!.IdMensaje.ToString()) },
-                { "[FechaIngreso]", WebUtility.HtmlEncode(mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss")) },
+                { "[FechaIngreso]", WebUtility.HtmlEncode(mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture)) },
                 { "[Nombre]", WebUtility.HtmlEncode(mensajeResultado!.Nombre) },
                 { "[Correo]", WebUtility.HtmlEncode(mensajeResultado!.Correo) },
                 { "[Mensaje]", WebUtility.HtmlEncode(mensajeResultado!.Mensaje) },

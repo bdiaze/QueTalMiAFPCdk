@@ -244,14 +244,14 @@
                         </span>
                     </div>
 
-                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaInicio" />
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaInicio" />
                     <div class="input-group-append input-group-prepend">
                         <span class="input-group-text">
                             <label style="margin-bottom:0px;">al</label>
                         </span>
                     </div>
 
-                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaFinal" />
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaFinal" />
                     <div class="input-group-append">
                         <span class="input-group-text">
                             <i class="far fa-calendar-alt"></i>
@@ -451,14 +451,14 @@
                         </span>
                     </div>
 
-                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaInicioEjemplo" onchange="actualizarUrlEjemplo()" />
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaInicioEjemplo" onchange="actualizarUrlEjemplo()" />
                     <div class="input-group-append input-group-prepend">
                         <span class="input-group-text">
                             <label style="margin-bottom:0px;">al</label>
                         </span>
                     </div>
 
-                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy")" type="text" class="form-control" id="fechaFinalEjemplo" onchange="actualizarUrlEjemplo()" />
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaFinalEjemplo" onchange="actualizarUrlEjemplo()" />
                     <div class="input-group-append">
                         <span class="input-group-text">
                             <i class="far fa-calendar-alt"></i>

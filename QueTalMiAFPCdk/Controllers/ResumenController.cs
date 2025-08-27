@@ -114,7 +114,7 @@ namespace QueTalMiAFPCdk.Controllers {
             Task<List<SalObtenerUltimaCuota>> taskCuotasPremio = cuotaUfComisionDAO.ObtenerUltimaCuota(
                 "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
                 "A,B,C,D,E",
-                String.Join(",", listaFechasPremios.Select(f => f.ToString("dd/MM/yyyy"))),
+                String.Join(",", listaFechasPremios.Select(f => f.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))),
                 1
             );
 
