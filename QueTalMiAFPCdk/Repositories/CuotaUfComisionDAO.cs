@@ -19,10 +19,10 @@ namespace QueTalMiAFPCdk.Repositories {
         Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo);
     }
 
-	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
-		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
-		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
-		private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
+	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
+		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/Url").Result;
+		private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/KeyId").Result).Result;
+        private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
 
 		private readonly EntCorreoDireccion _direccionDeDefecto = JsonConvert.DeserializeObject<EntCorreoDireccion>(parameterStore.ObtenerParametro("/QueTalMiAFP/SES/DireccionDeDefecto").Result)!;
 		private readonly string _hermesBaseUrl = parameterStore.ObtenerParametro("/Hermes/Api/Url").Result;

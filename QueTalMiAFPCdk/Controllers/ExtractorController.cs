@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Amazon.APIGateway.Model;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,9 +13,9 @@ using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class ExtractorController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager) : Controller {
-		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
-		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
+	public class ExtractorController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, ApiKeyHelper apiKey) : Controller {
+		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/Url").Result;
+        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/KeyId").Result).Result;
 
         private readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
 

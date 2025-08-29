@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Amazon.APIGateway.Model;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using QueTalMiAFPCdk.Models.Entities;
 using QueTalMiAFPCdk.Models.Others;
@@ -10,10 +11,10 @@ using System.Net;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class MensajesController(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, EnvioCorreo envioCorreo) : Controller {
-		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
-		private readonly string _xApiKey = secretManager.ObtenerSecreto("/QueTalMiAFP").Result.ApiKey;
-		private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
+	public class MensajesController(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, EnvioCorreo envioCorreo) : Controller {
+		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/Url").Result;
+        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/KeyId").Result).Result;
+        private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
 
         public async Task<IActionResult> Index() {
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));

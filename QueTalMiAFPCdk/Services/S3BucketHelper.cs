@@ -8,7 +8,7 @@ namespace QueTalMiAFPCdk.Services {
 
         public async Task<string> GetFile(string keyName) {
             string assumeRole = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/AssumeRoleArn").Result;
-            string bucketName = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/S3BucketName").Result;
+            string bucketName = parameterStore.ObtenerParametro("/QueTalMiAFPAoT/S3/BucketName").Result;
 
             using (AmazonSecurityTokenServiceClient client = new()) {
                 AssumeRoleRequest request = new() {
