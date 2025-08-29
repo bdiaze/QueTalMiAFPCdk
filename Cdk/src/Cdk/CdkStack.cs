@@ -19,9 +19,9 @@ namespace Cdk
             string ec2Host = System.Environment.GetEnvironmentVariable("EC2_HOST") ?? throw new ArgumentNullException("EC2_HOST");
             string ec2RoleArn = System.Environment.GetEnvironmentVariable("EC2_ROLE_ARN") ?? throw new ArgumentNullException("EC2_ROLE_ARN");
             string prefixRolesWebServer = System.Environment.GetEnvironmentVariable("PREFIX_ROLES_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_ROLES_WEB_SERVER");
-            string s3bucketArn = System.Environment.GetEnvironmentVariable("S3_BUCKET_ARN") ?? throw new ArgumentNullException("S3_BUCKET_ARN");
             string developmentUser = System.Environment.GetEnvironmentVariable("DEVELOPMENT_USER") ?? throw new ArgumentException("DEVELOPMENT_USER");
 
+            #region URL Scrapers
             string afpModeloUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_URL_API_BASE");
             string afpModeloV2UrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_V2_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_V2_URL_API_BASE");
             string afpModeloV3UrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_V3_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_V3_URL_API_BASE");
@@ -37,37 +37,50 @@ namespace Cdk
             string valoresUfUrlApiBase = System.Environment.GetEnvironmentVariable("VALORES_UF_URL_API_BASE") ?? throw new ArgumentNullException("VALORES_UF_URL_API_BASE");
             string comisionesUrlApiBase = System.Environment.GetEnvironmentVariable("COMISIONES_URL_API_BASE") ?? throw new ArgumentNullException("COMISIONES_URL_API_BASE");
             string comisionesCavUrlApiBase = System.Environment.GetEnvironmentVariable("COMISIONES_CAV_URL_API_BASE") ?? throw new ArgumentNullException("COMISIONES_CAV_URL_API_BASE");
-            
+            #endregion
+
             string queTalMiAfpExtractionKey = System.Environment.GetEnvironmentVariable("QUETALMIAFP_EXTRACTION_KEY") ?? throw new ArgumentNullException("QUETALMIAFP_EXTRACTION_KEY");
-            string queTalMiAfpApiUrl = System.Environment.GetEnvironmentVariable("QUETALMIAFP_API_URL") ?? throw new ArgumentNullException("QUETALMIAFP_API_URL");
-            string queTalMiAfpApiKey = System.Environment.GetEnvironmentVariable("QUETALMIAFP_API_KEY") ?? throw new ArgumentNullException("QUETALMIAFP_API_KEY");
-            string queTalMiAfpS3BucketName = System.Environment.GetEnvironmentVariable("QUETALMIAFP_S3_BUCKET_NAME") ?? throw new ArgumentNullException("QUETALMIAFP_S3_BUCKET_NAME");
             string queTalMiAfpMaxRetries = System.Environment.GetEnvironmentVariable("QUETALMIAFP_MAX_RETRIES") ?? throw new ArgumentNullException("QUETALMIAFP_MAX_RETRIES");
             string queTalMiAfpMilisegForzarTimeout = System.Environment.GetEnvironmentVariable("QUETALMIAFP_MILISEG_FORZAR_TIMEOUT") ?? throw new ArgumentNullException("QUETALMIAFP_MILISEG_FORZAR_TIMEOUT");
-            
+
+            #region Mercado Pago
             string mercadoPagoPublicKey = System.Environment.GetEnvironmentVariable("MERCADOPAGO_PUBLIC_KEY") ?? throw new ArgumentNullException("MERCADOPAGO_PUBLIC_KEY");
             string mercadoPagoAccessToken = System.Environment.GetEnvironmentVariable("MERCADOPAGO_ACCESS_TOKEN") ?? throw new ArgumentNullException("MERCADOPAGO_ACCESS_TOKEN");
             string mercadoPagoUrlSuccess = System.Environment.GetEnvironmentVariable("MERCADOPAGO_URL_SUCCESS") ?? throw new ArgumentNullException("MERCADOPAGO_URL_SUCCESS");
             string mercadoPagoUrlFailure = System.Environment.GetEnvironmentVariable("MERCADOPAGO_URL_FAILURE") ?? throw new ArgumentNullException("MERCADOPAGO_URL_FAILURE");
             string mercadoPagoUrlPending = System.Environment.GetEnvironmentVariable("MERCADOPAGO_URL_PENDING") ?? throw new ArgumentNullException("MERCADOPAGO_URL_PENDING");
-            
+            #endregion
+
+            #region Google Recaptcha
             string googleRecaptchaClientKey = System.Environment.GetEnvironmentVariable("GOOGLE_RECAPTCHA_CLIENT_KEY") ?? throw new ArgumentNullException("GOOGLE_RECAPTCHA_CLIENT_KEY");
             string googleRecaptchaSecretKey = System.Environment.GetEnvironmentVariable("GOOGLE_RECAPTCHA_SECRET_KEY") ?? throw new ArgumentNullException("GOOGLE_RECAPTCHA_SECRET_KEY");
-            
+            #endregion
+
             string emailDireccionNotificacion = System.Environment.GetEnvironmentVariable("EMAIL_DIRECCION_NOTIFICACION") ?? throw new ArgumentNullException("EMAIL_DIRECCION_NOTIFICACION");
             string emailNombreNotificacion = System.Environment.GetEnvironmentVariable("EMAIL_NOMBRE_NOTIFICACION") ?? throw new ArgumentNullException("EMAIL_NOMBRE_NOTIFICACION");
-            
+
+            #region Cognito
             string arnParameterUserPoolId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_ID");
             string arnParameterUserPoolClientId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_USER_POOL_CLIENT_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_USER_POOL_CLIENT_ID");
             string arnParameterCognitoRegion = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_REGION") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_REGION");
             string arnParameterCognitoBaseUrl = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_BASE_URL") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_BASE_URL");
             string arnParameterCognitoCallbacks = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_CALLBACKS") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_CALLBACKS");
             string arnParameterCognitoLogouts = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_COGNITO_LOGOUTS") ?? throw new ArgumentNullException("ARN_PARAMETER_COGNITO_LOGOUTS");
+            #endregion 
 
             string arnParameterSesDireccionDeDefecto = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_SES_DIRECCION_DE_DEFECTO") ?? throw new ArgumentNullException("ARN_PARAMETER_SES_DIRECCION_DE_DEFECTO");
 
+            #region Hermes
             string arnParameterHermesApiUrl = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_HERMES_API_URL") ?? throw new ArgumentNullException("ARN_PARAMETER_HERMES_API_URL");
             string arnParameterHermesApiKeyId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_HERMES_API_KEY_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_HERMES_API_KEY_ID");
+            #endregion
+
+            #region API QueTalMiAFP
+            string arnParameterQueTalMiAFPApiUrl = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_URL") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_URL");
+            string arnParameterQueTalMiAFPApiKeyId = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_KEY_ID") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_KEY_ID");
+            string arnParameterQueTalMiAFPApiBucketArn = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_ARN") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_ARN");
+            string arnParameterQueTalMiAFPApiBucketName = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME");
+            #endregion
 
             IHostedZone hostedZone = HostedZone.FromLookup(this, $"{appName}WebServerHostedZone", new HostedZoneProviderProps {
                 DomainName = domainName
@@ -81,6 +94,7 @@ namespace Cdk
                 DomainName = ec2Host
             });
 
+            #region String Parameters URL Scrapers
             // Se crean todos los parámetros de URL para la extracción de valores...
             StringParameter strParAfpModeloUrlApiBase = new(this, $"{appName}StringParameterAfpModeloUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModelo/UrlApiBase",
@@ -172,20 +186,9 @@ namespace Cdk
                 StringValue = comisionesCavUrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
+            #endregion
 
             // Se crean todos los parámetros de la API de QueTalMiAFP...
-            StringParameter strParApiUrl = new(this, $"{appName}StringParameterApiUrl", new StringParameterProps {
-                ParameterName = $"/{appName}/Api/Url",
-                Description = $"URL de API - {appName}",
-                StringValue = queTalMiAfpApiUrl,
-                Tier = ParameterTier.STANDARD,
-            });
-            StringParameter strParApiS3BucketName = new(this, $"{appName}StringParameterApiS3BucketName", new StringParameterProps {
-                ParameterName = $"/{appName}/Api/S3BucketName",
-                Description = $"S3 bucket name de API - {appName}",
-                StringValue = queTalMiAfpS3BucketName,
-                Tier = ParameterTier.STANDARD,
-            });
             StringParameter strParApiMaxRetries = new(this, $"{appName}StringParameterApiMaxRetries", new StringParameterProps {
                 ParameterName = $"/{appName}/Api/MaxRetries",
                 Description = $"Max retries de API - {appName}",
@@ -199,6 +202,7 @@ namespace Cdk
                 Tier = ParameterTier.STANDARD,
             });
 
+            #region String Parameters Mercado Pago
             // Se crean todos los parámetros de Mercado Pago...
             StringParameter strParMercadoPagoPublicKey = new(this, $"{appName}StringParameterMercadoPagoPublicKey", new StringParameterProps {
                 ParameterName = $"/{appName}/MercadoPago/PublicKey",
@@ -224,6 +228,7 @@ namespace Cdk
                 StringValue = mercadoPagoUrlPending,
                 Tier = ParameterTier.STANDARD,
             });
+            #endregion
 
             // Se crean todos los parámetros de Google Recaptcha...
             StringParameter strParGoogleRecaptchaClientKey = new(this, $"{appName}StringParameterGoogleRecaptchaClientKey", new StringParameterProps {
@@ -253,7 +258,6 @@ namespace Cdk
                 Description = $"Secretos de la aplicacion {appName}",
                 SecretObjectValue = new Dictionary<string, SecretValue> {
                     { "ExtractorKey", SecretValue.UnsafePlainText(queTalMiAfpExtractionKey) },
-                    { "ApiKey", SecretValue.UnsafePlainText(queTalMiAfpApiKey) },
                     { "MercadoPagoAccessToken", SecretValue.UnsafePlainText(mercadoPagoAccessToken) },
                     { "GoogleRecaptchaSecretKey", SecretValue.UnsafePlainText(googleRecaptchaSecretKey) },
                 },
@@ -261,6 +265,10 @@ namespace Cdk
 
             // Se obtiene ARN del API Key...
             IStringParameter strParHermesApiKeyId = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterHermesApiKeyId", arnParameterHermesApiKeyId);
+            IStringParameter strParQueTalMiAFPApiKeyId = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterQueTalMiAFPApiKeyId", arnParameterQueTalMiAFPApiKeyId);
+
+            // Se obtiene ARN del bucket S3 de la API...
+            IStringParameter strParQueTalMiAFPApiBucketArn = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterQueTalMiAFPApiBucketArn", arnParameterQueTalMiAFPApiBucketArn);
 
             // Se crea rol de la subapp que asumirá la instancia web server...
             Role assumeRole = new(this, $"{appName}WebServerRole", new RoleProps {
@@ -281,7 +289,7 @@ namespace Cdk
                                         "s3:GetObject"
                                     ],
                                     Resources = [
-                                        $"{s3bucketArn}/*",
+                                        $"{strParQueTalMiAFPApiBucketArn.StringValue}/*",
                                     ],
                                 }),
                                 new PolicyStatement(new PolicyStatementProps{
@@ -316,8 +324,6 @@ namespace Cdk
                                         strParComisionesCavUrlApiBase.ParameterArn,
                                         strParApiMaxRetries.ParameterArn,
                                         strParApiMilisegForzarTimeout.ParameterArn,
-                                        strParApiS3BucketName.ParameterArn,
-                                        strParApiUrl.ParameterArn,
                                         strParEmailDireccionNotif.ParameterArn,
                                         strParEmailNombreNotif.ParameterArn,
                                         strParGoogleRecaptchaClientKey.ParameterArn,
@@ -334,6 +340,9 @@ namespace Cdk
                                         arnParameterSesDireccionDeDefecto,
                                         arnParameterHermesApiUrl,
                                         arnParameterHermesApiKeyId,
+                                        arnParameterQueTalMiAFPApiUrl,
+                                        arnParameterQueTalMiAFPApiKeyId,
+                                        arnParameterQueTalMiAFPApiBucketName,
                                     ],
                                 }),
                                 new PolicyStatement(new PolicyStatementProps{
@@ -343,6 +352,7 @@ namespace Cdk
                                     ],
                                     Resources = [
                                         $"arn:aws:apigateway:{this.Region}::/apikeys/{strParHermesApiKeyId.StringValue}",
+                                        $"arn:aws:apigateway:{this.Region}::/apikeys/{strParQueTalMiAFPApiKeyId.StringValue}",
                                     ],
                                 }),
                             ]
