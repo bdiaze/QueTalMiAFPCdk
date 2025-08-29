@@ -128,7 +128,7 @@ label.em5 {
     height: 60rem;
 }
 
-@media (max-width:600px) {
+@media (max-width:768px) {
     .chartSimulacion {
         width: 100%;
         height: 104.5rem;
