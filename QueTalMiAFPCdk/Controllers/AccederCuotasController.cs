@@ -37,8 +37,8 @@ namespace QueTalMiAFPCdk.Controllers {
             int? inputMes = modeloEntrada.Historial?.Mes;
             int? inputAnno = modeloEntrada.Historial?.Anno;
 
-            DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
-
+            DateTime fechaActual = await cuotaUfComisionDAO.UltimaFechaTodas();
+            
             // Se añaden valores por defecto para inputs...
             inputAnno ??= fechaActual.Year;
             inputMes ??= fechaActual.Month;
