@@ -128,7 +128,8 @@ namespace QueTalMiAFPCdk.Controllers {
 
                 List<string> fondos = [ "A", "B", "C", "D", "E" ];
                 foreach (string fondo in fondos) {
-                    tasksCuotas.Add(extractor.ObtenerCuotasCapitalV2(fechaInicioParc, fechaFinalParc, fondo));
+					// tasksCuotas.Add(extractor.ObtenerCuotasSPensiones(fechaInicioParc, fechaFinalParc, fondo));
+					List<Cuota> cuotasSPensiones = await extractor.ObtenerCuotasSPensiones(fechaInicioParc, fechaFinalParc, fondo);
                 }
 
 				tasksCuotas.Add(extractor.ObtenerCuotasHabitat(fechaInicioParc, fechaFinalParc, null));

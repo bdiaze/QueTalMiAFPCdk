@@ -22,6 +22,7 @@ namespace Cdk
             string developmentUser = System.Environment.GetEnvironmentVariable("DEVELOPMENT_USER") ?? throw new ArgumentException("DEVELOPMENT_USER");
 
             #region URL Scrapers
+            string sPensionesUrlApiBase = System.Environment.GetEnvironmentVariable("SPENSIONES_URL_API_BASE") ?? throw new ArgumentNullException("SPENSIONES_URL_API_BASE");
             string afpModeloUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_URL_API_BASE");
             string afpModeloV2UrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_V2_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_V2_URL_API_BASE");
             string afpModeloV3UrlApiBase = System.Environment.GetEnvironmentVariable("AFP_MODELO_V3_URL_API_BASE") ?? throw new ArgumentNullException("AFP_MODELO_V3_URL_API_BASE");
@@ -29,7 +30,6 @@ namespace Cdk
             string afpModeloV3Base64IV = System.Environment.GetEnvironmentVariable("AFP_MODELO_V3_BASE64_IV") ?? throw new ArgumentNullException("AFP_MODELO_V3_BASE64_IV");
             string afpCuprumUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_CUPRUM_URL_API_BASE") ?? throw new ArgumentNullException("AFP_CUPRUM_URL_API_BASE");
             string afpCapitalUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_CAPITAL_URL_API_BASE") ?? throw new ArgumentNullException("AFP_CAPITAL_URL_API_BASE");
-            string afpCapitalV2UrlApiBase = System.Environment.GetEnvironmentVariable("AFP_CAPITAL_V2_URL_API_BASE") ?? throw new ArgumentNullException("AFP_CAPITAL_V2_URL_API_BASE");
             string afpHabitatUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_HABITAT_URL_API_BASE") ?? throw new ArgumentNullException("AFP_HABITAT_URL_API_BASE");
             string afpPlanvitalUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_PLANVITAL_URL_API_BASE") ?? throw new ArgumentNullException("AFP_PLANVITAL_URL_API_BASE");
             string afpProvidaUrlApiBase = System.Environment.GetEnvironmentVariable("AFP_PROVIDA_URL_API_BASE") ?? throw new ArgumentNullException("AFP_PROVIDA_URL_API_BASE");
@@ -96,6 +96,12 @@ namespace Cdk
 
             #region String Parameters URL Scrapers
             // Se crean todos los parámetros de URL para la extracción de valores...
+            StringParameter strParSPensionesUrlApiBase = new(this, $"{appName}StringParameterSPensionesUrlApiBase", new StringParameterProps { 
+                ParameterName = $"/{appName}/Extractor/SPensiones/UrlApiBase",
+                Description = $"URL API Base para extraccion de valores cuota de SPensiones - {appName}",
+                StringValue = sPensionesUrlApiBase,
+                Tier = ParameterTier.STANDARD
+            });
             StringParameter strParAfpModeloUrlApiBase = new(this, $"{appName}StringParameterAfpModeloUrlApiBase", new StringParameterProps {
                 ParameterName = $"/{appName}/Extractor/AFPModelo/UrlApiBase",
                 Description = $"URL API Base para extraccion de AFP Modelo - {appName}",
@@ -136,12 +142,6 @@ namespace Cdk
                 ParameterName = $"/{appName}/Extractor/AFPCapital/UrlApiBase",
                 Description = $"URL API Base para extraccion de AFP Capital - {appName}",
                 StringValue = afpCapitalUrlApiBase,
-                Tier = ParameterTier.STANDARD,
-            });
-            StringParameter strParAfpCapitalV2UrlApiBase = new(this, $"{appName}StringParameterAfpCapitalV2UrlApiBase", new StringParameterProps {
-                ParameterName = $"/{appName}/Extractor/AFPCapitalV2/UrlApiBase",
-                Description = $"URL API Base para extraccion de AFP Capital v2 - {appName}",
-                StringValue = afpCapitalV2UrlApiBase,
                 Tier = ParameterTier.STANDARD,
             });
             StringParameter strParAfpHabitatUrlApiBase = new(this, $"{appName}StringParameterAfpHabitatUrlApiBase", new StringParameterProps {
@@ -307,8 +307,8 @@ namespace Cdk
                                         "ssm:GetParameter"
                                     ],
                                     Resources = [
+                                        strParSPensionesUrlApiBase.ParameterArn,
                                         strParAfpCapitalUrlApiBase.ParameterArn,
-                                        strParAfpCapitalV2UrlApiBase.ParameterArn,
                                         strParAfpCuprumUrlApiBase.ParameterArn,
                                         strParAfpHabitatUrlApiBase.ParameterArn,
                                         strParAfpModeloUrlApiBase.ParameterArn,
