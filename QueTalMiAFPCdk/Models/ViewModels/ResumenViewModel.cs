@@ -23,6 +23,7 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
         public required string UrlLogo { get; set; }
         public int Ancho { get; set; } = 20;
         public int? Alto { get; set; } = null;
+        public bool SinMarginBottom { get; set; } = false;
 
         public Dictionary<string, List<CuotaRentabilidadDia?>> ValoresCuota { get; set; } = new Dictionary<string, List<CuotaRentabilidadDia?>> {
             { "A", [] },

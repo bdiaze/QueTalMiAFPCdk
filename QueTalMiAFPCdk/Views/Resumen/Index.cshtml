@@ -198,8 +198,8 @@
                         @{
                             afpLogo = Model.Resumen.UltimaSemana.First(c => c.Nombre.ToUpper() == Model.Premios.Ganadores[periodo].Afp);
                         }
-                        <img class="rounded mx-auto d-block mb-2" 
-                             style="width: 7rem;" 
+                        <img class="rounded mx-auto d-block @(!afpLogo.SinMarginBottom ? "mb-2": "")" 
+                             style="width: 7rem;@(afpLogo.Alto != null ? $"height: {(afpLogo.Alto * 0.31)?.ToString(CultureInfo.InvariantCulture)}rem;": "")" 
                              src="@(afpLogo.UrlLogo)" 
                              alt="AFP @(Model.Premios.Ganadores[periodoActual].Afp) "/>
                         <p class="text-center m-0 fondoAnterior">

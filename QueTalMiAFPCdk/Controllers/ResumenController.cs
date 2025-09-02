@@ -56,6 +56,7 @@ namespace QueTalMiAFPCdk.Controllers {
             };
 
             salida.Resumen.UltimaSemana.First(u => u.Nombre == "PlanVital").Alto = 10;
+            salida.Resumen.UltimaSemana.First(u => u.Nombre == "Modelo").SinMarginBottom = true;
 
             // Se obtiene el filtro por defecto a mostrar en el resumen...
             string? fondoSeleccionado = Request.Cookies["FiltroResumenFondoSeleccionado"];
