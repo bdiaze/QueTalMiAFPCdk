@@ -121,6 +121,10 @@ namespace QueTalMiAFPCdk.Services {
                         DateTime fecha = new(int.Parse(diaMesAnno[0]), int.Parse(diaMesAnno[1]), int.Parse(diaMesAnno[2]));
 
                         foreach (string afp in posAfp.Keys) {
+                            if (posAfp[afp] == null || celdas[posAfp[afp]!.Value].Length == 0) {
+                                continue;
+                            }
+
                             decimal valorCuota = decimal.Parse(celdas[posAfp[afp]!.Value].Replace(".", "").Replace(",", "."), CultureInfo.InvariantCulture);
 
                             if (fechaInicio <= fecha && fecha <= fechaFinal) {
