@@ -21,7 +21,7 @@
 
 <div>
     <img class="rounded d-block mr-3" style="float: left; width: min(300px, 30vw);" src="~/images/completo.webp" />
-    <div class="align-middle d-flex align-items-center" style="height: min(300px, 30vw);">
+    <div class="align-middle d-flex align-items-center" style="height: min(300px, 45vw);">
         <p class="text-center text-muted">
             ¿Te ha gustado tanto nuestro trabajo que te gustaría hacernos un donativo? ¡Pues este es el lugar para ello! 
             Un donativo, o como nosotros le llamamos, <cite>"una invitación a unos completitos"</cite>, es siempre muy bien recibido por nuestro equipo. 
@@ -39,16 +39,18 @@
             </div>
             <input asp-for="Monto" type="text" id="inputMonto" class="form-control" required />
         </div>
-        <span style="margin-left: 12.4em" asp-validation-for="Monto"></span>
+        <div class="text-center pt-1">
+            <span asp-validation-for="Monto"></span>
+        </div>
 
-        <input class="btn btn-success mt-3 py-3 px-0 w-100" type="submit" value="¡Ir a los métodos de pago!" />
+        <input class="btn btn-success mt-2 py-3 px-0 w-100" type="submit" value="¡Ir a los métodos de pago!" />
     </form>
 } else {
     <div class="input-group input-group-lg">
         <div class="input-group-prepend">
-            <button class="btn btn-outline-secondary px-4" type="button" onclick="cargarMonto('$1.000')" disabled>$1.000</button>
-            <button class="btn btn-outline-secondary px-4" type="button" onclick="cargarMonto('$5.000')" disabled>$5.000</button>
-            <button class="btn btn-outline-secondary px-4" type="button" onclick="cargarMonto('$10.000')" disabled>$10.000</button>
+            <button class="btn btn-outline-secondary px-3" type="button" onclick="cargarMonto('$1.000')" disabled>$1.000</button>
+            <button class="btn btn-outline-secondary px-3" type="button" onclick="cargarMonto('$5.000')" disabled>$5.000</button>
+            <button class="btn btn-outline-secondary px-3" type="button" onclick="cargarMonto('$10.000')" disabled>$10.000</button>
         </div>
         <input asp-for="Monto" type="text" id="inputMonto" class="form-control" required disabled/>
     </div>

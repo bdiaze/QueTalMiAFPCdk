@@ -20,7 +20,7 @@ namespace QueTalMiAFPCdk.Controllers {
             // Se le quita el formato al monto ingresado...
             string montoSinFormato = "";
             for (int i = 0; i < model.Monto.Length; i++) {
-                if ("0123456789".IndexOf(model.Monto[i]) >= 0) {
+                if ("0123456789".Contains(model.Monto[i])) {
                     montoSinFormato += model.Monto[i];
                 } else if (model.Monto[i] == ',') {
                     break;
