@@ -20,8 +20,8 @@ namespace QueTalMiAFPCdk.Repositories {
     }
 
 	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
-		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/Url").Result;
-		private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/KeyId").Result).Result;
+		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
+		private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
         private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
 
 		private readonly EntCorreoDireccion _direccionDeDefecto = JsonConvert.DeserializeObject<EntCorreoDireccion>(parameterStore.ObtenerParametro("/QueTalMiAFP/SES/DireccionDeDefecto").Result)!;

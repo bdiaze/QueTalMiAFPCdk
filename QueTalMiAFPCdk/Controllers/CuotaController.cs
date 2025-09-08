@@ -13,8 +13,8 @@ namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class CuotaController(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, ICuotaUfComisionDAO cuotaUfComisionDAO, S3BucketHelper s3BucketHelper) : ControllerBase {
-        private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/Url").Result;
-        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFPAoT/Api/KeyId").Result).Result;
+        private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
+        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
 
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
