@@ -265,7 +265,7 @@ namespace Cdk
 
             // Se obtiene ARN del API Key...
             IStringParameter strParHermesApiKeyId = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterHermesApiKeyId", arnParameterHermesApiKeyId);
-            IStringParameter strParQueTalMiAFPApiKeyId = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterQueTalMiAFPApiKeyId2", arnParameterQueTalMiAFPApiKeyId);
+            IStringParameter strParQueTalMiAFPApiKeyId = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterQueTalMiAFPApiKeyId", arnParameterQueTalMiAFPApiKeyId);
 
             // Se obtiene ARN del bucket S3 de la API...
             IStringParameter strParQueTalMiAFPApiBucketArn = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterQueTalMiAFPApiBucketArn", arnParameterQueTalMiAFPApiBucketArn);
