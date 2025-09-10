@@ -96,7 +96,7 @@ jobs:
               
             - name: CDK Deploy
               working-directory: ${{ vars.DIRECTORIO_CDK }}
-              run: cdk --app cdk.out deploy --require-approval never
+              run: cdk --app cdk.out deploy --require-approval never --no-previous-parameters
                                           
             - name: Publish .NET Application
               run: dotnet publish /p:PublishDir=../publish /p:PublishReadyToRun=true -r linux-arm64 --self-contained true 
