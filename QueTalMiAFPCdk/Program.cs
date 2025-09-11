@@ -62,13 +62,14 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
-builder.Services.AddSingleton<ParameterStoreHelper, ParameterStoreHelper>();
-builder.Services.AddSingleton<SecretManagerHelper, SecretManagerHelper>();
-builder.Services.AddSingleton<ApiKeyHelper, ApiKeyHelper>();
-builder.Services.AddSingleton<S3BucketHelper, S3BucketHelper>();
-builder.Services.AddSingleton<MercadoPagoHelper, MercadoPagoHelper>();
+builder.Services.AddSingleton<ParameterStoreHelper>();
+builder.Services.AddSingleton<SecretManagerHelper>();
+builder.Services.AddSingleton<ApiKeyHelper>();
+builder.Services.AddSingleton<S3BucketHelper>();
+builder.Services.AddSingleton<MercadoPagoHelper>();
 builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
-builder.Services.AddSingleton<EnvioCorreo, EnvioCorreo>();
+builder.Services.AddSingleton<NotificacionDAO>();
+builder.Services.AddSingleton<EnvioCorreo>();
 
 var app = builder.Build();
 

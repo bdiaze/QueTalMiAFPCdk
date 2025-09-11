@@ -18,7 +18,7 @@ namespace QueTalMiAFPCdk.Controllers {
             string? givenName = User.FindFirstValue(ClaimTypes.GivenName);
             string? surname = User.FindFirstValue(ClaimTypes.Surname);
 
-            return RedirectToAction("Index", "Resumen");
+            return RedirectToAction("Index", "Notificaciones");
         }
 
         [Route("logout")]

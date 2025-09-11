@@ -1,0 +1,58 @@
+﻿@using QueTalMiAFPCdk.Models.Entities
+@using QueTalMiAFPCdk.Models.ViewModels
+@model NotificacionesViewModel
+@{
+    ViewData["Title"] = "Mis Notificaciones";
+}
+
+@section Head {
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="~/css/Notificaciones.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/Notificaciones.js" asp-append-version="true"></script>
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="mt-3 text-muted">
+    ¿Cómo? ¡Así es! La información de ¿Qué tal mi AFP? ahora en tu propio correo electrónico. 
+    Suscríbete a las notificaciones que tu quieras y te mandamos a tu correo  
+    la información más actualizada de los fondos de pensiones. 
+</p>
+
+<hr/>
+
+<form method="post">
+    <table class="table table-borderless text-center mt-3">
+        @foreach (TipoNotificacion tipoNotificacion in Model.TipoNotificaciones)
+        {
+            <tr>
+                <td colspan="2" class="pb-0 align-middle">
+                    <h4 class="m-0">@(tipoNotificacion.Nombre)</h4>
+                    <p class="text-center text-muted mt-1 mb-0 periodicidad">@(Model.TipoPeriodicidades.FirstOrDefault(tp => tp.Id == tipoNotificacion.IdTipoPeriodicidad)?.Nombre)</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="align-middle">
+                    <p class="m-0 text-muted text-center">@(tipoNotificacion.Descripcion)</p>
+                </td>
+                <td class="py-0 align-middle">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success @(Model.Seleccion[tipoNotificacion.Id] == 1 ? "active" : "")">
+                            <input type="radio" name="Seleccion[@(tipoNotificacion.Id)]" value="1" @(Model.Seleccion[tipoNotificacion.Id] == 1 ? "checked" : "") />Encendido
+                        </label>
+                        <label class="btn btn-outline-danger @(Model.Seleccion[tipoNotificacion.Id] != 1 ? "active" : "")">
+                            <input type="radio" name="Seleccion[@(tipoNotificacion.Id)]" value="0" @(Model.Seleccion[tipoNotificacion.Id] != 1 ? "checked" : "") />Apagado
+                        </label>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+    <hr/>
+    <div class="text-center px-5 mt-4">
+        <button type="submit" class="btn btn-primary py-2 px-5">Guardar Preferencias</button>
+    </div>
+</form>

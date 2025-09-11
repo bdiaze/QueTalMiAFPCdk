@@ -47,24 +47,22 @@
                         <li class="nav-item text-center d-flex align-items-center px-3">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="Simulador" asp-action="Index">Simula tus Ganancias</a>
                         </li>
-                        <li class="nav-item text-center d-flex align-items-center pl-3">
+                        <li class="nav-item text-center d-flex align-items-center px-3">
                             <a class="nav-link text-dark text-center text-muted" asp-controller="AccederCuotas" asp-action="Index">Consulta los Valores Cuota</a>
                         </li>
-                        @if (environment.IsDevelopment() && false) {
-                            @if (User.Identity == null || !User.Identity.IsAuthenticated) {
-                                <li class="nav-item text-center d-flex align-items-center pl-3">
-                                    <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">¡Iniciar Sesión!</a>
-                                </li>
-                            } else {
-                                <!--
-                                <li class="nav-item text-center d-flex align-items-center px-1">
-                                    <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">Mis Notificaciones</a>
-                                </li>
-                                -->
-                                <li class="nav-item text-center d-flex align-items-center pl-3">
-                                    <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
-                                </li>
-                            }
+                        @if (User.Identity != null && User.Identity.IsAuthenticated) 
+                        {
+                            <li class="nav-item text-center d-flex align-items-center px-3">
+                                <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">Mis Notificaciones</a>
+                            </li>
+                            <li class="nav-item text-center d-flex align-items-center pl-3">
+                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
+                            </li>
+                        } else if (environment.IsDevelopment())
+                        {
+                            <li class="nav-item text-center d-flex align-items-center pl-3">
+                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">¡Iniciar Sesión!</a>
+                            </li>
                         }
                     </ul>
                 </div>
