@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="icon" href="~/flavicon.svg" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/af8e5553ff1adba06d2923ba/script.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7254462863498582" crossorigin="anonymous"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE5H36HX4Q"></script>
@@ -53,15 +54,21 @@
                         @if (User.Identity != null && User.Identity.IsAuthenticated) 
                         {
                             <li class="nav-item text-center d-flex align-items-center px-3">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">Mis Notificaciones</a>
+                                <a class="nav-link text-dark text-center text-muted" asp-controller="Notificaciones" asp-action="Index">
+                                    Mis Notificaciones
+                                    <p class="ml-1 mb-0 d-inline new-menu">¡NUEVO!</p>
+                                </a>
                             </li>
                             <li class="nav-item text-center d-flex align-items-center pl-3">
                                 <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
                             </li>
-                        } else if (environment.IsDevelopment())
+                        } else 
                         {
                             <li class="nav-item text-center d-flex align-items-center pl-3">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">¡Iniciar Sesión!</a>
+                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Login">
+                                    ¡Iniciar Sesión!
+                                    <p class="ml-1 mb-0 d-inline new-menu">¡NUEVO!</p>
+                                </a>
                             </li>
                         }
                     </ul>
@@ -84,6 +91,32 @@
 
     <div class="container">
         <main role="main" class="pb-3">
+            @{
+                string? noticiaYaCerrada = Context?.Request?.Cookies["NoticiaYaCerrada20250913"];
+            }
+
+            @if (noticiaYaCerrada != "S") {
+                <div id="noticias" class="alert alert-primary alert-dismissible fade show" role="alert">
+                    <b>¡Te tenemos novedades!</b><br/>
+                    <ul class="m-0">
+                        <li>
+                            ¡Ya puedes recibir en tu correo nuestro resumen semanal! 👌<br />
+                            <span class="m-0">Crea tu cuenta, inicia sesión, y suscríbete en la sección de "Mis Notificaciones".</span>
+                        </li>
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#noticias').on('closed.bs.alert', function () {
+                            $.cookie("NoticiaYaCerrada20250913", "S", { expires: 365, path: '/' });
+                        });
+                    });
+                </script>
+            }
+
             @RenderBody()
         </main>
     </div>
@@ -114,7 +147,6 @@
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/c5c39de281.js" crossorigin="anonymous"></script>

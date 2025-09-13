@@ -221,3 +221,40 @@ p, h6 {
 .linkSesion {
     font-size: 0.9rem;
 }
+
+.new-menu {
+    font-size: .7rem;
+    line-height: .7rem;
+    background-color: #dc3545;
+    border-radius: 0.4rem;
+    font-weight: 600;
+    color: white;
+    position: relative;
+    top: -0.15rem;
+    padding-left: .5rem;
+    padding-right: .55rem;
+    padding-top: .2rem;
+    padding-bottom: .3rem;
+}
+
+.new-titulo {
+    font-size: .8rem;
+    line-height: .8rem;
+    background-color: #dc3545;
+    border-radius: 0.4rem;
+    font-weight: 500;
+    color: white;
+    padding-left: .5rem;
+    padding-right: .55rem;
+    padding-top: .4rem;
+    padding-bottom: .4rem;
+}
+
+.alert button span {
+    position: relative;
+    top: -.2rem;
+}
+
+.alert li span {
+    font-size: .9rem;
+}
