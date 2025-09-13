@@ -6,5 +6,6 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
         public List<TipoPeriodicidad> TipoPeriodicidades { get; set; } = [];
         public List<Notificacion> Notificaciones { get; set; } = [];
         public Dictionary<short, short> Seleccion { get; set; } = [];
+        public bool GrabadoRecien { get; set; } = false;
     }
 }

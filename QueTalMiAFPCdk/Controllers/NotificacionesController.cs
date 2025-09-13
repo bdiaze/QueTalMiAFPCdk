@@ -53,6 +53,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 TipoNotificaciones = await notificacionDAO.ObtenerTipoNotificaciones(),
                 TipoPeriodicidades = await notificacionDAO.ObtenerTipoPeriodicidades(),
                 Notificaciones = notificaciones,
+                GrabadoRecien = true,
             };
 
             foreach (TipoNotificacion tipoNotificacion in model.TipoNotificaciones) {
