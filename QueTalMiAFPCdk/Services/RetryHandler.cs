@@ -9,12 +9,10 @@ namespace QueTalMiAFPCdk.Services {
 			for (int i = 0; i < MaxRetries; i++) {
 				response = await base.SendAsync(request, cancellationToken);
 				
-				string? errorTypeHeader;
-				try {
-					errorTypeHeader = response.Headers.GetValues("ErrorType").FirstOrDefault();
-				} catch (Exception) {
-					errorTypeHeader = null;
-				}
+				string? errorTypeHeader = null;
+				if (response.Headers.Contains("ErrorType")) {
+                    errorTypeHeader = response.Headers.GetValues("ErrorType").FirstOrDefault();
+                }
 
 				if (response.IsSuccessStatusCode && errorTypeHeader == null || 
 					response.StatusCode == HttpStatusCode.BadRequest) {
