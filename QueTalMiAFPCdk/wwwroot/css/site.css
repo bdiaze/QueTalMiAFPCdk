@@ -237,6 +237,12 @@ p, h6 {
     padding-bottom: .3rem;
 }
 
+@media (min-width: 1200px) {
+    .new-menu {
+        top: 0rem;
+    }
+}
+
 .new-titulo {
     font-size: .8rem;
     line-height: .8rem;
