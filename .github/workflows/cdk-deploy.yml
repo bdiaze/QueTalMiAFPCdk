@@ -21,7 +21,6 @@ jobs:
             EC2_HOST: ${{ vars.EC2_HOST }}
             EC2_ROLE_ARN: ${{ vars.EC2_ROLE_ARN }}
             PREFIX_ROLES_WEB_SERVER: ${{ vars.PREFIX_ROLES_WEB_SERVER }}
-            PREFIX_LOG_GROUPS_WEB_SERVER: ${{ vars.PREFIX_LOG_GROUPS_WEB_SERVER }}
             DEVELOPMENT_USER: ${{ secrets.DEVELOPMENT_USER }}
             SPENSIONES_URL_API_BASE: ${{ vars.SPENSIONES_URL_API_BASE }}
             AFP_MODELO_URL_API_BASE: ${{ vars.AFP_MODELO_URL_API_BASE }}

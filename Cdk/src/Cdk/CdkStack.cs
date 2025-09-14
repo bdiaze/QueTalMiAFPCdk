@@ -20,7 +20,6 @@ namespace Cdk
             string ec2Host = System.Environment.GetEnvironmentVariable("EC2_HOST") ?? throw new ArgumentNullException("EC2_HOST");
             string ec2RoleArn = System.Environment.GetEnvironmentVariable("EC2_ROLE_ARN") ?? throw new ArgumentNullException("EC2_ROLE_ARN");
             string prefixRolesWebServer = System.Environment.GetEnvironmentVariable("PREFIX_ROLES_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_ROLES_WEB_SERVER");
-            string prefixLogGroupsWebServer = System.Environment.GetEnvironmentVariable("PREFIX_LOG_GROUPS_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_LOG_GROUPS_WEB_SERVER");
             string developmentUser = System.Environment.GetEnvironmentVariable("DEVELOPMENT_USER") ?? throw new ArgumentException("DEVELOPMENT_USER");
 
             #region URL Scrapers
@@ -384,15 +383,7 @@ namespace Cdk
                     }),
                 ]
             });
-
             assumeRole.AttachInlinePolicy(policyAssumeRole);
-
-            // Se crean log groups para la aplicación web...
-            _ = new LogGroup(this, $"{appName}AppOutputLogGroup", new LogGroupProps {
-                LogGroupName = $"{prefixLogGroupsWebServer}{appName}",
-                Retention = RetentionDays.ONE_MONTH,
-                RemovalPolicy = RemovalPolicy.DESTROY
-            });
         }
     }
 }
