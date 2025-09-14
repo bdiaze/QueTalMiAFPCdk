@@ -1,0 +1,9 @@
+/var/log/apps/QueTalMiAFP/*.log {
+    create 0640 ec2-user logreaders
+    daily
+    rotate 10
+    missingok
+    notifempty
+    compress
+    delaycompress
+}

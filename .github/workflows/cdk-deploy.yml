@@ -21,6 +21,7 @@ jobs:
             EC2_HOST: ${{ vars.EC2_HOST }}
             EC2_ROLE_ARN: ${{ vars.EC2_ROLE_ARN }}
             PREFIX_ROLES_WEB_SERVER: ${{ vars.PREFIX_ROLES_WEB_SERVER }}
+            PREFIX_LOG_GROUPS_WEB_SERVER: ${{ vars.PREFIX_LOG_GROUPS_WEB_SERVER }}
             DEVELOPMENT_USER: ${{ secrets.DEVELOPMENT_USER }}
             SPENSIONES_URL_API_BASE: ${{ vars.SPENSIONES_URL_API_BASE }}
             AFP_MODELO_URL_API_BASE: ${{ vars.AFP_MODELO_URL_API_BASE }}
@@ -114,6 +115,7 @@ jobs:
                   WEBAPP_DIRECTORY: ${{ vars.WEBAPP_DIRECTORY }}
                   WEBAPP_SERVICE: ${{ vars.WEBAPP_SERVICE }}
                   WEBAPP_EXECSTART: ${{ vars.WEBAPP_EXECSTART }}
+                  WEBAPP_LOG_DIRECTORY : ${{ vars.WEBAPP_LOG_DIRECTORY }}
                   CLOUDFLARE_CLIENT_CRT: ${{ secrets.CLOUDFLARE_CLIENT_CRT }}
                   CERTBOT_EMAIL: ${{ vars.CERTBOT_EMAIL }}
                   CONFIGURAR_NGINX: ${{ vars.CONFIGURAR_NGINX }}
@@ -142,6 +144,10 @@ jobs:
                 echo 'Se copian archivos publicados en EC2'
                 scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY
                 
+                # Se copia el archivo logrotate
+                echo 'Se copia archivo de logrotate en EC2'
+                scp -i ssh_key.pem ./$WEBAPP_LOGROTATE $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
+                
                 # Se copia el archivo service...
                 echo 'Se copia archivo .service en EC2'
                 scp -i ssh_key.pem ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
@@ -156,10 +162,19 @@ jobs:
                 scp -i ssh_key.pem ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$WEBAPP_DIRECTORY 
                 
                 # Se inicializa el web service...
-                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART" '
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART WEBAPP_LOG_DIRECTORY=$WEBAPP_LOG_DIRECTORY WEBAPP_LOGROTATE=$WEBAPP_LOGROTATE" '
+                    echo 'Se crea carpeta para guardar los logs'
+                    sudo mkdir $WEBAPP_LOG_DIRECTORY || true
+                    sudo chown -R ec2-user:logreaders $WEBAPP_LOG_DIRECTORY
+                    sudo chmod -R 750 $WEBAPP_LOG_DIRECTORY
+                                    
                     echo 'Se mueve archivo cloudflare.crt'
                     sudo mkdir /etc/nginx/certs || true
                     sudo mv -f ~/$WEBAPP_DIRECTORY/cloudflare.crt /etc/nginx/certs/
+                    
+                    echo 'Se mueve archivo de logrotate y se gatilla una ejecución'
+                    sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_LOGROTATE /etc/logrotate.d/
+                    sudo logrotate -f /etc/logrotate.d/$WEBAPP_LOGROTATE
                     
                     echo 'Se mueve archivo .service y se inicia servicio'
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_SERVICE.service /etc/systemd/system/

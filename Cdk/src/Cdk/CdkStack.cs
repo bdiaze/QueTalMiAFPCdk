@@ -1,5 +1,6 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.Route53;
 using Amazon.CDK.AWS.SecretsManager;
 using Amazon.CDK.AWS.SSM;
@@ -19,6 +20,7 @@ namespace Cdk
             string ec2Host = System.Environment.GetEnvironmentVariable("EC2_HOST") ?? throw new ArgumentNullException("EC2_HOST");
             string ec2RoleArn = System.Environment.GetEnvironmentVariable("EC2_ROLE_ARN") ?? throw new ArgumentNullException("EC2_ROLE_ARN");
             string prefixRolesWebServer = System.Environment.GetEnvironmentVariable("PREFIX_ROLES_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_ROLES_WEB_SERVER");
+            string prefixLogGroupsWebServer = System.Environment.GetEnvironmentVariable("PREFIX_LOG_GROUPS_WEB_SERVER") ?? throw new ArgumentNullException("PREFIX_LOG_GROUPS_WEB_SERVER");
             string developmentUser = System.Environment.GetEnvironmentVariable("DEVELOPMENT_USER") ?? throw new ArgumentException("DEVELOPMENT_USER");
 
             #region URL Scrapers
@@ -269,7 +271,7 @@ namespace Cdk
 
             // Se obtiene ARN del bucket S3 de la API...
             IStringParameter strParQueTalMiAFPApiBucketArn = StringParameter.FromStringParameterArn(this, $"{appName}StringParameterQueTalMiAFPApiBucketArn", arnParameterQueTalMiAFPApiBucketArn);
-
+                        
             // Se crea rol de la subapp que asumirá la instancia web server...
             Role assumeRole = new(this, $"{appName}WebServerRole", new RoleProps {
                 RoleName = $"{prefixRolesWebServer}{appName}",
@@ -384,6 +386,18 @@ namespace Cdk
             });
 
             assumeRole.AttachInlinePolicy(policyAssumeRole);
+
+            // Se crean log groups para la aplicación web...
+            _ = new LogGroup(this, $"{appName}AppOutputLogGroup", new LogGroupProps {
+                LogGroupName = $"{prefixLogGroupsWebServer}{appName}/output-log",
+                Retention = RetentionDays.ONE_MONTH,
+                RemovalPolicy = RemovalPolicy.DESTROY
+            });
+            _ = new LogGroup(this, $"{appName}AppErrorLogGroup", new LogGroupProps {
+                LogGroupName = $"{prefixLogGroupsWebServer}{appName}/error-log",
+                Retention = RetentionDays.ONE_MONTH,
+                RemovalPolicy = RemovalPolicy.DESTROY
+            });
         }
     }
 }

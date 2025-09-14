@@ -9,6 +9,8 @@ User=ec2-user
 Environment=DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+StandardOutput=file:/var/log/apps/QueTalMiAFP/output.log
+StandardError=file:/var/log/apps/QueTalMiAFP/error.log
 
 [Install]
 WantedBy=multi-user.target
