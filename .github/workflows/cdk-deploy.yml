@@ -175,6 +175,7 @@ jobs:
                     
                     echo 'Se mueve archivo de logrotate y se gatilla una ejecución'
                     sudo mv -f ~/$WEBAPP_DIRECTORY/$WEBAPP_LOGROTATE /etc/logrotate.d/
+                    sudo chown root:root /etc/logrotate.d/$WEBAPP_LOGROTATE
                     sudo logrotate -f /etc/logrotate.d/$WEBAPP_LOGROTATE
                     
                     echo 'Se mueve archivo .service y se inicia servicio'
