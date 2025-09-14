@@ -389,12 +389,7 @@ namespace Cdk
 
             // Se crean log groups para la aplicación web...
             _ = new LogGroup(this, $"{appName}AppOutputLogGroup", new LogGroupProps {
-                LogGroupName = $"{prefixLogGroupsWebServer}{appName}/output-log",
-                Retention = RetentionDays.ONE_MONTH,
-                RemovalPolicy = RemovalPolicy.DESTROY
-            });
-            _ = new LogGroup(this, $"{appName}AppErrorLogGroup", new LogGroupProps {
-                LogGroupName = $"{prefixLogGroupsWebServer}{appName}/error-log",
+                LogGroupName = $"{prefixLogGroupsWebServer}{appName}",
                 Retention = RetentionDays.ONE_MONTH,
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
