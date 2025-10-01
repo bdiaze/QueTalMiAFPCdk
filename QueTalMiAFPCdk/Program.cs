@@ -1,12 +1,18 @@
 using Amazon.S3;
+using Google.Apis.Auth.OAuth2.Requests;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
 using System;
+using System.Globalization;
 using System.Security.Claims;
+using System.Text.Json;
+using static Google.Apis.Requests.BatchRequest;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,12 +36,53 @@ builder.Services.AddAuthentication(options => {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+    options.Events = new CookieAuthenticationEvents {
+        OnValidatePrincipal = async context => {
+            string? strExpiresAt = context.Properties.GetTokenValue("expires_at");
+            if (strExpiresAt != null && DateTimeOffset.TryParse(strExpiresAt, out DateTimeOffset expiresAt) && expiresAt < DateTimeOffset.UtcNow.AddMinutes(5)) {
+                using HttpClient client = new();
+                string response = await client.GetStringAsync($"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}/.well-known/openid-configuration");
+                JsonElement openidConfiguration = JsonDocument.Parse(response).RootElement;
+                string? tokenEndpoint = openidConfiguration.GetProperty("token_endpoint").GetString();
+                string? refreshToken = context.Properties.GetTokenValue("refresh_token");
+
+                if (tokenEndpoint != null && refreshToken != null) {
+                    HttpResponseMessage tokenResponse = await client.PostAsync(tokenEndpoint, new FormUrlEncodedContent(new Dictionary<string, string> {
+                        { "grant_type", "refresh_token" },
+                        { "client_id", userPoolClientId },
+                        { "refresh_token", refreshToken },
+                    }));
+
+                    if (tokenResponse.IsSuccessStatusCode) {
+                        string payload = await tokenResponse.Content.ReadAsStringAsync();
+                        JsonElement tokenData = JsonDocument.Parse(payload).RootElement;
+
+                        string? newIdToken = tokenData.TryGetProperty("id_token", out JsonElement jIdToken) ? jIdToken.GetString() : context.Properties.GetTokenValue(OpenIdConnectParameterNames.IdToken);
+                        string? newAccessToken = tokenData.GetProperty("access_token").GetString();
+                        string? newRefreshToken = tokenData.TryGetProperty("refresh_token", out JsonElement jRefreshToken) ? jRefreshToken.GetString() : refreshToken;
+                        int? newExpiresIn = tokenData.GetProperty("expires_in").GetInt32();
+
+                        if (newIdToken != null && newAccessToken != null && newRefreshToken != null && newExpiresIn != null) {
+                            context.Properties.StoreTokens([
+                                new AuthenticationToken { Name = OpenIdConnectParameterNames.IdToken, Value = newIdToken },
+                                new AuthenticationToken { Name = OpenIdConnectParameterNames.AccessToken, Value = newAccessToken },
+                                new AuthenticationToken { Name = OpenIdConnectParameterNames.RefreshToken, Value = newRefreshToken },
+                                new AuthenticationToken { Name = "expires_at", Value = DateTime.UtcNow.AddSeconds(newExpiresIn.Value).ToString("o", CultureInfo.InvariantCulture) },
+                            ]);
+                            context.ShouldRenew = true;
+                        }
+                    }
+                }
+            }
+        }
+    };
+})
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
     options.Authority = cognitoBaseUrl;
     options.MetadataAddress = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
     options.ClientId = userPoolClientId;
-    options.ResponseType = "code";
+    options.ResponseType = OpenIdConnectResponseType.Code;
     options.SaveTokens = true;
     options.Scope.Add("openid");
     options.Scope.Add("email");
