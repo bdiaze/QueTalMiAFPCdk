@@ -1,18 +1,12 @@
-using Amazon.S3;
-using Google.Apis.Auth.OAuth2.Requests;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
-using System;
 using System.Globalization;
-using System.Security.Claims;
 using System.Text.Json;
-using static Google.Apis.Requests.BatchRequest;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +26,11 @@ if (builder.Environment.IsDevelopment()) {
 Uri uri = new(callbackUrl);
 string callbackPath = uri.AbsolutePath;
 
+using HttpClient client = new();
+string response = await client.GetStringAsync($"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}/.well-known/openid-configuration");
+JsonElement openidConfiguration = JsonDocument.Parse(response).RootElement;
+string? tokenEndpoint = openidConfiguration.GetProperty("token_endpoint").GetString();
+
 builder.Services.AddAuthentication(options => {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -40,11 +39,7 @@ builder.Services.AddAuthentication(options => {
     options.Events = new CookieAuthenticationEvents {
         OnValidatePrincipal = async context => {
             string? strExpiresAt = context.Properties.GetTokenValue("expires_at");
-            if (strExpiresAt != null && DateTimeOffset.TryParse(strExpiresAt, out DateTimeOffset expiresAt) && expiresAt < DateTimeOffset.UtcNow.AddMinutes(5)) {
-                using HttpClient client = new();
-                string response = await client.GetStringAsync($"https://cognito-idp.{cognitoRegion}.amazonaws.com/{userPoolId}/.well-known/openid-configuration");
-                JsonElement openidConfiguration = JsonDocument.Parse(response).RootElement;
-                string? tokenEndpoint = openidConfiguration.GetProperty("token_endpoint").GetString();
+            if (strExpiresAt != null && DateTimeOffset.TryParse(strExpiresAt, out DateTimeOffset expiresAt)  && expiresAt < DateTimeOffset.UtcNow.AddMinutes(5)) {
                 string? refreshToken = context.Properties.GetTokenValue("refresh_token");
 
                 if (tokenEndpoint != null && refreshToken != null) {
