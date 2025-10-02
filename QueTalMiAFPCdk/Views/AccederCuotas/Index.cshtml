@@ -118,160 +118,170 @@
 
 <p class="text-muted mt-3">Y si amas los Excel, descarga la información en un archivo CSV:</p>
 
-<table class="table table-bordered sinBordeInterno" style="margin-top: 20px; margin-bottom: 1rem; table-layout:fixed; width:100%; text-align:center;">
-    <tr>
-        <th style="text-align:center; width:50%;">AFP</th>
-        <th style="text-align:center; width:50%;">FONDO</th>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="CAPITAL" id="afpCapital" checked>
-                <label class="form-check-label em6" for="afpCapital">
-                    AFP Capital
-                </label>
-            </div>
-        </td>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="A" id="fondoA" checked>
-                <label class="form-check-label em5" for="fondoA">
-                    Fondo A
-                </label>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="CUPRUM" id="afpCuprum" checked>
-                <label class="form-check-label em6" for="afpCuprum">
-                    AFP Cuprum
-                </label>
-            </div>
-        </td>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="B" id="fondoB" checked>
-                <label class="form-check-label em5" for="fondoB">
-                    Fondo B
-                </label>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="HABITAT" id="afpHabitat" checked>
-                <label class="form-check-label em6" for="afpHabitat">
-                    AFP Habitat
-                </label>
-            </div>
-        </td>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="C" id="fondoC" checked>
-                <label class="form-check-label em5" for="fondoC">
-                    Fondo C
-                </label>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="MODELO" id="afpModelo" checked>
-                <label class="form-check-label em6" for="afpModelo">
-                    AFP Modelo
-                </label>
-            </div>
-        </td>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="D" id="fondoD" checked>
-                <label class="form-check-label em5" for="fondoD">
-                    Fondo D
-                </label>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="PLANVITAL" id="afpPlanvital" checked>
-                <label class="form-check-label em6" for="afpPlanvital">
-                    AFP PlanVital
-                </label>
-            </div>
-        </td>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="E" id="fondoE" checked>
-                <label class="form-check-label em5" for="fondoE">
-                    Fondo E
-                </label>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="PROVIDA" id="afpProvida" checked>
-                <label class="form-check-label em6" for="afpProvida">
-                    AFP ProVida
-                </label>
-            </div>
-        </td>
-        <td rowspan="2"></td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="UNO" id="afpUno" checked>
-                <label class="form-check-label em6" for="afpUno">
-                    AFP Uno
-                </label>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <th colspan="2" style="text-align:center;">RANGO DE FECHAS</th>
-    </tr>
-    <tr>
-        <td colspan="2" class="pl-3 pr-3 pt-2 pb-2">
-            <div style="width:100%;">
-                <div class="input-group input-daterange">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="far fa-calendar-alt"></i>
-                        </span>
-                    </div>
+<div style="position: relative;" class="mb-1">
+    <table class="table table-bordered sinBordeInterno" style="margin-top: 20px; margin-bottom: 1rem; table-layout:fixed; width:100%; text-align:center;">
+        <tr>
+            <th style="text-align:center; width:50%;">AFP</th>
+            <th style="text-align:center; width:50%;">FONDO</th>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="CAPITAL" id="afpCapital" checked>
+                    <label class="form-check-label em6" for="afpCapital">
+                        AFP Capital
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="A" id="fondoA" checked>
+                    <label class="form-check-label em5" for="fondoA">
+                        Fondo A
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="CUPRUM" id="afpCuprum" checked>
+                    <label class="form-check-label em6" for="afpCuprum">
+                        AFP Cuprum
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="B" id="fondoB" checked>
+                    <label class="form-check-label em5" for="fondoB">
+                        Fondo B
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="HABITAT" id="afpHabitat" checked>
+                    <label class="form-check-label em6" for="afpHabitat">
+                        AFP Habitat
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="C" id="fondoC" checked>
+                    <label class="form-check-label em5" for="fondoC">
+                        Fondo C
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="MODELO" id="afpModelo" checked>
+                    <label class="form-check-label em6" for="afpModelo">
+                        AFP Modelo
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="D" id="fondoD" checked>
+                    <label class="form-check-label em5" for="fondoD">
+                        Fondo D
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="PLANVITAL" id="afpPlanvital" checked>
+                    <label class="form-check-label em6" for="afpPlanvital">
+                        AFP PlanVital
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="E" id="fondoE" checked>
+                    <label class="form-check-label em5" for="fondoE">
+                        Fondo E
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="PROVIDA" id="afpProvida" checked>
+                    <label class="form-check-label em6" for="afpProvida">
+                        AFP ProVida
+                    </label>
+                </div>
+            </td>
+            <td rowspan="2"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="UNO" id="afpUno" checked>
+                    <label class="form-check-label em6" for="afpUno">
+                        AFP Uno
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2" style="text-align:center;">RANGO DE FECHAS</th>
+        </tr>
+        <tr>
+            <td colspan="2" class="pl-3 pr-3 pt-2 pb-2">
+                <div style="width:100%;">
+                    <div class="input-group input-daterange">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                            </span>
+                        </div>
 
-                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaInicio" />
-                    <div class="input-group-append input-group-prepend">
-                        <span class="input-group-text">
-                            <label style="margin-bottom:0px;">al</label>
-                        </span>
-                    </div>
+                        <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-12).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaInicio" />
+                        <div class="input-group-append input-group-prepend">
+                            <span class="input-group-text">
+                                <label style="margin-bottom:0px;">al</label>
+                            </span>
+                        </div>
 
-                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaFinal" />
-                    <div class="input-group-append">
-                        <span class="input-group-text">
-                            <i class="far fa-calendar-alt"></i>
-                        </span>
+                        <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaFinal" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </td>
-    </tr>
-</table>
-<div id="alertaDescargarCSV" style="display: none; height: 54px;" class="alert alert-danger alert-dismissible">
-    <p class="mb-0 mt-1"></p>
-    <button type="button" class="close" aria-label="Cerrar" onclick="$(this).parent('div').fadeOut('fast');">
-        <span aria-hidden="true">&times;</span>
-    </button>
+            </td>
+        </tr>
+    </table>
+    <div id="alertaDescargarCSV" style="display: none; height: 54px;" class="alert alert-danger alert-dismissible">
+        <p class="mb-0 mt-1"></p>
+        <button type="button" class="close" aria-label="Cerrar" onclick="$(this).parent('div').fadeOut('fast');">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <button id="btnDescargarCSV" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2">Descargar</button>
+    @if (User.Identity == null || !User.Identity.IsAuthenticated)
+    {
+        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear funcionalidades<br/><span>¡Es gratis 😊!</span></span>">
+            <a href="/login?redirect=@(Url.Action("Index", "AccederCuotas"))" class="btn btn-primary py-3 px-5">
+                ¡Iniciar Sesión!
+            </a>
+        </div>
+    }
 </div>
-<button id="btnDescargarCSV" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2 mb-1">Descargar</button>
 
 <hr />
 

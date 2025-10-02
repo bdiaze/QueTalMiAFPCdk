@@ -373,6 +373,11 @@ function obtenerGananPesos(tipoFondo, sueldoImponible, diaCotizacion, fechaInici
                 "chartGananPesos" + tipoFondo,
                 listaGanancias
             );
+        },
+        function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                $(location).attr("href", "/login?redirect=/Simulador");
+            }
         }
     );
 }

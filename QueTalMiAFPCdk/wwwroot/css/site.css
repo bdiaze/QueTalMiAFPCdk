@@ -27,7 +27,9 @@ a {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 @media (min-width: 768px) {
   html {
@@ -263,4 +265,53 @@ p, h6 {
 
 .alert li span {
     font-size: .9rem;
+}
+
+.overlay {
+    position: absolute;
+    top: -0.5rem;
+    left: -0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+}
+
+.card:has(div.show) {
+    border-bottom-width: 1px !important;
+}
+
+.tooltip-inner {
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid #1b6ec2;
+    color: #1b6ec2;
+    max-width: 12.8rem;
+}
+
+.bs-tooltip-top .arrow::before {
+    border-top-color: #1b6ec2;
+}
+
+.bs-tooltip-bottom .arrow::before {
+    border-bottom-color: #1b6ec2;
+}
+
+.tooltip.show {
+    opacity: 1;
+}
+
+.tooltip span {
+    font-size: 0.9rem;
+}
+
+.tooltip span span {
+    font-size: 1rem;
+    font-weight: 400;
 }

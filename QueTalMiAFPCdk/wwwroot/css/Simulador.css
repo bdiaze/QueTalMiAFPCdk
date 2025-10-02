@@ -25,31 +25,31 @@
 
 #TabGPFondoA.active {
     background-color: #c23b33;
-    border-bottom-color: #c23b33;
+    border-color: #c23b33;
     color: #fff;
 }
 
 #TabGPFondoB.active {
     background-color: #f2af32;
-    border-bottom-color: #f2af32;
+    border-color: #f2af32;
     color: #fff;
 }
 
 #TabGPFondoC.active {
     background-color: #72b500;
-    border-bottom-color: #72b500;
+    border-color: #72b500;
     color: #fff;
 }
 
 #TabGPFondoD.active {
     background-color: #2E8ECD;
-    border-bottom-color: #2E8ECD;
+    border-color: #2E8ECD;
     color: #fff;
 }
 
 #TabGPFondoE.active {
     background-color: #0061a0;
-    border-bottom-color: #0061a0;
+    border-color: #0061a0;
     color: #fff;
 }
 

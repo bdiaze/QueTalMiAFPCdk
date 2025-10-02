@@ -1,4 +1,5 @@
 ﻿using Amazon.APIGateway.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
@@ -13,9 +14,7 @@ namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class CuotaController(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, ICuotaUfComisionDAO cuotaUfComisionDAO, S3BucketHelper s3BucketHelper) : ControllerBase {
-        private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
-        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
-
+        
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
         [HttpGet]
@@ -85,25 +84,21 @@ namespace QueTalMiAFPCdk.Controllers {
                 return ValidationProblem();
             }
 
-            Dictionary<string, string?> parameters = new() {
-                { "listaAFPs", listaAFPs },
-                { "listaFondos", listaFondos },
-                { "fechaInicial", dtFechaInicio.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) },
-                { "fechaFinal", dtFechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) }
-            };
+            // Se valida que si el usuario no ha iniciado sesión solo consulte por el año actual +/- 7 días...
+            if (User.Identity == null || !User.Identity.IsAuthenticated) {
+                DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
+                if (ultimaFechaAlgunValorCuota == null) {
+                    ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+                }
 
-			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
-			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-			string requestUri = QueryHelpers.AddQueryString(_baseUrl + "CuotaUfComision/ObtenerCuotas", parameters);
-			HttpResponseMessage response = await client.GetAsync(requestUri);
-            string responseString = await response.Content.ReadAsStringAsync();
-            SalObtenerCuotas? retornoConsulta = JsonConvert.DeserializeObject<SalObtenerCuotas>(responseString);
+                DateOnly fechaMinima = DateOnly.FromDateTime(ultimaFechaAlgunValorCuota.Value.AddYears(-1).AddDays(-7));
+                DateOnly fechaMaxima = DateOnly.FromDateTime(ultimaFechaAlgunValorCuota.Value.AddDays(7));
+                if (fechaMinima != DateOnly.FromDateTime(dtFechaInicio) || fechaMaxima != DateOnly.FromDateTime(dtFechaFinal)) {
+                    return Unauthorized();
+                }
+            }
 
-            if (retornoConsulta!.S3Url == null) {
-                return retornoConsulta!.ListaCuotas!;
-			} else {
-                return JsonConvert.DeserializeObject<List<CuotaUf>>(await s3BucketHelper.GetFile(retornoConsulta!.S3Url))!;
-			}
+            return await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal); 
         }
 
         // POST: CuotaUfComision/ObtenerUltimaCuota
@@ -132,6 +127,20 @@ namespace QueTalMiAFPCdk.Controllers {
                 return ValidationProblem();
             }
 
+            DateOnly? fechaMinima = null;
+            DateOnly? fechaMaxima = null;
+            int? cantFechasIntermedias = null;
+            bool? incluyeMinimo = null;
+            bool? incluyeMaximo = null;
+            if (User.Identity == null || !User.Identity.IsAuthenticated) {
+                DateTime ultimaFechaTodosValoresCuota = await cuotaUfComisionDAO.UltimaFechaTodas();
+                fechaMinima = DateOnly.FromDateTime(ultimaFechaTodosValoresCuota.AddYears(-1));
+                fechaMaxima = DateOnly.FromDateTime(ultimaFechaTodosValoresCuota);
+                cantFechasIntermedias = 0;
+                incluyeMinimo = false;
+                incluyeMaximo = false;
+            }
+
             string[] fechas = entrada.ListaFechas.Replace(" ", "").Split(",");
             foreach (string fecha in fechas) {
                 string[] diaMesAnno = fecha.Split("/");
@@ -148,6 +157,21 @@ namespace QueTalMiAFPCdk.Controllers {
                         int.Parse(diaMesAnno[2]),
                         int.Parse(diaMesAnno[1]),
                         int.Parse(diaMesAnno[0]));
+
+                    // Se valida que si el usuario no ha iniciado sesión se incluya la consulta dentro del rango de mínimos y máximos...
+                    if (fechaMinima != null && fechaMaxima != null && cantFechasIntermedias != null) {
+                        DateOnly auxDateOnly = DateOnly.FromDateTime(dtFecha);
+                        
+                        if (auxDateOnly == fechaMinima) {
+                            incluyeMinimo = true;
+                        } else if (auxDateOnly == fechaMaxima) {
+                            incluyeMaximo = true;
+                        } else if (auxDateOnly < fechaMinima || auxDateOnly > fechaMaxima) {
+                            return Unauthorized();
+                        } else {
+                            cantFechasIntermedias++;
+                        }
+                    }
                 } catch (ArgumentOutOfRangeException) {
                     ModelState.AddModelError(
                         nameof(entrada.ListaFechas),
@@ -156,24 +180,27 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            EntObtenerUltimaCuota entradaSanitizada = new() { 
-                ListaAFPs = WebUtility.HtmlEncode(entrada.ListaAFPs),
-                ListaFondos = WebUtility.HtmlEncode(entrada.ListaFondos),
-                ListaFechas = WebUtility.HtmlEncode(entrada.ListaFechas),
-                TipoComision = entrada.TipoComision
-            };
+            // Se valida que si el usuario no ha iniciado sesión debe si o si consultar por los valores mínimos y máximos...
+            if (incluyeMinimo != null && !incluyeMinimo.Value) {
+                return Unauthorized();
+            }
 
-            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
-            client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-            var response = await client.PostAsync(_baseUrl + "CuotaUfComision/ObtenerUltimaCuota", new StringContent(JsonConvert.SerializeObject(entradaSanitizada), Encoding.UTF8, "application/json"));
-            string responseString = await response.Content.ReadAsStringAsync();
-            
-            return JsonConvert.DeserializeObject<List<SalObtenerUltimaCuota>>(responseString)!;
+            if (incluyeMaximo != null && !incluyeMaximo.Value) {
+                return Unauthorized();
+            }
+
+            // Se valida que si el usuario no ha iniciado sesión solo consulte por 12 fechas intermedias...
+            if (cantFechasIntermedias != null && cantFechasIntermedias > 12) {
+                return Unauthorized();
+            }
+
+            return await cuotaUfComisionDAO.ObtenerUltimaCuota(entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
         }
 
         // GET: api/Cuota/ObtenerRentabilidadRealUltimoAnno
         [Route("[action]")]
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<RentabilidadReal>>> ObtenerRentabilidadRealUltimoAnno() {
             DateTime fechaFinal = await cuotaUfComisionDAO.UltimaFechaTodas();
             DateTime fechaInicial = fechaFinal.AddYears(-1);
@@ -188,7 +215,17 @@ namespace QueTalMiAFPCdk.Controllers {
         // GET: api/Cuota/DescargarCuotasCSV?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicio=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
         [HttpGet]
-        public async Task<FileContentResult> DescargarCuotasCSV(string listaAFPs, string listaFondos, string fechaInicial, string fechaFinal) {
+        public async Task<ActionResult> DescargarCuotasCSV(string listaAFPs, string listaFondos, string fechaInicial, string fechaFinal) {
+            // Si el usuario no está autenticado, se le envía a autenticarse...
+            if (User.Identity == null || !User.Identity.IsAuthenticated) {
+                return Challenge();
+            }
+
+            // Si llegamos a esta URL sin Referer, se asume que llegamos desde pantalla de login, por lo que se redirecciona a pantalla de acceso...
+            if (string.IsNullOrEmpty(Request.Headers.Referer.ToString())) {
+                return RedirectToAction("Index", "AccederCuotas");
+            }
+            
             ActionResult<List<CuotaUf>> retorno = await ObtenerCuotas(listaAFPs, listaFondos, fechaInicial, fechaFinal);
 
             StringBuilder sb = new();

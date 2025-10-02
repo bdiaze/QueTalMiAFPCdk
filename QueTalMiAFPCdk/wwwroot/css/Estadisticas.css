@@ -33,71 +33,71 @@
 
 #TabRRFondoA.active, #TabRTFondoA.active, #TabFondoA.active {
     background-color: #c23b33;
-    border-bottom-color: #c23b33;
+    border-color: #c23b33;
     color: #fff;
 }
 
 #TabRRFondoB.active, #TabRTFondoB.active, #TabFondoB.active {
     background-color: #f2af32;
-    border-bottom-color: #f2af32;
+    border-color: #f2af32;
     color: #fff;
 }
 
 #TabRRFondoC.active, #TabRTFondoC.active, #TabFondoC.active {
     background-color: #72b500;
-    border-bottom-color: #72b500;
+    border-color: #72b500;
     color: #fff;
 }
 
 #TabRRFondoD.active, #TabRTFondoD.active, #TabFondoD.active {
     background-color: #2E8ECD;
-    border-bottom-color: #2E8ECD;
+    border-color: #2E8ECD;
     color: #fff;
 }
 
 #TabRRFondoE.active, #TabRTFondoE.active, #TabFondoE.active {
     background-color: #0061a0;
-    border-bottom-color: #0061a0;
+    border-color: #0061a0;
     color: #fff;
 }
 
 #TabRRCapital.active, #TabRTCapital.active, #TabVCCapital.active {
     background-color: #E3E829;
-    border-bottom-color: #E3E829;
+    border-color: #E3E829;
 }
 
 #TabRRCuprum.active, #TabRTCuprum.active, #TabVCCuprum.active {
     background-color: #f2af32;
-    border-bottom-color: #f2af32;
+    border-color: #f2af32;
 }
 
 #TabRRHabitat.active, #TabRTHabitat.active, #TabVCHabitat.active {
     background-color: #2E8ECD;
-    border-bottom-color: #2E8ECD;
+    border-color: #2E8ECD;
     color: #fff;
 }
 
 #TabRRModelo.active, #TabRTModelo.active, #TabVCModelo.active {
     background-color: #72b500;
-    border-bottom-color: #72b500;
+    border-color: #72b500;
     color: #fff;
 }
 
 #TabRRPlanVital.active, #TabRTPlanVital.active, #TabVCPlanVital.active {
     background-color: #c23b33;
-    border-bottom-color: #c23b33;
+    border-color: #c23b33;
     color: #fff;
 }
 
 #TabRRProVida.active, #TabRTProVida.active, #TabVCProVida.active {
     background-color: #0061a0;
-    border-bottom-color: #0061a0;
+    border-color: #0061a0;
     color: #fff;
 }
 
 #TabRRUno.active, #TabRTUno.active, #TabVCUno.active {
     background-color: #e3007d;
-    border-bottom-color: #e3007d;
+    border-color: #e3007d;
     color: #fff;
 }
 

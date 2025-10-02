@@ -75,7 +75,7 @@ $("#btnDescargarCSV").click(function () {
     url += "&listaFondos=" + encodeURIComponent(listaFondos);
     url += "&fechaInicial=" + encodeURIComponent(fechaInicio);
     url += "&fechaFinal=" + encodeURIComponent(fechaFinal);
-
+        
     location.href = url;
 });
 

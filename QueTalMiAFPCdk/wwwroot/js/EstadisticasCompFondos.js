@@ -167,6 +167,11 @@ function obtenerRentReal(afp, fechaInicial, fechaFinal) {
                 "chartRentReal" + afp,
                 listaCuotas
             );
+        },
+        function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                $(location).attr("href", "/login?redirect=/Estadisticas/ComparandoFondos");
+            }
         }
     );
 }
@@ -220,6 +225,11 @@ function obtenerRentabilidades(afp, fechaInicial, fechaFinal) {
                 "chartRentabilidad" + afp,
                 listaCuotas
             );
+        },
+        function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                $(location).attr("href", "/login?redirect=/Estadisticas/ComparandoFondos");
+            }
         }
     );
 }
@@ -263,6 +273,11 @@ function consultarFondo(afp, fechaInicial, fechaFinal) {
                 "chartValor" + afp,
                 listaCuotas
             );
+        },
+        function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 401) {
+                $(location).attr("href", "/login?redirect=/Estadisticas/ComparandoFondos");
+            }
         }
     );
 }
