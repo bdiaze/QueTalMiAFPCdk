@@ -26,7 +26,7 @@ namespace QueTalMiAFPCdk.Controllers {
         }
 
         [Route("logout")]
-        public async Task<IActionResult> Logout() {
+        public async Task<IActionResult> Logout(string? redirect = null) {
             if (User.Identity != null && User.Identity.IsAuthenticated) {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
@@ -40,7 +40,18 @@ namespace QueTalMiAFPCdk.Controllers {
                     logoutUrl = cognitoLogouts.First(l => l.Contains("localhost"));
                 }
 
+                if (!string.IsNullOrEmpty(redirect)) {
+                    TempData["PostLogoutRedirect"] = redirect;
+                }
+
                 return Redirect($"{cognitoBaseUrl}/logout?client_id={userPoolClientId}&logout_uri={logoutUrl}");
+            }
+
+            if (TempData.TryGetValue("PostLogoutRedirect", out object? value)) {
+                string? storedRedirect = value?.ToString();
+                if (!string.IsNullOrEmpty(storedRedirect)) {
+                    return Redirect(storedRedirect);
+                }
             }
 
             return RedirectToAction("Index", "Resumen");

@@ -4,6 +4,7 @@
 
 @{
     ViewData["Title"] = "Consulta los Valores Cuota";
+    ViewData["LogoutRedirect"] = Url.Action("Index", "AccederCuotas");
 }
 
 @section Head {
@@ -275,8 +276,8 @@
     <button id="btnDescargarCSV" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2">Descargar</button>
     @if (User.Identity == null || !User.Identity.IsAuthenticated)
     {
-        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear funcionalidades<br/><span>¡Es gratis 😊!</span></span>">
-            <a href="/login?redirect=@(Url.Action("Index", "AccederCuotas"))" class="btn btn-primary py-3 px-5">
+        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
+            <a href="/login?redirect=@(Url.Action("Index", "AccederCuotas"))" class="btn btn-primary py-2 px-5">
                 ¡Iniciar Sesión!
             </a>
         </div>

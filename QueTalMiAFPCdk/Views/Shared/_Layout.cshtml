@@ -60,7 +60,7 @@
                                 </a>
                             </li>
                             <li class="nav-item text-center d-flex align-items-center pl-3">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout">Cerrar Sesión</a>
+                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout" asp-route-redirect="@ViewData["LogoutRedirect"]">Cerrar Sesión</a>
                             </li>
                         } else 
                         {

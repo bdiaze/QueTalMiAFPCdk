@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
 @{
     ViewData["Title"] = "Simula tus Ganancias";
+    ViewData["LogoutRedirect"] = Url.Action("Index", "Simulador");
 }
 
 @section Head {
@@ -68,7 +69,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" class="px-0">
+            <td colspan="2" class="px-0 @((User.Identity == null || !User.Identity.IsAuthenticated) ? "pt-2": "")">
                 <div style="width: calc(80% - 1rem); position: relative;" class="d-inline-block mr-2">
                     <div class="input-group input-daterange">
                         <div class="input-group-prepend">
@@ -93,7 +94,7 @@
                     </div>
                     @if (User.Identity == null || !User.Identity.IsAuthenticated)
                     {
-                        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear funcionalidades<br/><span>¡Es gratis 😊!</span></span>">
+                        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
                             <a href="/login?redirect=@(Url.Action("Index", "Simulador"))" style="font-size: 0.8rem;" class="btn btn-primary py-1 px-4">
                                 ¡Iniciar Sesión!
                             </a>

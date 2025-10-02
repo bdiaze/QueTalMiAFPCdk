@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
 @{
     ViewData["Title"] = "Rentabilidad por AFP";
+    ViewData["LogoutRedirect"] = Url.Action("ComparandoFondos", "Estadisticas");
 }
 
 @section Head {
@@ -55,7 +56,7 @@
     </div>
     @if (User.Identity == null || !User.Identity.IsAuthenticated)
     {
-        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear funcionalidades<br/><span>¡Es gratis 😊!</span></span>">
+        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
             <a href="/login?redirect=@(Url.Action("ComparandoFondos", "Estadisticas"))" style="font-size: 0.8rem;" class="btn btn-primary py-1 px-4">
                 ¡Iniciar Sesión!
             </a>
