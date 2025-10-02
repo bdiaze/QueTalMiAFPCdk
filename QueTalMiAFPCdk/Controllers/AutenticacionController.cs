@@ -12,11 +12,15 @@ namespace QueTalMiAFPCdk.Controllers {
     public class AutenticacionController(ParameterStoreHelper parameterStoreHelper, IWebHostEnvironment environment) : Controller {
         [Authorize]
         [Route("login")]
-        public IActionResult Login() {
+        public IActionResult Login(string? redirect = null) {
             string? nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             string? email = User.FindFirstValue(ClaimTypes.Email);
             string? givenName = User.FindFirstValue(ClaimTypes.GivenName);
             string? surname = User.FindFirstValue(ClaimTypes.Surname);
+
+            if (!string.IsNullOrEmpty(redirect)) {
+                return Redirect(redirect);
+            }
 
             return RedirectToAction("Index", "Notificaciones");
         }
