@@ -66,6 +66,13 @@ namespace QueTalMiAFPCdk.Controllers {
             // Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
             DateTime fechasTodas = await taskFechaTodas;
             modeloEntrada.Premios.Anno ??= fechasTodas.Year;
+            
+            if (User.Identity == null || !User.Identity.IsAuthenticated) {
+                if (modeloEntrada.Premios.Anno != fechasTodas.Year) {
+                    return Challenge();
+                }
+            }
+
             modeloEntrada.Premios.Anno = modeloEntrada.Premios.Anno < 2002 ? fechasTodas.Year : modeloEntrada.Premios.Anno;
             modeloEntrada.Premios.Anno = modeloEntrada.Premios.Anno > fechasTodas.Year ? fechasTodas.Year : modeloEntrada.Premios.Anno;
             salida.Premios.Anno = modeloEntrada.Premios.Anno;
