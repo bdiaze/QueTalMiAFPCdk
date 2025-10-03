@@ -40,7 +40,17 @@
     <div class="input-group mx-auto">
         <select asp-for="Historial.Afp" asp-items="@Model.Historial?.ListaAfps" class="custom-select"></select>
         <select asp-for="Historial.Mes" asp-items="@Model.Historial?.ListaMeses" class="custom-select"></select>
-        <select asp-for="Historial.Anno" asp-items="@Model.Historial?.ListaAnnos" class="custom-select"></select>
+        <div style="position: relative; flex: 1 1 auto; width: calc(1% + 2.3rem); margin-left: -1px;">
+            <select asp-for="Historial.Anno" asp-items="@Model.Historial?.ListaAnnos" class="custom-select" style="border-radius: 0;"></select>
+            @if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                <div class="overlay" style="left: 0; right: 0; top: -.3rem; bottom: -.3rem;" data-toggle="tooltip" data-placement="top" data-html="true" title="<span><span><u>Años Anteriores<br/>Calendario Histórico</u></span><br/>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
+                    <a href="/login?redirect=@(Url.Action("Index", "AccederCuotas"))" class="btn btn-primary py-1 px-2" style="font-size: 0.7rem;">
+                        ¡Iniciar Sesión!
+                    </a>
+                </div>
+            }
+        </div>
         <div class="input-group-append">
             <button type="submit" class="px-4 btn btn-primary">Buscar</button>
         </div>
@@ -304,6 +314,15 @@
     <tr>
         <th style="text-align: center;">Método HTTP</th>
         <td class="text-muted">GET</td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align: center;">Cabecera</th>
+    </tr>
+    <tr>
+        <th style="text-align: center;">X-API-Key</th>
+        <td class="text-muted">
+            API Key para autenticarse frente al servicio de obtención de cuotas.<br/>
+        </td>
     </tr>
     <tr>
         <th colspan="2" style="text-align: center;">Parámetros</th>

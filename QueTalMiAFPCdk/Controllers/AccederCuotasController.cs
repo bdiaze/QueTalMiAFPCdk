@@ -45,6 +45,12 @@ namespace QueTalMiAFPCdk.Controllers {
             inputAfp ??= Request.Cookies["FiltroHistorialAfpSeleccionada"];
             inputAfp ??= "CAPITAL";
 
+            if (User.Identity == null || !User.Identity.IsAuthenticated) {
+                if (inputAnno != fechaActual.Year) {
+                    return Challenge();
+                }
+            }
+
             // Se prepara rango de fecha a utilizar para historial de valores cuota...
             DateTime? fechaDesdeHistorial = null;
             try {
