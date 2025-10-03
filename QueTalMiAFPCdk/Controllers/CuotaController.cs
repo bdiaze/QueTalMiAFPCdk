@@ -13,12 +13,12 @@ using System.Text;
 namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class CuotaController(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, ICuotaUfComisionDAO cuotaUfComisionDAO, S3BucketHelper s3BucketHelper) : ControllerBase {
+    public class CuotaController(ICuotaUfComisionDAO cuotaUfComisionDAO) : ControllerBase {
         
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
         [HttpGet]
-        public async Task<ActionResult<List<CuotaUf>>> ObtenerCuotas(string listaAFPs, string listaFondos, string fechaInicial, string fechaFinal) {
+        public async Task<ActionResult<List<CuotaUf>>> ObtenerCuotas(string listaAFPs, string listaFondos, string fechaInicial, string fechaFinal, [FromHeader(Name = "X-API-Key")] string? xApiKey) {
             if (listaAFPs == null) {
                 ModelState.AddModelError(
                     nameof(listaAFPs),
@@ -85,7 +85,7 @@ namespace QueTalMiAFPCdk.Controllers {
             }
 
             // Se valida que si el usuario no ha iniciado sesión solo consulte por el año actual +/- 7 días...
-            if (User.Identity == null || !User.Identity.IsAuthenticated) {
+            if (xApiKey == null && (User.Identity == null || !User.Identity.IsAuthenticated)) {
                 DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
                 if (ultimaFechaAlgunValorCuota == null) {
                     ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
@@ -98,7 +98,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            return await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal); 
+            return await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal, xApiKey); 
         }
 
         // POST: CuotaUfComision/ObtenerUltimaCuota
@@ -198,6 +198,7 @@ namespace QueTalMiAFPCdk.Controllers {
         }
 
         // GET: api/Cuota/ObtenerRentabilidadRealUltimoAnno
+        /*
         [Route("[action]")]
         [HttpGet]
         [Authorize]
@@ -211,6 +212,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 fechaInicial,
                 fechaFinal);
         }
+        */
 
         // GET: api/Cuota/DescargarCuotasCSV?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicio=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
@@ -225,12 +227,33 @@ namespace QueTalMiAFPCdk.Controllers {
             if (string.IsNullOrEmpty(Request.Headers.Referer.ToString())) {
                 return RedirectToAction("Index", "AccederCuotas");
             }
-            
-            ActionResult<List<CuotaUf>> retorno = await ObtenerCuotas(listaAFPs, listaFondos, fechaInicial, fechaFinal);
+
+            string[] diaMesAnnoInicio = fechaInicial.Split("/");
+            string[] diaMesAnnoFinal = fechaFinal.Split("/");
+
+            DateTime dtFechaInicio = new(
+                    int.Parse(diaMesAnnoInicio[2]),
+                    int.Parse(diaMesAnnoInicio[1]),
+                    int.Parse(diaMesAnnoInicio[0])
+            );
+            DateTime dtFechaFinal = new(
+                    int.Parse(diaMesAnnoFinal[2]),
+                    int.Parse(diaMesAnnoFinal[1]),
+                    int.Parse(diaMesAnnoFinal[0]
+            ));
+
+            if (dtFechaInicio > dtFechaFinal) {
+                ModelState.AddModelError(
+                    nameof(fechaInicial),
+                    "El parámetro fechaInicio no puede representar una fecha posterior al parámetro fechaFinal.");
+                return ValidationProblem();
+            }
+
+            List<CuotaUf> retorno = await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal);
 
             StringBuilder sb = new();
             sb.AppendLine($"AFP;FECHA;FONDO;VALOR_CUOTA;VALOR_UF");
-            foreach (CuotaUf cuota in retorno.Value!) {
+            foreach (CuotaUf cuota in retorno) {
                 sb.AppendLine(
                     $"{cuota.Afp};" +
                     $"{cuota.Fecha};" +
