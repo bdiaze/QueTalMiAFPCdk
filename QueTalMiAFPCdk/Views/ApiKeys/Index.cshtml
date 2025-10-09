@@ -1,18 +1,22 @@
 ﻿@using QueTalMiAFPCdk.Models.Entities
 @using QueTalMiAFPCdk.Models.ViewModels
 @using System.Globalization
+@inject IWebHostEnvironment environment
 @model ApiKeysViewModel
 @{
-    ViewData["Title"] = "Mi API Key";
+    ViewData["Title"] = "API Pública";
     CultureInfo cultureInfo = new CultureInfo("es-CL");
 }
 
 @section Head {
     <meta name="description" content="" />
     <link rel="stylesheet" href="~/css/ApiKeys.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
 }
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
     <script src="~/js/ApiKeys.js" asp-append-version="true"></script>
 }
 
@@ -20,8 +24,9 @@
 <h1>@ViewData["Title"]</h1>
 
 <p class="mt-3 text-muted">
-    Por seguridad, el acceso a nuestra API pública ahora requiere del uso de una API key. 
-    ¿Y cómo consigo una API key? ¡A continuación pues! crea, monitorea y revoca tu propia API key.
+    Bienvenido a la nueva documentación de la API pública de ¿Qué tal mi AFP?.
+    Lo primero que notarás es que, por seguridad, <u>el acceso a nuestra API ahora requiere el uso de una API key</u>. 
+    ¿Y cómo consigo una? ¡Muy fácil! A continuación podrás crear y administrar tu propia API key.
 </p>
 
 <hr id="miApiKey" />
@@ -83,7 +88,7 @@
                 </td>
                 <td class="p-0 align-middle">
                     <p class="m-0 text-center text-muted text-truncate">
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#revocarModal">Revocar</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#revocarModal">😰 Revocar</button>
                     </p>
                 </td>
             </tr>
@@ -127,7 +132,7 @@
                     <form method="post" class="text-center">
                         <input asp-for="IdRevocacion" type="hidden"/>
                         <input name="Accion" value="REVOCAR" type="hidden"/>
-                        <button type="submit" class="btn btn-danger">Revocar</button>
+                        <button type="submit" class="btn btn-danger">😱 Revocar</button>
                     </form>
                 </div>
             </div>
@@ -149,7 +154,7 @@
 <h5>API Keys Antiguas</h5>
 
 <p class="mt-3 text-muted">
-    Y aquí te dejamos las antiguas API keys que has usado:
+    Y aquí te dejamos las API keys que has usado anteriormente:
 </p>
 
 <div class="p-0 mt-0 mb-3 mx-0">
@@ -226,11 +231,249 @@
         {
             <tr>
                 <td colspan="4" class="p-0 align-middle">
-                    <p class="m-1 text-center text-muted text-truncate">
+                    <p class="m-2 text-center text-muted text-truncate">
                         No posees keys anteriores.
                     </p>
                 </td>
             </tr>
         }
     </table>
+</div>
+
+<hr />
+
+<h5>¿Cómo usar?</h5>
+
+<p class="text-muted mt-3">
+    Nuestra API es bien simple, requiere una única cabecera con el API key, y cuatro query string parameters para identificar los filtros de búsqueda, 
+    más detalles a continuación:
+</p>
+<table class="table table-bordered mt-3 mb-3">
+    <tr>
+        <th style="text-align: center; min-width: 9em;">URL API</th>
+        @if (environment.IsDevelopment()) {
+            <td id="urlAPI" class="text-break text-muted">https://localhost:44332/api/Cuota/ObtenerCuotas</td>
+        } else {
+            <td id="urlAPI" class="text-break text-muted">https://www.quetalmiafp.cl/api/Cuota/ObtenerCuotas</td>
+        }
+    </tr>
+    <tr>
+        <th style="text-align: center;">Método HTTP</th>
+        <td class="text-muted">GET</td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align: center;">Cabecera</th>
+    </tr>
+    <tr>
+        <th style="text-align: center;">X-API-Key</th>
+        <td class="text-muted">
+            API Key para autenticarse frente al servicio de obtención de cuotas.<br/>
+        </td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align: center;">Parámetros</th>
+    </tr>
+    <tr>
+        <th style="text-align: center;">listaAFPs</th>
+        <td class="text-muted">
+            Lista de los nombres de las AFPs que se desean consultar separados por coma ",". Ejemplo: CAPITAL,CUPRUM,HABITAT
+        </td>
+    </tr>
+    <tr>
+        <th style="text-align: center;">listaFondos</th>
+        <td class="text-muted">
+            Lista de los fondos que se desean consultar separados por coma ",". Ejemplo: A,B,C
+        </td>
+    </tr>
+    <tr>
+        <th style="text-align: center;">fechaInicial</th>
+        <td class="text-muted">
+            Fecha con formato dd/mm/aaaa para indicar el rango inicial de la consulta. Ejemplo: 01/01/2020
+        </td>
+    </tr>
+    <tr>
+        <th style="text-align: center;">fechaFinal</th>
+        <td class="text-muted">
+            Fecha con formato dd/mm/aaaa para indicar el rango final de la consulta. Ejemplo: 31/12/2020
+        </td>
+    </tr>
+</table>
+<p class="text-muted">
+    Ejemplo de parámetros a utilizar:
+</p>
+<table class="table table-bordered sinBordeInterno" style="margin-top: 20px; margin-bottom: 20px; table-layout:fixed; width:100%; text-align:center;">
+    <tr>
+        <td colspan="2" class="px-3 py-2">
+            <div class="input-group p-0">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">API Key</span>
+                </div>
+                <input type="text" class="form-control" id="apiKeyEjemplo" />
+            </div>
+        </td>
+    </tr> 
+    <tr>
+        <th style="text-align:center; width:50%;">AFP</th>
+        <th style="text-align:center; width:50%;">FONDO</th>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CAPITAL" id="afpCapitalEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em6" for="afpCapital">
+                    AFP Capital
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="A" id="fondoAEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em5" for="fondoA">
+                    Fondo A
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CUPRUM" id="afpCuprumEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em6" for="afpCuprum">
+                    AFP Cuprum
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="B" id="fondoBEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em5" for="fondoB">
+                    Fondo B
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="HABITAT" id="afpHabitatEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em6" for="afpHabitat">
+                    AFP Habitat
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="C" id="fondoCEjemplo" onchange="actualizarUrlEjemplo()" checked>
+                <label class="form-check-label em5" for="fondoC">
+                    Fondo C
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="MODELO" id="afpModeloEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpModelo">
+                    AFP Modelo
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="D" id="fondoDEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em5" for="fondoD">
+                    Fondo D
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PLANVITAL" id="afpPlanvitalEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpPlanvital">
+                    AFP PlanVital
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="E" id="fondoEEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em5" for="fondoE">
+                    Fondo E
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PROVIDA" id="afpProvidaEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpProvida">
+                    AFP ProVida
+                </label>
+            </div>
+        </td>
+        <td rowspan="2"></td>
+    </tr>
+    <tr>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="UNO" id="afpUnoEjemplo" onchange="actualizarUrlEjemplo()">
+                <label class="form-check-label em6" for="afpUno">
+                    AFP Uno
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th colspan="2" style="text-align:center;">RANGO DE FECHAS</th>
+    </tr>
+    <tr>
+        <td colspan="2" class="pl-3 pr-3 pt-2 pb-2">
+            <div style="width:100%;">
+                <div class="input-group input-daterange">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).AddMonths(-6).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaInicioEjemplo" onchange="actualizarUrlEjemplo()" />
+                    <div class="input-group-append input-group-prepend">
+                        <span class="input-group-text">
+                            <label style="margin-bottom:0px;">al</label>
+                        </span>
+                    </div>
+
+                    <input value="@TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control" id="fechaFinalEjemplo" onchange="actualizarUrlEjemplo()" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="input-group mt-3">
+    <div class="input-group-prepend">
+        <span class="input-group-text" style="width: 9em;">URL Resultante</span>
+    </div>
+    <textarea style="word-break:break-all; resize:none; background-color:#fff;" class="form-control" id="urlResultanteEjemplo" readonly rows="4"></textarea>
+</div>
+
+<button id="btnConsultaAPIEjemplo" type="button" style="width:33%;" class="btn btn-primary pb-2 pt-2 mt-3 mb-3" onclick="consultaAPIEjemplo()">
+    <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    <div style="display:inline-block;">Probar Consulta</div>
+</button>
+
+<div class="input-group mb-3" style="display: none;">
+    <div class="input-group-prepend">
+        <span class="input-group-text" style="width: 9em;">JSON Resultado</span>
+    </div>
+    <textarea style="word-break:break-all; resize:none; background-color:#fff;" class="form-control" id="resultadoEjemplo" readonly rows="20"></textarea>
 </div>

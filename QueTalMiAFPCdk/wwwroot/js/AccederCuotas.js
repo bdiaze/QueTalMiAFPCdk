@@ -27,8 +27,6 @@
 
         $("#historial" + fondo).show();
     });
-
-    actualizarUrlEjemplo();
 });
 
 
@@ -78,60 +76,3 @@ $("#btnDescargarCSV").click(function () {
         
     location.href = url;
 });
-
-function actualizarUrlEjemplo() {
-    let listaAFPs = $("#afpCapitalEjemplo").is(":checked") ? $("#afpCapitalEjemplo").val() + "," : "";
-    listaAFPs += $("#afpCuprumEjemplo").is(":checked") ? $("#afpCuprumEjemplo").val() + "," : "";
-    listaAFPs += $("#afpHabitatEjemplo").is(":checked") ? $("#afpHabitatEjemplo").val() + "," : "";
-    listaAFPs += $("#afpModeloEjemplo").is(":checked") ? $("#afpModeloEjemplo").val() + "," : "";
-    listaAFPs += $("#afpPlanvitalEjemplo").is(":checked") ? $("#afpPlanvitalEjemplo").val() + "," : "";
-    listaAFPs += $("#afpProvidaEjemplo").is(":checked") ? $("#afpProvidaEjemplo").val() + "," : "";
-    listaAFPs += $("#afpUnoEjemplo").is(":checked") ? $("#afpUnoEjemplo").val() + "," : "";
-    if (listaAFPs.charAt(listaAFPs.length - 1) == ",") {
-        listaAFPs = listaAFPs.substr(0, listaAFPs.length - 1);
-    }
-
-    let listaFondos = $("#fondoAEjemplo").is(":checked") ? $("#fondoAEjemplo").val() + "," : "";
-    listaFondos += $("#fondoBEjemplo").is(":checked") ? $("#fondoBEjemplo").val() + "," : "";
-    listaFondos += $("#fondoCEjemplo").is(":checked") ? $("#fondoCEjemplo").val() + "," : "";
-    listaFondos += $("#fondoDEjemplo").is(":checked") ? $("#fondoDEjemplo").val() + "," : "";
-    listaFondos += $("#fondoEEjemplo").is(":checked") ? $("#fondoEEjemplo").val() + "," : "";
-    if (listaFondos.charAt(listaFondos.length - 1) == ",") {
-        listaFondos = listaFondos.substr(0, listaFondos.length - 1);
-    }
-
-    let fechaInicio = $("#fechaInicioEjemplo").val();
-    let fechaFinal = $("#fechaFinalEjemplo").val();
-
-    let urlResultante = $("#urlAPI").html() + "?";
-    urlResultante += "listaAFPs=" + encodeURIComponent(listaAFPs);
-    urlResultante += "&listaFondos=" + encodeURIComponent(listaFondos);
-    urlResultante += "&fechaInicial=" + encodeURIComponent(fechaInicio);
-    urlResultante += "&fechaFinal=" + encodeURIComponent(fechaFinal);
-
-    $("#urlResultanteEjemplo").val(urlResultante);
-}
-
-function consultaAPIEjemplo() {
-    $.ajax({
-        url: $("#urlResultanteEjemplo").val(),
-        beforeSend: function (jqXHR, settings) {
-            $("#btnConsultaAPIEjemplo").find("span").css("display", "");
-            $("#btnConsultaAPIEjemplo").prop("disabled", true);
-            $("#resultadoEjemplo").parent("div").css("display", "none");
-        },
-        success: function (data, textStatus, jqXHR) {
-            var strJSON = JSON.stringify(data, null, 4);
-            $("#resultadoEjemplo").val(strJSON.substr(0, 5000) +
-                (strJSON.length > 5000 ? "...\n\nSolo se presentan los primeros 5.000 caracteres de la salida." : ""));
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            $("#resultadoEjemplo").val(JSON.stringify(jqXHR["responseJSON"], null, 4));
-        },
-        complete: function (jqXHR, textStatus) {
-            $("#btnConsultaAPIEjemplo").find("span").css("display", "none");
-            $("#btnConsultaAPIEjemplo").prop("disabled", false);
-            $("#resultadoEjemplo").parent("div").css("display", "");
-        }
-    });
-}
