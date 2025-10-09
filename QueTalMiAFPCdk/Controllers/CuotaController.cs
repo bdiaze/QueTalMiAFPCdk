@@ -13,7 +13,7 @@ using System.Text;
 namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class CuotaController(ICuotaUfComisionDAO cuotaUfComisionDAO) : ControllerBase {
+    public class CuotaController(ICuotaUfComisionDAO cuotaUfComisionDAO, ApiKeyDAO apiKeyDAO) : ControllerBase {
         
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
@@ -84,8 +84,17 @@ namespace QueTalMiAFPCdk.Controllers {
                 return ValidationProblem();
             }
 
-            // Se valida que si el usuario no ha iniciado sesión solo consulte por el año actual +/- 7 días...
-            if (xApiKey == null && (User.Identity == null || !User.Identity.IsAuthenticated)) {
+            // Si viene con un API key, se valida...
+            bool apiKeyValida = false;
+            if (!string.IsNullOrEmpty(xApiKey)) {
+                apiKeyValida = await apiKeyDAO.Validar(xApiKey);
+                if (!apiKeyValida) {
+                    return Unauthorized();
+                }
+            }
+
+            // Se valida que si el usuario no ha iniciado sesión (y no incluye una API key válida) solo consulte por el año actual +/- 7 días...
+            if ((User.Identity == null || !User.Identity.IsAuthenticated) && !apiKeyValida) {
                 DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
                 if (ultimaFechaAlgunValorCuota == null) {
                     ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
@@ -98,7 +107,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            return await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal, xApiKey); 
+            return await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal); 
         }
 
         // POST: CuotaUfComision/ObtenerUltimaCuota
@@ -196,23 +205,6 @@ namespace QueTalMiAFPCdk.Controllers {
 
             return await cuotaUfComisionDAO.ObtenerUltimaCuota(entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
         }
-
-        // GET: api/Cuota/ObtenerRentabilidadRealUltimoAnno
-        /*
-        [Route("[action]")]
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<List<RentabilidadReal>>> ObtenerRentabilidadRealUltimoAnno() {
-            DateTime fechaFinal = await cuotaUfComisionDAO.UltimaFechaTodas();
-            DateTime fechaInicial = fechaFinal.AddYears(-1);
-
-            return await cuotaUfComisionDAO.ObtenerRentabilidadReal(
-                "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
-                "A,B,C,D,E",
-                fechaInicial,
-                fechaFinal);
-        }
-        */
 
         // GET: api/Cuota/DescargarCuotasCSV?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicio=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
