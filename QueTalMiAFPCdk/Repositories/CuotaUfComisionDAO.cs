@@ -14,7 +14,7 @@ namespace QueTalMiAFPCdk.Repositories {
 		Task<DateTime> UltimaFechaAlguna();
 		Task<DateTime?> UltimaFechaAlgunaConTimeout();
 		Task<List<RentabilidadReal>> ObtenerRentabilidadReal(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
-		Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal, string? xApiKey = null);
+		Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
 		Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision);
         Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo);
     }
@@ -88,7 +88,7 @@ namespace QueTalMiAFPCdk.Repositories {
 			return (await System.Text.Json.JsonSerializer.DeserializeAsync<List<RentabilidadReal>>(responseStream, options))!;
 		}
 
-		public async Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal, string? xApiKey = null) {
+		public async Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal) {
             Dictionary<string, string?> parameters = new() {
                 { "listaAFPs", listaAFPs },
                 { "listaFondos", listaFondos },
@@ -97,7 +97,7 @@ namespace QueTalMiAFPCdk.Repositories {
             };
 
             using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
-            client.DefaultRequestHeaders.Add("x-api-key", xApiKey ?? _xApiKey);
+            client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
             string requestUri = QueryHelpers.AddQueryString(_baseUrl + "CuotaUfComision/ObtenerCuotas", parameters);
             HttpResponseMessage response = await client.GetAsync(requestUri);
             string responseString = await response.Content.ReadAsStringAsync();
