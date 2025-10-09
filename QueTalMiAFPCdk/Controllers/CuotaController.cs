@@ -93,8 +93,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            // Se valida que si el usuario no ha iniciado sesión (y no incluye una API key válida) solo consulte por el año actual +/- 7 días...
+            // Se valida que si el usuario no ha iniciado sesión (y no incluye una API key válida)...
             if ((User.Identity == null || !User.Identity.IsAuthenticated) && !apiKeyValida) {
+                // Solo consulte por el año actual +/ -7 días...
                 DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
                 if (ultimaFechaAlgunValorCuota == null) {
                     ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
@@ -103,6 +104,22 @@ namespace QueTalMiAFPCdk.Controllers {
                 DateOnly fechaMinima = DateOnly.FromDateTime(ultimaFechaAlgunValorCuota.Value.AddYears(-1).AddDays(-7));
                 DateOnly fechaMaxima = DateOnly.FromDateTime(ultimaFechaAlgunValorCuota.Value.AddDays(7));
                 if (fechaMinima != DateOnly.FromDateTime(dtFechaInicio) || fechaMaxima != DateOnly.FromDateTime(dtFechaFinal)) {
+                    return Unauthorized();
+                }
+
+
+                // Solo consulte por una AFP y todos los fondos, o todas las AFP con un solo fondo...
+                string[] afps = listaAFPs.Split(",");
+                string[] fondos = listaFondos.Split(",");
+                if (afps.Length == 1) {
+                    if (fondos.Length != 5) {
+                        return Unauthorized();
+                    }
+                } else if (fondos.Length == 1) {
+                    if (afps.Length != 7) {
+                        return Unauthorized();
+                    }
+                } else {
                     return Unauthorized();
                 }
             }
@@ -148,6 +165,13 @@ namespace QueTalMiAFPCdk.Controllers {
                 cantFechasIntermedias = 0;
                 incluyeMinimo = false;
                 incluyeMaximo = false;
+
+                // Se valida que solo consulte por un fondo y por todas las AFPs...
+                string[] fondos = entrada.ListaFondos.Split(",");
+                string[] afps = entrada.ListaAFPs.Split(",");
+                if (fondos.Length != 1 || afps.Length != 7) {
+                    return Unauthorized();
+                }
             }
 
             string[] fechas = entrada.ListaFechas.Replace(" ", "").Split(",");
