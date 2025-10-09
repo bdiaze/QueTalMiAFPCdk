@@ -68,7 +68,7 @@
             <tr>
                 <td class="p-0 align-middle">
                     <p class="m-0 text-center text-muted text-truncate">
-                        @fechaCreacionVigente.ToString("d 'de' MMM. 'de' yyyy", cultureInfo)<br/>
+                        @fechaCreacionVigente.ToString("d 'de' MMM 'de' yyyy", cultureInfo)<br/>
                         @fechaCreacionVigente.ToString("HH:mm:ss", cultureInfo)
                     </p>
                 </td>
@@ -76,7 +76,7 @@
                     @if (fechaUltimoUsoVigente != null)
                     {
                         <p class="m-0 text-center text-muted text-truncate">
-                            @fechaUltimoUsoVigente?.ToString("d 'de' MMM. 'de' yyyy", cultureInfo)<br/>
+                            @fechaUltimoUsoVigente?.ToString("d 'de' MMM 'de' yyyy", cultureInfo)<br/>
                             @fechaUltimoUsoVigente?.ToString("HH:mm:ss", cultureInfo)
                         </p>
                     } else
@@ -209,19 +209,19 @@
                     </td>
                     <td class="p-0 align-middle">
                         <p class="m-1 text-center text-muted text-truncate">
-                            @fechaCreacion.ToString("d 'de' MMM. 'de' yyyy", cultureInfo)<br/>
+                            @fechaCreacion.ToString("d 'de' MMM 'de' yyyy", cultureInfo)<br/>
                             @fechaCreacion.ToString("HH:mm:ss", cultureInfo)
                         </p>
                     </td>
                     <td class="p-0 align-middle">
                         <p class="m-1 text-center text-muted text-truncate">
-                            @fechaUltimoUso?.ToString("d 'de' MMM. 'de' yyyy", cultureInfo)<br/>
+                            @fechaUltimoUso?.ToString("d 'de' MMM 'de' yyyy", cultureInfo)<br/>
                             @fechaUltimoUso?.ToString("HH:mm:ss", cultureInfo)
                         </p>
                     </td>
                     <td class="p-0 align-middle">
                         <p class="m-1 text-center text-muted text-truncate">
-                            @fechaEliminacion?.ToString("d 'de' MMM. 'de' yyyy", cultureInfo)<br/>
+                            @fechaEliminacion?.ToString("d 'de' MMM 'de' yyyy", cultureInfo)<br/>
                             @fechaEliminacion?.ToString("HH:mm:ss", cultureInfo)
                         </p>
                     </td>
