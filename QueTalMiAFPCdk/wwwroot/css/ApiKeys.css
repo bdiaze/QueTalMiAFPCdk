@@ -1,0 +1,35 @@
+﻿div:has(> table.grillaKeysAntiguas) {
+    overflow: auto;
+}
+
+.grillaKeysAntiguas {
+    width: 100%;
+}
+
+.grillaKeysAntiguas td {
+    font-size: 0.9rem;
+}
+
+.grillaKeysAntiguas th p {
+    font-weight: 500;
+}
+
+div:has(> table.grillaKeyVigente) {
+    overflow: auto;
+}
+
+.grillaKeyVigente {
+    width: 100%;
+}
+
+.grillaKeyVigente th {
+    font-size: 0.9rem;
+}
+
+.grillaKeyVigente td {
+    font-size: 1.1rem;
+}
+
+.grillaKeyVigente th p {
+    font-weight: 500;
+}
