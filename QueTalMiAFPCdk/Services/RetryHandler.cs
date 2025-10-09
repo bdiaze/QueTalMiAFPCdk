@@ -14,8 +14,9 @@ namespace QueTalMiAFPCdk.Services {
                     errorTypeHeader = response.Headers.GetValues("ErrorType").FirstOrDefault();
                 }
 
-				if (response.IsSuccessStatusCode && errorTypeHeader == null || 
-					response.StatusCode == HttpStatusCode.BadRequest) {
+				if ((response.IsSuccessStatusCode && errorTypeHeader == null) || 
+					response.StatusCode == HttpStatusCode.BadRequest ||
+					response.StatusCode == HttpStatusCode.Unauthorized) {
 					return response;
 				}
 			}

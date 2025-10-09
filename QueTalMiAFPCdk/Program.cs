@@ -36,10 +36,15 @@ builder.Services.AddAuthentication(options => {
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+
     options.Events = new CookieAuthenticationEvents {
         OnValidatePrincipal = async context => {
             string? strExpiresAt = context.Properties.GetTokenValue("expires_at");
-            if (strExpiresAt != null && DateTimeOffset.TryParse(strExpiresAt, out DateTimeOffset expiresAt)  && expiresAt < DateTimeOffset.UtcNow.AddMinutes(5)) {
+            if (strExpiresAt != null && DateTimeOffset.TryParse(strExpiresAt, out DateTimeOffset expiresAt) && expiresAt < DateTimeOffset.UtcNow.AddMinutes(5)) {
                 string? refreshToken = context.Properties.GetTokenValue("refresh_token");
 
                 if (tokenEndpoint != null && refreshToken != null) {
@@ -65,6 +70,8 @@ builder.Services.AddAuthentication(options => {
                                 new AuthenticationToken { Name = OpenIdConnectParameterNames.RefreshToken, Value = newRefreshToken },
                                 new AuthenticationToken { Name = "expires_at", Value = DateTime.UtcNow.AddSeconds(newExpiresIn.Value).ToString("o", CultureInfo.InvariantCulture) },
                             ]);
+                            context.Properties.IsPersistent = true;
+                            context.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30);
                             context.ShouldRenew = true;
                         }
                     }
@@ -79,10 +86,12 @@ builder.Services.AddAuthentication(options => {
     options.ClientId = userPoolClientId;
     options.ResponseType = OpenIdConnectResponseType.Code;
     options.SaveTokens = true;
+    options.UseTokenLifetime = false;
     options.Scope.Add("openid");
     options.Scope.Add("email");
     options.Scope.Add("profile");
     options.CallbackPath = callbackPath;
+
     options.TokenValidationParameters = new TokenValidationParameters {
         ValidateIssuer = true,
         ValidIssuer = cognitoBaseUrl,
@@ -91,10 +100,16 @@ builder.Services.AddAuthentication(options => {
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
     };
+
     options.Events = new OpenIdConnectEvents { 
         OnRedirectToIdentityProvider = context => {
             context.ProtocolMessage.SetParameter("lang", "es");
             context.ProtocolMessage.RedirectUri = callbackUrl;
+            return Task.CompletedTask;
+        },
+        OnTicketReceived = context => {
+            context.Properties!.IsPersistent = true;
+            context.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30);
             return Task.CompletedTask;
         }
     };
@@ -111,6 +126,7 @@ builder.Services.AddSingleton<S3BucketHelper>();
 builder.Services.AddSingleton<MercadoPagoHelper>();
 builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
 builder.Services.AddSingleton<NotificacionDAO>();
+builder.Services.AddSingleton<ApiKeyDAO>();
 builder.Services.AddSingleton<EnvioCorreo>();
 
 var app = builder.Build();
