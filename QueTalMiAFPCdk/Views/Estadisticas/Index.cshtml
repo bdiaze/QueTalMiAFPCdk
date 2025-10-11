@@ -1,12 +1,11 @@
 ﻿@using System.Globalization
 @{
     ViewData["Title"] = "Rentabilidad por Fondo";
+    ViewData["Description"] = "Aquí podrás conocer la evolución histórica de la rentabilidad y los valores cuota de las AFP para cada uno de los fondos de pensiones.";
     ViewData["LogoutRedirect"] = Url.Action("Index", "Estadisticas");
 }
 
 @section Head {
-    <meta name="description" content="Aquí podrás conocer la evolución histórica de la rentabilidad 
-          y los valores cuota de las AFP para cada uno de los fondos de pensiones." />
     <link rel="stylesheet" href="~/css/Estadisticas.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
 }

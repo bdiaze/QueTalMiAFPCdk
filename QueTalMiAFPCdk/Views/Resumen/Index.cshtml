@@ -11,12 +11,10 @@
         mensajeBienvenida = $"¡Bienvenid@ { User.FindFirstValue(ClaimTypes.GivenName) }! 😊";
     }
     ViewData["Title"] = mensajeBienvenida;
+    ViewData["Description"] = "¿Quieres saber los valores cuota de AFP Modelo? ¿Seguir la evolución de los fondos en AFP ProVida? ¿O encontrar la AFP con la mejor rentabilidad del momento? En un solo lugar tendrás todo: valores cuota actualizados al día, gráficas interactivas para comparar rentabilidades y un simulador que te dirá cuánto podrías haber ganado (o perdido) en el fondo y la AFP que tú elijas.";
 }
 
 @section Head {
-    <meta name="description" content="¿Quieres saber los valores cuota de AFP Modelo? ¿Seguir la evolución de los fondos en AFP ProVida? ¿O encontrar la AFP con la mejor rentabilidad del momento?
-    En un solo lugar tendrás todo: valores cuota actualizados al día, gráficas interactivas para comparar rentabilidades 
-    y un simulador que te dirá cuánto podrías haber ganado (o perdido) en el fondo y la AFP que tú elijas." />
     <link rel="stylesheet" href="~/css/Resumen.css" asp-append-version="true" />
 }
 

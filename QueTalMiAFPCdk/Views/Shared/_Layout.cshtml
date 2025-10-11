@@ -5,7 +5,30 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ¿Qué tal mi AFP?</title>
+
+    <meta property="og:site_name" content="¿Qué tal mi AFP?" />
+    <meta property="og:title" content="@ViewData["Title"]" />
+    <meta property="og:description" content="@ViewData["Description"]" />
+    <meta property="og:locale" content="es_CL" />
+    <meta property="og:type" content="website" />
+
+    <meta property="twitter:title" content="@ViewData["Title"]" />
+    <meta property="twitter:description" content="@ViewData["Description"]" />
+    <meta property="twitter:card" content="summary" />
+
+    <title>@ViewData["Title"]</title>
+    <meta name="description" content="@ViewData["Description"]" />
+    
+    <script type="application/ld+json">
+        {
+          "@@context" : "https://schema.org",
+          "@@type" : "WebSite",
+          "name" : "¿Qué tal mi AFP?",
+          "alternateName": ["QueTalMiAFP"],
+          "url" : "https://www.quetalmiafp.cl/"
+        }
+    </script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="icon" href="~/flavicon.svg" />
