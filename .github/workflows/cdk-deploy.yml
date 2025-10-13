@@ -192,6 +192,9 @@ jobs:
                     sudo systemctl stop $WEBAPP_SERVICE || true
                     echo 'Se eliminan archivos del servicio web'
                     rm -rf ~/$WEBAPP_DIRECTORY/*   
+                    
+                    echo 'Se crea directorio de app si no existe'
+                    mkdir -p ~/$WEBAPP_DIRECTORY
                             
                     echo 'Se copian archivos desde directorio temporal a directorio de la aplicación web' 
                     cp -r ~/$TEMP_WEBAPP_DIRECTORY/publish/* ~/$WEBAPP_DIRECTORY
