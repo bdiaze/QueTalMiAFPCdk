@@ -113,7 +113,7 @@ jobs:
                   EC2_HOST: ${{ vars.EC2_HOST }}
                   EC2_USERNAME: ${{ vars.EC2_USERNAME }}
                   EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-                  TEMP_WEBAPP_DIRECTORY: $${{ vars.TEMP_WEBAPP_DIRECTORY }}
+                  TEMP_WEBAPP_DIRECTORY: ${{ vars.TEMP_WEBAPP_DIRECTORY }}
                   WEBAPP_DIRECTORY: ${{ vars.WEBAPP_DIRECTORY }}
                   WEBAPP_LOGROTATE: ${{ vars.WEBAPP_LOGROTATE }}
                   WEBAPP_SERVICE: ${{ vars.WEBAPP_SERVICE }}
