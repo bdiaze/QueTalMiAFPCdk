@@ -1,13 +1,18 @@
 using Amazon.CDK;
+using Amazon.CDK.AWS.CertificateManager;
+using Amazon.CDK.AWS.CloudFront;
+using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.Route53;
+using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SecretsManager;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
+using Distribution = Amazon.CDK.AWS.CloudFront.Distribution;
 
 namespace Cdk
 {
@@ -83,6 +88,9 @@ namespace Cdk
             string arnParameterQueTalMiAFPApiBucketName = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME");
             #endregion
 
+            string arnCertificate = System.Environment.GetEnvironmentVariable("ARN_CERTIFICATE") ?? throw new ArgumentNullException("ARN_CERTIFICATE");
+            string distributionSubdomainName = System.Environment.GetEnvironmentVariable("DISTRIBUTION_SUBDOMAIN_NAME") ?? throw new ArgumentNullException("DISTRIBUTION_SUBDOMAIN_NAME");
+
             IHostedZone hostedZone = HostedZone.FromLookup(this, $"{appName}WebServerHostedZone", new HostedZoneProviderProps {
                 DomainName = domainName
             });
@@ -94,6 +102,53 @@ namespace Cdk
                 RecordName = subdomainName,
                 DomainName = ec2Host
             });
+
+            #region CDN para archivos estáticos
+            // Se crea bucket donde se almacenarán recursos estáticos...  
+            Bucket bucket = new(this, $"{appName}StaticResourcesS3Bucket", new BucketProps {
+                Versioned = false,
+                RemovalPolicy = RemovalPolicy.DESTROY,
+                BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
+                BucketName = $"{appName.ToLower()}-static-resources"
+            });
+
+            // Se obtiene el certificado existente...
+            ICertificate certificate = Certificate.FromCertificateArn(this, $"{appName}Certificate", arnCertificate);
+
+            // Se crea distribución de cloudfront...
+            Distribution distribution = new(this, $"{appName}Distribution", new DistributionProps {
+                Comment = $"{appName} Distribution",
+                DomainNames = [distributionSubdomainName],
+                Certificate = certificate,
+                DefaultBehavior = new BehaviorOptions {
+                    Origin = new HttpOrigin(subdomainName, new HttpOriginProps {
+                        ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY,
+                    }),
+                    AllowedMethods = AllowedMethods.ALLOW_ALL,
+                    ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                },
+                AdditionalBehaviors = new Dictionary<string, IBehaviorOptions> {
+                    { "css/*", new BehaviorOptions {
+                        Origin = S3BucketOrigin.WithOriginAccessControl(bucket),
+                        Compress = true,
+                        ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                        CachePolicy = CachePolicy.CACHING_OPTIMIZED
+                    } },
+                    { "images/*", new BehaviorOptions {
+                        Origin = S3BucketOrigin.WithOriginAccessControl(bucket),
+                        Compress = true,
+                        ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                        CachePolicy = CachePolicy.CACHING_OPTIMIZED
+                    } },
+                    { "js/*", new BehaviorOptions {
+                        Origin = S3BucketOrigin.WithOriginAccessControl(bucket),
+                        Compress = true,
+                        ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                        CachePolicy = CachePolicy.CACHING_OPTIMIZED
+                    } },
+                },
+            });
+            #endregion
 
             #region String Parameters URL Scrapers
             // Se crean todos los parámetros de URL para la extracción de valores...
