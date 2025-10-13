@@ -141,6 +141,16 @@ jobs:
                     rm -rf ~/$TEMP_WEBAPP_DIRECTORY/*
                 '
                 
+                # Se crean carpetas temporales...
+                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "TEMP_WEBAPP_DIRECTORY=$TEMP_WEBAPP_DIRECTORY" '
+                    echo 'Se crean directorios de la carpeta temporal'
+                    mkdir -p ~/$TEMP_WEBAPP_DIRECTORY/publish
+                    mkdir -p ~/$TEMP_WEBAPP_DIRECTORY/logrotate
+                    mkdir -p ~/$TEMP_WEBAPP_DIRECTORY/service
+                    mkdir -p ~/$TEMP_WEBAPP_DIRECTORY/conf
+                    mkdir -p ~/$TEMP_WEBAPP_DIRECTORY/cloudflare
+                '
+                
                 # Se copian las piezas publicadas en directorio remoto temporal de instancia EC2...
                 echo 'Se copian archivos publicados en EC2'
                 scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish

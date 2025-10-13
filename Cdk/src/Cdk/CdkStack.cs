@@ -5,6 +5,7 @@ using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.Route53;
+using Amazon.CDK.AWS.Route53.Targets;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SecretsManager;
 using Amazon.CDK.AWS.SSM;
@@ -126,6 +127,7 @@ namespace Cdk
                     }),
                     AllowedMethods = AllowedMethods.ALLOW_ALL,
                     ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    CachePolicy = CachePolicy.CACHING_DISABLED
                 },
                 AdditionalBehaviors = new Dictionary<string, IBehaviorOptions> {
                     { "css/*", new BehaviorOptions {
@@ -147,6 +149,13 @@ namespace Cdk
                         CachePolicy = CachePolicy.CACHING_OPTIMIZED
                     } },
                 },
+            });
+
+            // Se crea record en hosted zone...
+            _ = new ARecord(this, $"{appName}DistributionARecord", new ARecordProps {
+                Zone = hostedZone,
+                RecordName = distributionSubdomainName,
+                Target = RecordTarget.FromAlias(new CloudFrontTarget(distribution)),
             });
             #endregion
 
