@@ -89,9 +89,6 @@ namespace Cdk
             string arnParameterQueTalMiAFPApiBucketName = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME");
             #endregion
 
-            string arnCertificate = System.Environment.GetEnvironmentVariable("ARN_CERTIFICATE") ?? throw new ArgumentNullException("ARN_CERTIFICATE");
-            string distributionSubdomainName = System.Environment.GetEnvironmentVariable("DISTRIBUTION_SUBDOMAIN_NAME") ?? throw new ArgumentNullException("DISTRIBUTION_SUBDOMAIN_NAME");
-
             IHostedZone hostedZone = HostedZone.FromLookup(this, $"{appName}WebServerHostedZone", new HostedZoneProviderProps {
                 DomainName = domainName
             });
@@ -103,61 +100,6 @@ namespace Cdk
                 RecordName = subdomainName,
                 DomainName = ec2Host
             });
-
-            #region CDN para archivos estáticos
-            // Se crea bucket donde se almacenarán recursos estáticos...  
-            Bucket bucket = new(this, $"{appName}StaticResourcesS3Bucket", new BucketProps {
-                Versioned = false,
-                RemovalPolicy = RemovalPolicy.DESTROY,
-                BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
-                BucketName = $"{appName.ToLower()}-static-resources"
-            });
-
-            // Se obtiene el certificado existente...
-            ICertificate certificate = Certificate.FromCertificateArn(this, $"{appName}Certificate", arnCertificate);
-
-            // Se crea distribución de cloudfront...
-            Distribution distribution = new(this, $"{appName}Distribution", new DistributionProps {
-                Comment = $"{appName} Distribution",
-                DomainNames = [distributionSubdomainName],
-                Certificate = certificate,
-                DefaultBehavior = new BehaviorOptions {
-                    Origin = new HttpOrigin(subdomainName, new HttpOriginProps {
-                        ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY,
-                    }),
-                    AllowedMethods = AllowedMethods.ALLOW_ALL,
-                    ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                    CachePolicy = CachePolicy.CACHING_DISABLED
-                },
-                AdditionalBehaviors = new Dictionary<string, IBehaviorOptions> {
-                    { "css/*", new BehaviorOptions {
-                        Origin = S3BucketOrigin.WithOriginAccessControl(bucket),
-                        Compress = true,
-                        ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                        CachePolicy = CachePolicy.CACHING_OPTIMIZED
-                    } },
-                    { "images/*", new BehaviorOptions {
-                        Origin = S3BucketOrigin.WithOriginAccessControl(bucket),
-                        Compress = true,
-                        ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                        CachePolicy = CachePolicy.CACHING_OPTIMIZED
-                    } },
-                    { "js/*", new BehaviorOptions {
-                        Origin = S3BucketOrigin.WithOriginAccessControl(bucket),
-                        Compress = true,
-                        ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                        CachePolicy = CachePolicy.CACHING_OPTIMIZED
-                    } },
-                },
-            });
-
-            // Se crea record en hosted zone...
-            _ = new ARecord(this, $"{appName}DistributionARecord", new ARecordProps {
-                Zone = hostedZone,
-                RecordName = distributionSubdomainName,
-                Target = RecordTarget.FromAlias(new CloudFrontTarget(distribution)),
-            });
-            #endregion
 
             #region String Parameters URL Scrapers
             // Se crean todos los parámetros de URL para la extracción de valores...
