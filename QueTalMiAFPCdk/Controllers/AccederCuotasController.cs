@@ -6,7 +6,7 @@ using QueTalMiAFPCdk.Repositories;
 using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
-    public class AccederCuotasController(IWebHostEnvironment environment, ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller { 
+    public class AccederCuotasController(IWebHostEnvironment environment, CuotaUfComisionDAO cuotaUfComisionDAO) : Controller { 
         private static readonly Dictionary<string, string> LISTA_AFPS = new() {
             { "CAPITAL", "Capital" },
             { "CUPRUM", "Cuprum" },
@@ -73,16 +73,17 @@ namespace QueTalMiAFPCdk.Controllers {
             listaAnnos.Reverse();
 
 
-            AccederCuotasViewModel salida = new();
-            salida.AmbienteDesarrollo = environment.IsDevelopment();
+            AccederCuotasViewModel salida = new() {
+                AmbienteDesarrollo = environment.IsDevelopment(),
 
-            salida.Historial = new HistorialAfp {
-                Afp = inputAfp,
-                ListaAfps = new SelectList(LISTA_AFPS.Select(l => new SelectListItem { Value = l.Key, Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
-                Mes = fechaDesdeHistorial.GetValueOrDefault().Month,
-                ListaMeses = new SelectList(LISTA_MESES.Select(l => new SelectListItem { Value = l.Key.ToString(), Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
-                Anno = fechaDesdeHistorial.GetValueOrDefault().Year,
-                ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString() }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text))
+                Historial = new HistorialAfp {
+                    Afp = inputAfp,
+                    ListaAfps = new SelectList(LISTA_AFPS.Select(l => new SelectListItem { Value = l.Key, Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
+                    Mes = fechaDesdeHistorial.GetValueOrDefault().Month,
+                    ListaMeses = new SelectList(LISTA_MESES.Select(l => new SelectListItem { Value = l.Key.ToString(), Text = l.Value }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text)),
+                    Anno = fechaDesdeHistorial.GetValueOrDefault().Year,
+                    ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString() }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text))
+                }
             };
 
             // Se graba en cookie última AFP seleccionada para usar como defecto en consultas posteriores...

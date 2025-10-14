@@ -13,7 +13,7 @@ using System.Text;
 namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class CuotaController(ICuotaUfComisionDAO cuotaUfComisionDAO, ApiKeyDAO apiKeyDAO) : ControllerBase {
+    public class CuotaController(CuotaUfComisionDAO cuotaUfComisionDAO, ApiKeyDAO apiKeyDAO) : ControllerBase {
         
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]

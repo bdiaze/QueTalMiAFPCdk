@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
-    public class ResumenController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
+    public class ResumenController(CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
         private const int CANTIDAD_DIAS_RESUMEN = 7;
         private const int CANTIDAD_MESES_PREMIO = 6;
 
@@ -51,7 +51,7 @@ namespace QueTalMiAFPCdk.Controllers {
             // Se arma objeto de salida...
             ResumenViewModel salida = new() {
                 Resumen = {
-                    UltimaSemana = IMAGENES_AFP.Keys.ToList().OrderBy(c => c.ToString()).Select(c => new UltimaSemanaAfp { Nombre = LISTA_AFPS[c], UrlLogo = IMAGENES_AFP[c] }).ToList(),
+                    UltimaSemana = [.. IMAGENES_AFP.Keys.ToList().OrderBy(c => c.ToString()).Select(c => new UltimaSemanaAfp { Nombre = LISTA_AFPS[c], UrlLogo = IMAGENES_AFP[c] })],
                 }
             };
 
@@ -177,7 +177,7 @@ namespace QueTalMiAFPCdk.Controllers {
             salida.Premios.FechasTodas = fechasTodas;
 
             // Se calcula porcentaje que se lleva del mes para el premio de la rentabilidad del mes...
-            DateTime primerDiaMes = new DateTime(fechasTodas.Year, fechasTodas.Month, 1);
+            DateTime primerDiaMes = new(fechasTodas.Year, fechasTodas.Month, 1);
             DateTime ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
             decimal porcMesPremio = 100 * fechasTodas.Day / ultimoDiaMes.Day;
             salida.Premios.PorcMesPremio = porcMesPremio;

@@ -124,7 +124,7 @@ builder.Services.AddSingleton<SecretManagerHelper>();
 builder.Services.AddSingleton<ApiKeyHelper>();
 builder.Services.AddSingleton<S3BucketHelper>();
 builder.Services.AddSingleton<MercadoPagoHelper>();
-builder.Services.AddSingleton<ICuotaUfComisionDAO, CuotaUfComisionDAO>();
+builder.Services.AddSingleton<CuotaUfComisionDAO>();
 builder.Services.AddSingleton<NotificacionDAO>();
 builder.Services.AddSingleton<ApiKeyDAO>();
 builder.Services.AddSingleton<EnvioCorreo>();
@@ -140,7 +140,6 @@ if (app.Environment.IsDevelopment()) {
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

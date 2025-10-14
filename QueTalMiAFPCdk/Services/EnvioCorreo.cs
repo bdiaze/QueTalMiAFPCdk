@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Services {
-	public class EnvioCorreo(ParameterStoreHelper parameterStore, ICuotaUfComisionDAO cuotaUfComisionDAO) {
+	public class EnvioCorreo(ParameterStoreHelper parameterStore, CuotaUfComisionDAO cuotaUfComisionDAO) {
 		private readonly string _direccionNotificacion = parameterStore.ObtenerParametro("/QueTalMiAFP/Email/DireccionNotificacion").Result;
 		private readonly string _nombreNotificacion = parameterStore.ObtenerParametro("/QueTalMiAFP/Email/NombreNotificacion").Result;
 

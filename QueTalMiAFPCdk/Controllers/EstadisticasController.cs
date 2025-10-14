@@ -5,7 +5,7 @@ using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class EstadisticasController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
+	public class EstadisticasController(CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
 
         public async Task<IActionResult> Index() {
 			DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();

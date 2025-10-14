@@ -2,7 +2,7 @@
 using QueTalMiAFPCdk.Repositories;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class SimuladorController(ICuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
+	public class SimuladorController(CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
 
 		public async Task<IActionResult> Index() {
             ViewBag.UltimaFechaTodosValoresCuota = await cuotaUfComisionDAO.UltimaFechaTodas();

@@ -9,17 +9,7 @@ using System.Text;
 using System.Text.Json;
 
 namespace QueTalMiAFPCdk.Repositories {
-	public interface ICuotaUfComisionDAO {
-		Task<DateTime> UltimaFechaTodas();
-		Task<DateTime> UltimaFechaAlguna();
-		Task<DateTime?> UltimaFechaAlgunaConTimeout();
-		Task<List<RentabilidadReal>> ObtenerRentabilidadReal(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
-		Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal);
-		Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision);
-        Task<SalCorreoEnviar> EnviarCorreo(string nombrePara, string correoPara, string? nombreResponderA, string? correoResponderA, string asunto, string cuerpo);
-    }
-
-	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) : ICuotaUfComisionDAO {
+	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) {
 		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
 		private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
         private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
