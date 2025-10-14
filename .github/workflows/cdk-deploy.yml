@@ -151,7 +151,8 @@ jobs:
                 
                 # Se copian las piezas publicadas en directorio remoto temporal de instancia EC2...
                 echo 'Se copian archivos publicados en EC2'
-                scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish
+                rsync -avz --no-o --no-g --delete -e "ssh -i ssh_key.pem" ./publish/ $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish/
+                # scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish
                 
                 # Se copia el archivo logrotate
                 echo 'Se copia archivo de logrotate en EC2'
