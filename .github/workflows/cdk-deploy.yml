@@ -132,13 +132,7 @@ jobs:
                 
                 echo 'Se crea archivo de CRT Cloudflare'
                 echo "$CLOUDFLARE_CLIENT_CRT" > cloudflare.crt
-                
-                # Se limpia carpeta temporal...
-                ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "TEMP_WEBAPP_DIRECTORY=$TEMP_WEBAPP_DIRECTORY" '
-                    echo 'Se eliminan archivos de la carpeta temporal'
-                    rm -rf ~/$TEMP_WEBAPP_DIRECTORY/*
-                '
-                
+                                
                 # Se crean carpetas temporales...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "TEMP_WEBAPP_DIRECTORY=$TEMP_WEBAPP_DIRECTORY" '
                     echo 'Se crean directorios de la carpeta temporal'
