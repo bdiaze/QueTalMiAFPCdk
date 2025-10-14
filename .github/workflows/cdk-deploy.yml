@@ -145,29 +145,24 @@ jobs:
                 
                 # Se copian las piezas publicadas en directorio remoto temporal de instancia EC2...
                 echo 'Se copian archivos publicados en EC2'
-                rsync -azc --no-o --no-g --delete --stats -e "ssh -i ssh_key.pem" ./publish/ $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish/
-                # scp -i ssh_key.pem -r ./publish/* $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish
+                rsync -azc --no-o --no-g --delete --stats --quiet -e "ssh -i ssh_key.pem" ./publish/ $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/publish/
                 
                 # Se copia el archivo logrotate
                 echo 'Se copia archivo de logrotate en EC2'
-                rsync -azc --no-o --no-g --delete --stats -e "ssh -i ssh_key.pem" ./$WEBAPP_LOGROTATE $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/logrotate/
-                # scp -i ssh_key.pem ./$WEBAPP_LOGROTATE $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/logrotate
+                rsync -azc --no-o --no-g --delete --stats --quiet -e "ssh -i ssh_key.pem" ./$WEBAPP_LOGROTATE $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/logrotate/
                 
                 # Se copia el archivo service...
                 echo 'Se copia archivo .service en EC2'
-                rsync -azc --no-o --no-g --delete --stats -e "ssh -i ssh_key.pem" ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/service/
-                # scp -i ssh_key.pem ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/service
+                rsync -azc --no-o --no-g --delete --stats --quiet -e "ssh -i ssh_key.pem" ./$WEBAPP_SERVICE.service $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/service/
                 
                 # Se copia el archivo de nginx...
                 [[ $CONFIGURAR_NGINX == 1 ]] && echo 'Se copia archivo .conf en EC2'
-                [[ $CONFIGURAR_NGINX == 1 ]] && rsync -azc --no-o --no-g --delete --stats -e "ssh -i ssh_key.pem" ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/conf/
-                # [[ $CONFIGURAR_NGINX == 1 ]] && scp -i ssh_key.pem ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/conf 
+                [[ $CONFIGURAR_NGINX == 1 ]] && rsync -azc --no-o --no-g --delete --stats --quiet -e "ssh -i ssh_key.pem" ./$WEBAPP_SERVICE.conf $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/conf/
                 [[ $CONFIGURAR_NGINX != 1 ]] && echo 'No se copia archivo .conf en EC2'
                 
                 # Se copia archivo CRT de cloudflare...
                 echo 'Se copia archivo cloudflare.crt en EC2'
-                rsync -azc --no-o --no-g --delete --stats -e "ssh -i ssh_key.pem" ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/cloudflare/
-                # scp -i ssh_key.pem ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/cloudflare 
+                rsync -azc --no-o --no-g --delete --stats --quiet -e "ssh -i ssh_key.pem" ./cloudflare.crt $EC2_USERNAME@$EC2_HOST:~/$TEMP_WEBAPP_DIRECTORY/cloudflare/
                                                 
                 # Se inicializa el web service...
                 ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "TEMP_WEBAPP_DIRECTORY=$TEMP_WEBAPP_DIRECTORY WEBAPP_SERVICE=$WEBAPP_SERVICE WEBAPP_DIRECTORY=$WEBAPP_DIRECTORY WEBAPP_EXECSTART=$WEBAPP_EXECSTART WEBAPP_LOG_DIRECTORY=$WEBAPP_LOG_DIRECTORY WEBAPP_LOGROTATE=$WEBAPP_LOGROTATE" '
@@ -178,30 +173,24 @@ jobs:
                     
                     echo 'Se mueve archivo cloudflare.crt'
                     sudo mkdir -p /etc/nginx/certs
-                    sudo rsync -azc --no-o --no-g --stats ~/$TEMP_WEBAPP_DIRECTORY/cloudflare/cloudflare.crt /etc/nginx/certs/
-                    # sudo mv -f ~/$TEMP_WEBAPP_DIRECTORY/cloudflare/cloudflare.crt /etc/nginx/certs/
+                    sudo rsync -az --no-o --no-g --stats --quiet ~/$TEMP_WEBAPP_DIRECTORY/cloudflare/cloudflare.crt /etc/nginx/certs/
                     
                     echo 'Se mueve archivo de logrotate y se gatilla una ejecución'
-                    sudo rsync -azc --no-o --no-g --stats ~/$TEMP_WEBAPP_DIRECTORY/logrotate/$WEBAPP_LOGROTATE /etc/logrotate.d/
-                    # sudo mv -f ~/$TEMP_WEBAPP_DIRECTORY/logrotate/$WEBAPP_LOGROTATE /etc/logrotate.d/
+                    sudo rsync -az --no-o --no-g --stats --quiet ~/$TEMP_WEBAPP_DIRECTORY/logrotate/$WEBAPP_LOGROTATE /etc/logrotate.d/
                     sudo chown root:root /etc/logrotate.d/$WEBAPP_LOGROTATE
                     sudo logrotate -f /etc/logrotate.d/$WEBAPP_LOGROTATE
                     
                     echo 'Se detiene servicio web'
-                    sudo systemctl stop $WEBAPP_SERVICE || true
-                    # echo 'Se eliminan archivos del servicio web'
-                    # rm -rf ~/$WEBAPP_DIRECTORY/*   
+                    sudo systemctl stop $WEBAPP_SERVICE || true  
                     
                     echo 'Se crea directorio de app si no existe'
                     mkdir -p ~/$WEBAPP_DIRECTORY
                             
                     echo 'Se copian archivos desde directorio temporal a directorio de la aplicación web' 
-                    sudo rsync -azc --no-o --no-g --delete --stats ~/$TEMP_WEBAPP_DIRECTORY/publish/ ~/$WEBAPP_DIRECTORY/
-                    # cp -r ~/$TEMP_WEBAPP_DIRECTORY/publish/* ~/$WEBAPP_DIRECTORY
+                    sudo rsync -az --no-o --no-g --delete --stats --quiet ~/$TEMP_WEBAPP_DIRECTORY/publish/ ~/$WEBAPP_DIRECTORY/
                                                     
                     echo 'Se mueve archivo .service y se inicia servicio'
-                    sudo rsync -azc --no-o --no-g --stats ~/$TEMP_WEBAPP_DIRECTORY/service/$WEBAPP_SERVICE.service /etc/systemd/system/
-                    # sudo mv -f ~/$TEMP_WEBAPP_DIRECTORY/service/$WEBAPP_SERVICE.service /etc/systemd/system/
+                    sudo rsync -az --no-o --no-g --stats --quiet ~/$TEMP_WEBAPP_DIRECTORY/service/$WEBAPP_SERVICE.service /etc/systemd/system/
                     sudo chmod +x ~/$WEBAPP_DIRECTORY/$WEBAPP_EXECSTART
                     sudo systemctl daemon-reload
                     sudo systemctl enable $WEBAPP_SERVICE
@@ -212,8 +201,7 @@ jobs:
                 # Se mueve archivo .conf y se reinicia nginx...
                 [[ $CONFIGURAR_NGINX == 1 ]] && ssh -i ssh_key.pem $EC2_USERNAME@$EC2_HOST "TEMP_WEBAPP_DIRECTORY=$TEMP_WEBAPP_DIRECTORY WEBAPP_SERVICE=$WEBAPP_SERVICE" '
                     echo 'Se mueve archivo .conf y se reinicia nginx'
-                    sudo rsync -azc --no-o --no-g --stats ~/$TEMP_WEBAPP_DIRECTORY/conf/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
-                    # sudo mv -f ~/$TEMP_WEBAPP_DIRECTORY/conf/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
+                    sudo rsync -az --no-o --no-g --stats --quiet ~/$TEMP_WEBAPP_DIRECTORY/conf/$WEBAPP_SERVICE.conf /etc/nginx/conf.d/
                     sudo systemctl reload nginx
                 '
                 [[ $CONFIGURAR_NGINX != 1 ]] && echo 'No se mueve archivo .conf ni se reinicia nginx'
