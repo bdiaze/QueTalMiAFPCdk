@@ -124,7 +124,25 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            return await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal); 
+            List<CuotaUf> salida = await cuotaUfComisionDAO.ObtenerCuotas(listaAFPs, listaFondos, dtFechaInicio, dtFechaFinal);
+
+            if (apiKeyValida) {
+                await apiKeyDAO.IngresarHistorialUso(
+                    xApiKey!,
+                    DateTimeOffset.UtcNow,
+                    Url.Action("ObtenerCuotas", "Cuota")!,
+                    System.Text.Json.JsonSerializer.Serialize(new {
+                        listaAFPs,
+                        listaFondos,
+                        fechaInicial,
+                        fechaFinal
+                    }),
+                    StatusCodes.Status200OK,
+                    salida.Count
+                );
+            }
+
+            return salida; 
         }
 
         // POST: CuotaUfComision/ObtenerUltimaCuota
