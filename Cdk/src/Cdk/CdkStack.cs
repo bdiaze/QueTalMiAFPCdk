@@ -367,29 +367,6 @@ namespace Cdk
                     }
                 }
             });
-
-            StringParameter strParAssumeRoleArn = new(this, $"{appName}StringParameterApiAssumeRoleArn", new StringParameterProps {
-                ParameterName = $"/{appName}/Api/AssumeRoleArn",
-                Description = $"Assume role ARN - {appName}",
-                StringValue = assumeRole.RoleArn,
-                Tier = ParameterTier.STANDARD,
-            });
-
-            Policy policyAssumeRole = new(this, $"{appName}PolicyAssumeRole", new PolicyProps { 
-                PolicyName = $"{appName}PolicyGetParameterAssumeRoleArn",
-                Statements = [
-                    new PolicyStatement(new PolicyStatementProps{
-                        Sid = $"{appName}AccessToParameterStore",
-                        Actions = [
-                            "ssm:GetParameter"
-                        ],
-                        Resources = [
-                            strParAssumeRoleArn.ParameterArn
-                        ],
-                    }),
-                ]
-            });
-            assumeRole.AttachInlinePolicy(policyAssumeRole);
         }
     }
 }

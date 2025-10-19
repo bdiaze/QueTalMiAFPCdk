@@ -2,15 +2,16 @@
 using Amazon.APIGateway.Model;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
+using System.Configuration;
 
 namespace QueTalMiAFPCdk.Services {
-    public class ApiKeyHelper(ParameterStoreHelper parameterStore) {
+    public class ApiKeyHelper(IConfiguration configuration) {
         
         private readonly Dictionary<string, string> apiKeys = [];
 
         public async Task<string> ObtenerApiKey(string apiKeyId) {
             if (!apiKeys.TryGetValue(apiKeyId, out string? value)) {
-                string assumeRole = await parameterStore.ObtenerParametro("/QueTalMiAFP/Api/AssumeRoleArn");
+                string assumeRole = configuration.GetValue<string>("AssumeRoleArn")!;
 
                 using AmazonSecurityTokenServiceClient client = new();
                 AssumeRoleRequest request = new() {

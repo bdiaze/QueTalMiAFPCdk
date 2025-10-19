@@ -142,7 +142,7 @@ if (app.Environment.IsDevelopment()) {
 
 app.UseStaticFiles(new StaticFileOptions { 
     OnPrepareResponse = context => {
-        context.Context.Response.Headers["Cache-Control"] = $"public,max-age={30 * 24 * 60 * 60},immutable";
+        context.Context.Response.Headers.CacheControl = $"public,max-age={30 * 24 * 60 * 60},immutable";
     }
 });
 
