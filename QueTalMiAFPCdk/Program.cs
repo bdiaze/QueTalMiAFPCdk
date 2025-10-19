@@ -140,7 +140,11 @@ if (app.Environment.IsDevelopment()) {
     app.UseHsts();
 }
 
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions { 
+    OnPrepareResponse = context => {
+        context.Context.Response.Headers["Cache-Control"] = $"public,max-age={30 * 24 * 60 * 60},immutable";
+    }
+});
 
 app.UseRouting();
 
