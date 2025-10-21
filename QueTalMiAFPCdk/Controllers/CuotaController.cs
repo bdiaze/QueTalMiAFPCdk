@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -13,12 +14,14 @@ using System.Text;
 namespace QueTalMiAFPCdk.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class CuotaController(CuotaUfComisionDAO cuotaUfComisionDAO, ApiKeyDAO apiKeyDAO) : ControllerBase {
+    public class CuotaController(ILogger<CuotaController> logger, CuotaUfComisionDAO cuotaUfComisionDAO, ApiKeyDAO apiKeyDAO) : ControllerBase {
         
         // GET: api/Cuota/ObtenerCuotas?listaAFPs=CAPITAL,UNO&listaFondos=A,B&fechaInicial=01/01/2020&fechaFinal=31/12/2020
         [Route("[action]")]
         [HttpGet]
         public async Task<ActionResult<List<CuotaUf>>> ObtenerCuotas(string listaAFPs, string listaFondos, string fechaInicial, string fechaFinal, [FromHeader(Name = "X-API-Key")] string? xApiKey) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             if (listaAFPs == null) {
                 ModelState.AddModelError(
                     nameof(listaAFPs),
@@ -141,6 +144,14 @@ namespace QueTalMiAFPCdk.Controllers {
                     salida.Count
                 );
             }
+
+            logger.LogInformation(
+                "[GET] - [Cuota] - [ObtenerCuotas] - [{ElapsedTime} ms] - [{StatusCode}] - " +
+                "Se retornan exitosamente los valores cuota. Autenticado: {IsAutheticated} - Con API Key: {ApiKeyValida} - " +
+                "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal} - " +
+                "Cant. Registros: {CantRegistros}.", 
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false, 
+                apiKeyValida, listaAFPs, listaFondos, fechaInicial, fechaFinal, salida.Count);
 
             return salida; 
         }
