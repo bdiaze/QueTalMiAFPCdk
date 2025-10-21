@@ -8,8 +8,8 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (ViewBag.ClaseError == "QueTalMiAFP.Models.Others.ExceptionQueTalMiAFP") {
-    <p class="card-text">@ViewBag.Message</p>
+@if (ViewData.ContainsKey("Message") && ViewData["Message"]?.ToString()?.Length > 0) {
+    <p class="card-text">@ViewData["Message"]</p>
 } else {
     <p class="card-text">Ocurrió un error inesperado, favor intente más tarde.</p>
 }
