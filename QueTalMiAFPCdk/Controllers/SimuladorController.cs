@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QueTalMiAFPCdk.Repositories;
+using System.Diagnostics;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class SimuladorController(CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
+	public class SimuladorController(ILogger<SimuladorController> logger, CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
 
 		public async Task<IActionResult> Index() {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             ViewBag.UltimaFechaTodosValoresCuota = await cuotaUfComisionDAO.UltimaFechaTodas();
+            long elapsedTimeFechaTodas = stopwatch.ElapsedMilliseconds;
+
             string? sueldoImponible = Request.Cookies["SueldoImponible"];
             sueldoImponible ??= "$600.000";
             ViewBag.SueldoImponible = sueldoImponible;
@@ -32,6 +37,15 @@ namespace QueTalMiAFPCdk.Controllers {
                     Path = "/Simulador"
                 });
             }
+
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se retorna exitosamente la página de simulación - " +
+                "Elapsed Time Fecha Todas: {FechaTodas}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                elapsedTimeFechaTodas);
+
             return View();
 		}
 	}
