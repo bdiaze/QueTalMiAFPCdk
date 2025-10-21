@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
-    public class ResumenController(CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
+    public class ResumenController(ILogger<ResumenController> logger, CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
         private const int CANTIDAD_DIAS_RESUMEN = 7;
         private const int CANTIDAD_MESES_PREMIO = 6;
 
@@ -34,6 +34,8 @@ namespace QueTalMiAFPCdk.Controllers {
         };
 
         public async Task<IActionResult> Index(ResumenViewModel modeloEntrada) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             // Se comienza con consulta de última fecha, mediante Task para poder avanzar en las otras tareas...
             Task<DateTime> taskFechaHasta = cuotaUfComisionDAO.UltimaFechaAlguna();
             Task<DateTime> taskFechaTodas = cuotaUfComisionDAO.UltimaFechaTodas();
@@ -65,6 +67,8 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
             DateTime fechasTodas = await taskFechaTodas;
+            long elapsedTimeFechaTodas = stopwatch.ElapsedMilliseconds;
+
             modeloEntrada.Premios.Anno ??= fechasTodas.Year;
             
             if (User.Identity == null || !User.Identity.IsAuthenticated) {
@@ -128,6 +132,8 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se espera a obtener por última fecha para usar resultado como parámetro de consulta de valores cuota...
             DateTime? fechaHasta = await taskFechaHasta;
+            long elapsedTimeFechaHasta = stopwatch.ElapsedMilliseconds;
+
             if (fechaHasta == null) {
                 fechaHasta = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
             }
@@ -142,6 +148,7 @@ namespace QueTalMiAFPCdk.Controllers {
             salida.Resumen.FechasUltimaSemana = fechas;
 
             List<CuotaUf> valoresCuota = await taskValoresCuota;
+            long elapsedTimeValoresCuota = stopwatch.ElapsedMilliseconds;
 
             // Se arman las listas de valores cuotas para cada AFP, según el listado de fechas...
             foreach (UltimaSemanaAfp ultimaSemanaAfp in salida.Resumen.UltimaSemana) {
@@ -186,6 +193,8 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se calculan las rentabilidades de todos los meses...
             List<SalObtenerUltimaCuota> cuotasPremio = await taskCuotasPremio;
+            long elapsedTimeCuotasPremio = stopwatch.ElapsedMilliseconds;
+
             foreach (int periodo in salida.Premios.Ganadores.Keys) {
                 List<GanadorMes> candidatos = [];
                 foreach (string afp in "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO".Split(",")) {
@@ -208,6 +217,15 @@ namespace QueTalMiAFPCdk.Controllers {
                 salida.Premios.Ganadores[periodo].Rentabilidad = ganador.Rentabilidad;
             }
 
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se retorna exitosamente la página de resumen - " +
+                "AnnoPremios: {AnnoPremios} - " +
+                "Elapsed Time Fecha Todas: {FechaTodas} - Elapsed Time Fecha Alguna: {FechaAlgunas} - Elapsed Time Valores Cuota: {ValoresCuota} - Elapsed Time Cuotas Premio: {CuotasPremio}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName, 
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                modeloEntrada.Premios.Anno,
+                elapsedTimeFechaTodas, elapsedTimeFechaHasta, elapsedTimeValoresCuota, elapsedTimeCuotasPremio);
 
             return View(salida);
         }
