@@ -73,6 +73,16 @@ namespace QueTalMiAFPCdk.Controllers {
             
             if (User.Identity == null || !User.Identity.IsAuthenticated) {
                 if (modeloEntrada.Premios.Anno != fechasTodas.Year) {
+                    logger.LogInformation(
+                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                        "Se redirecciona a challenge para inicio de sesión - " +
+                        "AnnoPremios: {AnnoPremios} - " +
+                        "Elapsed Time Fecha Todas: {FechaTodas}.",
+                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
+                        modeloEntrada.Premios.Anno,
+                        elapsedTimeFechaTodas);
+
                     return Challenge();
                 }
             }
