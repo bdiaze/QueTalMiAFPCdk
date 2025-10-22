@@ -5,11 +5,15 @@ using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class EstadisticasController(CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
+	public class EstadisticasController(ILogger<EstadisticasController> logger, CuotaUfComisionDAO cuotaUfComisionDAO) : Controller {
 
         public async Task<IActionResult> Index() {
-			DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
-			if (ultimaFechaAlgunValorCuota == null) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
+            long elapsedTimeFechaAlguna = stopwatch.ElapsedMilliseconds;
+
+            if (ultimaFechaAlgunValorCuota == null) {
 				ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 			}
 			ViewBag.UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value;
@@ -25,12 +29,24 @@ namespace QueTalMiAFPCdk.Controllers {
                 });
             }
 
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se retorna exitosamente la página de estadística - " +
+                "Elapsed Time Fecha Alguna: {ElapsedTimeFechaAlguna}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                elapsedTimeFechaAlguna);
+
             return View();
 		}
 
 		public async Task<IActionResult> ComparandoFondos() {
-			DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
-			if (ultimaFechaAlgunValorCuota == null) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
+            long elapsedTimeFechaAlguna = stopwatch.ElapsedMilliseconds;
+
+            if (ultimaFechaAlgunValorCuota == null) {
 				ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 			}
 			ViewBag.UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value;
@@ -45,12 +61,16 @@ namespace QueTalMiAFPCdk.Controllers {
                     Path = "/Estadisticas/ComparandoFondos"
                 });
             }
-            return View();
-		}
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error() {
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se retorna exitosamente la página de estadística - " +
+                "Elapsed Time Fecha Alguna: {ElapsedTimeFechaAlguna}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                elapsedTimeFechaAlguna);
+
+            return View();
 		}
 	}
 }
