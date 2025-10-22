@@ -6,50 +6,49 @@ using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class MensajesController(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, EnvioCorreo envioCorreo) : Controller {
+	public class MensajesController(ILogger<MensajesController> logger, ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, MensajeDAO mensajeDAO, EnvioCorreo envioCorreo) : Controller {
 		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
         private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
         private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
 
         public async Task<IActionResult> Index() {
-			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
-			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-			HttpResponseMessage response = await client.GetAsync(_baseUrl + "TipoMensaje/ObtenerVigentes");
-			string responseString = await response.Content.ReadAsStringAsync();
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-			ViewBag.TiposMensaje = JsonConvert.DeserializeObject<List<TipoMensaje>>(responseString);
+            ViewBag.TiposMensaje = await mensajeDAO.ObtenerTiposVigentes();
+            long elapsedTimeTiposMensajes = stopwatch.ElapsedMilliseconds;
+
 			ViewBag.reCaptchaClientKey = _reCaptchaClientKey;
-			return View();
+
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se retorna exitosamente la página de mensajes - " +
+                "Elapsed Time Tipos Mensajes: {ElapsedTimeTiposMensajes}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                elapsedTimeTiposMensajes);
+
+            return View();
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> IngresarMensaje(IngresarMensajeViewModel model) {
-			if (!ModelState.IsValid) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            if (!ModelState.IsValid) {
 				throw new ExceptionQueTalMiAFP(ModelState.Values
 					.SelectMany(v => v.Errors)
 					.Select(e => e.ErrorMessage)
 					.First());
 			}
 
-			IngresarMensajeViewModel modelSanitizado = new() { 
-				IdTipoMensaje = model.IdTipoMensaje,
-				Nombre = model.Nombre,
-				Correo = model.Correo,
-				Mensaje = model.Mensaje,
-				GoogleReCaptchaResponse = model.GoogleReCaptchaResponse,
-			};
-
-            using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
-			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
-
-            HttpResponseMessage response = await client.PostAsync(_baseUrl + "MensajeUsuario/IngresarMensaje", new StringContent(JsonConvert.SerializeObject(modelSanitizado), Encoding.UTF8, "application/json"));
-			string responseString = await response.Content.ReadAsStringAsync();
-            MensajeUsuario? mensajeResultado = JsonConvert.DeserializeObject<MensajeUsuario>(responseString);
+            MensajeUsuario? mensajeResultado = await mensajeDAO.IngresarMensaje(model.IdTipoMensaje, model.Nombre, model.Correo, model.Mensaje);
+            long elapsedTimeIngresoMensaje = stopwatch.ElapsedMilliseconds;
 
             Dictionary<string, string> datos = new() {
                 { "[IdMensaje]", WebUtility.HtmlEncode(mensajeResultado!.IdMensaje.ToString()) },
@@ -62,8 +61,17 @@ namespace QueTalMiAFPCdk.Controllers {
 			string body = EnvioCorreo.ArmarCuerpo(datos, "MensajeRecibido.html");
 			
 			await envioCorreo.Notificar($"¡Ha llegado un mensaje de {mensajeResultado.Nombre}!", body, mensajeResultado.Correo, mensajeResultado.Nombre);
+            long elapsedTimeEnvioCorreo = stopwatch.ElapsedMilliseconds;
 
-			return View(mensajeResultado);
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se ingresa exitosamente el mensaje - " +
+                "Elapsed Time Ingreso Mensaje: {ElapsedTimeIngresoMensaje} - Elapsed Time Envío Correo: {ElapsedTimeEnvioCorreo}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                elapsedTimeIngresoMensaje, elapsedTimeEnvioCorreo);
+
+            return View(mensajeResultado);
 		}
 	}
 }

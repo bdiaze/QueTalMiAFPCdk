@@ -135,6 +135,7 @@ builder.Services.AddSingleton<CuotaUfComisionDAO>();
 builder.Services.AddSingleton<NotificacionDAO>();
 builder.Services.AddSingleton<ApiKeyDAO>();
 builder.Services.AddSingleton<EnvioCorreo>();
+builder.Services.AddSingleton<MensajeDAO>();
 
 var app = builder.Build();
 
