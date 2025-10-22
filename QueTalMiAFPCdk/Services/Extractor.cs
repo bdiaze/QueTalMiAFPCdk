@@ -1,18 +1,23 @@
-﻿using HtmlAgilityPack;
+﻿using Amazon.APIGateway.Model;
+using HtmlAgilityPack;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QueTalMiAFPCdk.Models.Entities;
 using QueTalMiAFPCdk.Models.Others;
+using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services.Exceptions;
 using System.Globalization;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 
 namespace QueTalMiAFPCdk.Services {
-	public class Extractor(ParameterStoreHelper parameterStore) {
+	public class Extractor(ParameterStoreHelper parameterStore, SecretManagerHelper secretManager, CuotaUfComisionDAO cuotaUfComisionDAO) {
+
         public const string NOMBRE_SPENSIONES = "SPENSIONES";
 		public const string NOMBRE_CAPITAL = "CAPITAL";
 		public const string NOMBRE_CUPRUM = "CUPRUM";
@@ -55,7 +60,221 @@ namespace QueTalMiAFPCdk.Services {
         private readonly string _comisionesUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/Comisiones/UrlApiBase").Result;
         private readonly string _comisionesCavUrlApiBase = parameterStore.ObtenerParametro("/QueTalMiAFP/Extractor/ComisionesCav/UrlApiBase").Result;
 
-        public async Task<List<Cuota>> ObtenerCuotasSPensiones(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        public async Task<List<Log>> ExtraerValores(int tipoExtraccion, string llaveExtraccion) {           
+            // Se valida llave de extracción...
+            string hashedLlave = (await secretManager.ObtenerSecreto("/QueTalMiAFP")).ExtractorKey;
+            byte[] hashedLlaveBytes = Convert.FromBase64String(hashedLlave);
+            byte[] salt = new byte[16];
+            Array.Copy(hashedLlaveBytes, 0, salt, 0, 16);
+
+            Rfc2898DeriveBytes pbkdf2 = new(llaveExtraccion, salt, 100000, HashAlgorithmName.SHA1);
+            byte[] hash = pbkdf2.GetBytes(20);
+            byte[] hashBytes = new byte[36];
+            Array.Copy(salt, 0, hashBytes, 0, 16);
+            Array.Copy(hash, 0, hashBytes, 16, 20);
+            string strLlaveExtraccion = Convert.ToBase64String(hashBytes);
+
+            if (strLlaveExtraccion != hashedLlave) {
+                RegistrarLog("Error, no se efectúa la extracción debido a que la llave ingresada no es correcta.", 1);
+                return Logs;
+            }
+
+            // Se determinan fechas de inicio y término...
+            DateTime fechaInicio;
+            switch (tipoExtraccion) {
+                case 1: // Extracción completa:
+                    fechaInicio = new DateTime(2002, 8, 1);
+                    break;
+                case 2: // Extracción último año:
+                    fechaInicio = DateTime.Now.ToUniversalTime().Date.AddYears(-1);
+                    break;
+                case 3: // Extracción último mes:
+                    fechaInicio = DateTime.Now.ToUniversalTime().Date.AddMonths(-1);
+                    break;
+                case 4: // Extracción última semana:
+                    fechaInicio = DateTime.Now.ToUniversalTime().Date.AddDays(-7);
+                    break;
+                default:
+                    RegistrarLog("Error, no se efectúa la extracción debido a que el tipo de extracción indicado no es válido.", 1);
+                    return Logs;
+            }
+            DateTime fechaFinal = DateTime.Now.ToUniversalTime().Date;
+
+            RegistrarLog("Se inicia proceso de extracción de los valores UF.");
+            List<Task<HashSet<Uf>>> tasksUf = [];
+            for (int anno = fechaInicio.Year; anno <= fechaFinal.Year; anno++) {
+                DateTime fechaInicioParc = new(
+                    anno,
+                    anno > fechaInicio.Year ? 1 : fechaInicio.Month,
+                    anno > fechaInicio.Year ? 1 : fechaInicio.Day);
+                DateTime fechaFinalParc = new(
+                    anno,
+                    anno < fechaFinal.Year ? 12 : fechaFinal.Month,
+                    anno < fechaFinal.Year ? 31 : fechaFinal.Day);
+
+                tasksUf.Add(ObtenerValoresUF(fechaInicioParc, fechaInicioParc, fechaFinalParc));
+            }
+
+            RegistrarLog("Se inicia proceso de extracción de las comisiones de todas las AFPs.");
+            List<Task<List<Comision>>> tasksComisiones = [];
+            for (int anno = fechaInicio.Year; anno <= fechaFinal.Year; anno++) {
+                DateTime fechaInicioParc = new(
+                    anno,
+                    anno > fechaInicio.Year ? 1 : fechaInicio.Month,
+                    anno > fechaInicio.Year ? 1 : fechaInicio.Day);
+                DateTime fechaFinalParc = new(
+                    anno,
+                    anno < fechaFinal.Year ? 12 : fechaFinal.Month,
+                    anno < fechaFinal.Year ? 31 : fechaFinal.Day);
+
+                DateTime fechaMesAnno = new(
+                    fechaInicioParc.Year,
+                    fechaInicioParc.Month,
+                    1);
+                while (fechaMesAnno <= fechaFinalParc) {
+                    tasksComisiones.Add(ObtenerComisiones(null, fechaMesAnno));
+
+                    if (fechaMesAnno >= new DateTime(2008, 10, 1)) {
+                        tasksComisiones.Add(ObtenerComisionesCAV(null, fechaMesAnno));
+                    }
+
+                    fechaMesAnno = fechaMesAnno.AddMonths(1);
+                }
+            }
+
+            RegistrarLog("Se inicia proceso de extracción de los valores cuotas para todas las AFPs.");
+            List<Task<List<Cuota>>> tasksCuotas = [];
+            for (int anno = fechaInicio.Year; anno <= fechaFinal.Year; anno++) {
+                DateTime fechaInicioParc = new(
+                    anno,
+                    anno > fechaInicio.Year ? 1 : fechaInicio.Month,
+                    anno > fechaInicio.Year ? 1 : fechaInicio.Day);
+                DateTime fechaFinalParc = new(
+                    anno,
+                    anno < fechaFinal.Year ? 12 : fechaFinal.Month,
+                    anno < fechaFinal.Year ? 31 : fechaFinal.Day);
+
+                List<string> fondos = ["A", "B", "C", "D", "E"];
+                foreach (string fondo in fondos) {
+                    tasksCuotas.Add(ObtenerCuotasSPensiones(fechaInicioParc, fechaFinalParc, fondo));
+                }
+
+                tasksCuotas.Add(ObtenerCuotasHabitat(fechaInicioParc, fechaFinalParc, null));
+                tasksCuotas.Add(ObtenerCuotasPlanvital(fechaInicioParc, fechaFinalParc, null));
+
+                if (anno >= 2010) {
+                    DateTime fechaInicioParcModelo = fechaInicioParc >= new DateTime(2010, 9, 1) ? fechaInicioParc : new DateTime(2010, 9, 1);
+                    tasksCuotas.Add(ObtenerCuotasModeloV3(fechaInicioParcModelo, fechaFinalParc, null));
+                }
+
+                if (anno >= 2019) {
+                    DateTime fechaInicioParcUno = fechaInicioParc >= new DateTime(2019, 10, 1) ? fechaInicioParc : new DateTime(2019, 10, 1);
+                    tasksCuotas.Add(ObtenerCuotasUno(fechaInicioParcUno, fechaFinalParc, null));
+                }
+
+                DateTime fechaInicioParcProvida = new(
+                    fechaInicioParc.Year,
+                    fechaInicioParc.Month,
+                    1);
+                while (fechaInicioParcProvida <= fechaFinalParc) {
+                    tasksCuotas.Add(ObtenerCuotasProvida(fechaInicioParcProvida, fechaInicioParc, fechaFinalParc, null));
+                    fechaInicioParcProvida = fechaInicioParcProvida.AddMonths(1);
+                }
+            }
+            tasksCuotas.Add(ObtenerCuotasCuprum(fechaInicio, fechaFinal, null));
+
+            // Se actualizan los valores UF...
+            int cantUfsExtraidas = 0;
+            int cantUfsInsertadas = 0;
+            int cantUfsActualizadas = 0;
+            foreach (Task<HashSet<Uf>> taskUf in tasksUf) {
+                try {
+                    HashSet<Uf> ufParciales = await taskUf;
+                    if (ufParciales != null) {
+                        cantUfsExtraidas += ufParciales.Count;
+
+                        SalActualizacionMasivaUf salActMasivUf = await cuotaUfComisionDAO.ActualizacionMasivaUf(ufParciales);
+
+                        cantUfsInsertadas += salActMasivUf.CantUfsInsertadas;
+                        cantUfsActualizadas += salActMasivUf.CantUfsActualizadas;
+                    }
+                } catch (Exception ex) {
+                    RegistrarLog($"{ex}", 1);
+                }
+            }
+
+            // Se actualizan las comisiones...
+            int cantComisionesExtraidas = 0;
+            int cantComisionesInsertadas = 0;
+            int cantComisionesActualizadas = 0;
+            foreach (Task<List<Comision>> taskComisiones in tasksComisiones) {
+                try {
+                    List<Comision> comisionesParciales = await taskComisiones;
+                    if (comisionesParciales != null) {
+                        cantComisionesExtraidas += comisionesParciales.Count;
+
+                        SalActualizacionMasivaComision salActMasivComision = await cuotaUfComisionDAO.ActualizacionMasivaComision(comisionesParciales);
+
+                        cantComisionesInsertadas += salActMasivComision.CantComisionesInsertadas;
+                        cantComisionesActualizadas += salActMasivComision.CantComisionesActualizadas;
+                    }
+                } catch (Exception ex) {
+                    RegistrarLog($"{ex}", 1);
+                }
+            }
+
+            // Se actualizan las cuotas...
+            int cantCuotasExtraidas = 0;
+            int cantCuotasInsertadas = 0;
+            int cantCuotasActualizadas = 0;
+            foreach (Task<List<Cuota>> taskCuotas in tasksCuotas) {
+                try {
+                    List<Cuota> cuotasParciales = await taskCuotas;
+                    if (cuotasParciales != null) {
+                        cantCuotasExtraidas += cuotasParciales.Count;
+
+                        SalActualizacionMasivaCuota salActMasivCuota = await cuotaUfComisionDAO.ActualizacionMasivaCuota(cuotasParciales);
+
+                        cantCuotasInsertadas += salActMasivCuota.CantCuotasInsertadas;
+                        cantCuotasActualizadas += salActMasivCuota.CantCuotasActualizadas;
+                    }
+                } catch (Exception ex) {
+                    RegistrarLog($"{ex}", 1);
+                }
+            }
+
+            // Se registran logs resumen...
+            RegistrarLog($"Se termina proceso de extracción de los valores UF con una cantidad de {cantUfsExtraidas} registros.");
+            RegistrarLog($"Se termina proceso de extracción de las comisiones con una cantidad de {cantComisionesExtraidas} registros.");
+            RegistrarLog($"Se termina proceso de extracción de los valores cuotas con una cantidad de {cantCuotasExtraidas} registros.");
+
+            RegistrarLog($"Cantidad de valores UF insertados en proceso de extracción: {cantUfsInsertadas}");
+            RegistrarLog($"Cantidad de valores UF actualizados en proceso de extracción: {cantUfsActualizadas}");
+            RegistrarLog($"Cantidad de comisiones insertadas en proceso de extracción: {cantComisionesInsertadas}");
+            RegistrarLog($"Cantidad de comisiones actualizadas en proceso de extracción: {cantComisionesActualizadas}");
+            RegistrarLog($"Cantidad de cuotas insertadas en proceso de extracción: {cantCuotasInsertadas}");
+            RegistrarLog($"Cantidad de cuotas actualizadas en proceso de extracción: {cantCuotasActualizadas}");
+
+            // Se añade log final para indicar la cantidad de errores observados...
+            int cantLogsError = 0;
+            foreach (Log log in Logs) {
+                if (log.Tipo == 1) cantLogsError++;
+            }
+
+            if (cantLogsError > 0) {
+                string mensaje;
+                if (cantLogsError == 1) {
+                    mensaje = $"Se observó un error en el proceso de extracción de valores.";
+                } else {
+                    mensaje = $"Se observaron {cantLogsError} errores en el proceso de extracción de valores.";
+                }
+                RegistrarLog(mensaje, 1);
+            }
+
+            return Logs;
+        }
+
+        private async Task<List<Cuota>> ObtenerCuotasSPensiones(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
             try {
                 RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
                     NOMBRE_SPENSIONES,
@@ -157,7 +376,7 @@ namespace QueTalMiAFPCdk.Services {
             }
         }
 
-        public async Task<List<Cuota>> ObtenerCuotasModelo(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        private async Task<List<Cuota>> ObtenerCuotasModelo(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_MODELO,
@@ -218,7 +437,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> ObtenerCuotasModeloV2(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		private async Task<List<Cuota>> ObtenerCuotasModeloV2(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
             try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_MODELO,
@@ -286,7 +505,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-        public async Task<List<Cuota>> ObtenerCuotasModeloV3(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        private async Task<List<Cuota>> ObtenerCuotasModeloV3(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
             try {
                 RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
                     NOMBRE_MODELO,
@@ -364,7 +583,7 @@ namespace QueTalMiAFPCdk.Services {
             }
         }
 
-        public async Task<List<Cuota>> ObtenerCuotasCuprum(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        private async Task<List<Cuota>> ObtenerCuotasCuprum(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_CUPRUM,
@@ -425,7 +644,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> ObtenerCuotasCapital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		private async Task<List<Cuota>> ObtenerCuotasCapital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_CAPITAL,
@@ -494,7 +713,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}     
         
-        public async Task<List<Cuota>> ObtenerCuotasHabitat(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+        private async Task<List<Cuota>> ObtenerCuotasHabitat(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_HABITAT,
@@ -601,7 +820,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> ObtenerCuotasPlanvital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		private async Task<List<Cuota>> ObtenerCuotasPlanvital(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}", 
 					NOMBRE_PLANVITAL,
@@ -664,7 +883,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> ObtenerCuotasProvida(DateTime mesAnno, DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		private async Task<List<Cuota>> ObtenerCuotasProvida(DateTime mesAnno, DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Mes/Año {2} - Fecha Inicio {3} - Fecha Final {4}",
 					NOMBRE_PROVIDA,
@@ -749,7 +968,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Cuota>> ObtenerCuotasUno(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
+		private async Task<List<Cuota>> ObtenerCuotasUno(DateTime fechaInicio, DateTime fechaFinal, string? fondo) {
 			try {
 				RegistrarLog(string.Format("Extrayendo valores cuota de {0} - Fondo {1} - Fecha Inicio {2} - Fecha Final {3}",
 					NOMBRE_UNO,
@@ -817,7 +1036,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<HashSet<Uf>> ObtenerValoresUF(DateTime anno, DateTime fechaInicio, DateTime fechaFinal) {			
+		private async Task<HashSet<Uf>> ObtenerValoresUF(DateTime anno, DateTime fechaInicio, DateTime fechaFinal) {			
 			try {
 				RegistrarLog(string.Format("Extrayendo valores UF de Mindicador - Año: {0} - Fecha Inicio {1} - Fecha Final {2}",
 					anno.Year,
@@ -877,7 +1096,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Comision>> ObtenerComisiones(string? Afp, DateTime mesAnno) {
+		private async Task<List<Comision>> ObtenerComisiones(string? Afp, DateTime mesAnno) {
 			try {
 				RegistrarLog(string.Format("Extrayendo comisiones de SPensiones - {0} - Mes/Año {1}",
 						Afp ?? "Todas las AFPs",
@@ -952,7 +1171,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public async Task<List<Comision>> ObtenerComisionesCAV(string? Afp, DateTime mesAnno) {
+		private async Task<List<Comision>> ObtenerComisionesCAV(string? Afp, DateTime mesAnno) {
 			try {
 				RegistrarLog(string.Format("Extrayendo comisiones CAV de SPensiones - {0} - Mes/Año {1}",
 						Afp ?? "Todas las AFPs",
@@ -1031,7 +1250,7 @@ namespace QueTalMiAFPCdk.Services {
 			}
 		}
 
-		public void RegistrarLog(string mensaje, int tipo = 0) {
+		private void RegistrarLog(string mensaje, int tipo = 0) {
 			DateTime fecha = DateTime.Now;
 			Logs.Add(new Log() { 
 				Fecha = fecha,
