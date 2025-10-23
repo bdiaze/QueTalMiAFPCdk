@@ -24,9 +24,12 @@ namespace QueTalMiAFPCdk.Controllers {
 
             if (!string.IsNullOrEmpty(redirect)) {
 
+                string validatedRedirect = "";
                 Uri url = new(redirect, UriKind.RelativeOrAbsolute);
                 if (url.IsAbsoluteUri) {
-                    redirect = url.AbsolutePath + url.Query + url.Fragment;
+                    validatedRedirect = url.AbsolutePath + url.Query + url.Fragment;
+                } else {
+                    validatedRedirect = url.ToString();
                 }
 
                 logger.LogInformation(
@@ -37,7 +40,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
                     redirect.Replace(Environment.NewLine, " "));
 
-                return Redirect(redirect);
+                return Redirect(validatedRedirect);
             }
 
             logger.LogInformation(
@@ -70,12 +73,15 @@ namespace QueTalMiAFPCdk.Controllers {
 
                 if (!string.IsNullOrEmpty(redirect)) {
 
+                    string validatedRedirect = "";
                     Uri url = new(redirect, UriKind.RelativeOrAbsolute);
                     if (url.IsAbsoluteUri) {
-                        redirect = url.AbsolutePath + url.Query + url.Fragment;
+                        validatedRedirect = url.AbsolutePath + url.Query + url.Fragment;
+                    } else {
+                        validatedRedirect = url.ToString();
                     }
 
-                    TempData["PostLogoutRedirect"] = redirect;
+                    TempData["PostLogoutRedirect"] = validatedRedirect;
                 }
 
                 logger.LogInformation(
