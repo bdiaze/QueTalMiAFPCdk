@@ -24,6 +24,11 @@ namespace QueTalMiAFPCdk.Controllers {
 
             if (!string.IsNullOrEmpty(redirect)) {
 
+                Uri url = new(redirect, UriKind.RelativeOrAbsolute);
+                if (url.IsAbsoluteUri) {
+                    redirect = url.AbsolutePath + url.Query + url.Fragment;
+                }
+
                 logger.LogInformation(
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Se redirecciona a redirect indicado - " +
@@ -64,6 +69,12 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
 
                 if (!string.IsNullOrEmpty(redirect)) {
+
+                    Uri url = new(redirect, UriKind.RelativeOrAbsolute);
+                    if (url.IsAbsoluteUri) {
+                        redirect = url.AbsolutePath + url.Query + url.Fragment;
+                    }
+
                     TempData["PostLogoutRedirect"] = redirect;
                 }
 
