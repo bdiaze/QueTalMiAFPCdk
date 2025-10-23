@@ -29,7 +29,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro listaAFPs debe incluir por lo menos el nombre de una AFP. Ejemplo: CAPITAL.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"listaAFPs\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -45,7 +45,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro listaFondos debe incluir por lo menos un fondo. Ejemplo: A.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"listaFondos\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -69,7 +69,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro fechaInicio debe tener formato dd/mm/yyyy. Ejemplo: 31/12/2020.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, formato incorrecto del parámetro \"fechaInicial\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -84,7 +84,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro fechaFinal debe tener formato dd/mm/yyyy. Ejemplo: 31/12/2020.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, formato incorrecto del parámetro \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -106,7 +106,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro fechaInicio no corresponde a una fecha válida.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, fecha inválida en parámetro \"fechaInicial\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -126,7 +126,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro fechaFinal no corresponde a una fecha válida.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, fecha inválida en parámetro \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -141,7 +141,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     "El parámetro fechaInicio no puede representar una fecha posterior al parámetro fechaFinal.");
 
                 logger.LogInformation(
-                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                    "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, \"fechaInicial\" es mayor a \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                     HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -158,7 +158,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 if (!apiKeyValida) {
 
                     logger.LogInformation(
-                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}]" +
+                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                         "API key no es válida - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                         HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -182,7 +182,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 if (fechaMinima != DateOnly.FromDateTime(dtFechaInicio) || fechaMaxima != DateOnly.FromDateTime(dtFechaFinal)) {
 
                     logger.LogInformation(
-                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}]" +
+                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                         "Se solicitan fechas distintas a mínimo o máximo para usuario no autenticado - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                         HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -200,7 +200,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     if (fondos.Length != 5) {
 
                         logger.LogInformation(
-                            "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}]" +
+                            "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                             "Se solicita una sola AFP pero no todos los fondos para usuario no autenticado - " +
                             "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                             HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -213,7 +213,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     if (afps.Length != 7) {
 
                         logger.LogInformation(
-                            "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}]" +
+                            "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                             "Se solicita un solo fondo pero no todas las AFP para usuario no autenticado - " +
                             "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                             HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -225,7 +225,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 } else {
 
                     logger.LogInformation(
-                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}]" +
+                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                         "Se solicita más de un fondo y más de una AFP para usuario no autenticado - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
                         HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
@@ -256,7 +256,7 @@ namespace QueTalMiAFPCdk.Controllers {
             }
 
             logger.LogInformation(
-                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}]" +
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                 "Se retornan exitosamente los valores cuota - " +
                 "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal} - " +
                 "Cant. Registros: {CantRegistros} - " +
