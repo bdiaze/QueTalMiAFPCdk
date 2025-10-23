@@ -29,7 +29,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Se retorna exitosamente la página de api keys - " +
                 "Elapsed Time Obtener Por Sub: {ElapsedTimeObtenerPorSub}.",
                 HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
-                stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 elapsedTimeObtenerPorSub);
 
             return View(model);
@@ -90,7 +90,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Elapsed Time Obtener Por Sub: {ElapsedTimeObtenerPorSub} - Elapsed Time Eliminar: {ElapsedTimeEliminar} - " +
                 "Elapsed Time Crear: {ElapsedTimeCrear} - Elapsed Time Segundo Por Sub: {ElapsedTimeSegundoPorSub}.",
                 HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
-                stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 modelEntrada.Accion, modelEntrada.IdRevocacion,
                 elapsedTimeObtenerPorSub, elapsedTimeEliminar, elapsedTimeCrear, elapsedTimeSegundoPorSub);
 
