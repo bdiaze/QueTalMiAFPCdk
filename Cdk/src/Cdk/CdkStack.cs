@@ -387,6 +387,7 @@ namespace Cdk
                     AllowedMethods = AllowedMethods.ALLOW_ALL,
                     ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                     CachePolicy = CachePolicy.CACHING_DISABLED,
+                    OriginRequestPolicy = OriginRequestPolicy.ALL_VIEWER,
                 }
             });
 
