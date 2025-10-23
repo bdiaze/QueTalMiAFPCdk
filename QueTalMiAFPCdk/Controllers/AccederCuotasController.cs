@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace QueTalMiAFPCdk.Controllers {
-    public class AccederCuotasController(IWebHostEnvironment environment, CuotaUfComisionDAO cuotaUfComisionDAO) : Controller { 
+    public class AccederCuotasController(ILogger<AccederCuotasController> logger, IWebHostEnvironment environment, CuotaUfComisionDAO cuotaUfComisionDAO) : Controller { 
         private static readonly Dictionary<string, string> LISTA_AFPS = new() {
             { "CAPITAL", "Capital" },
             { "CUPRUM", "Cuprum" },
@@ -33,11 +34,14 @@ namespace QueTalMiAFPCdk.Controllers {
         };
 
         public async Task<IActionResult> Index(AccederCuotasViewModel modeloEntrada) {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             string? inputAfp = modeloEntrada.Historial?.Afp;
             int? inputMes = modeloEntrada.Historial?.Mes;
             int? inputAnno = modeloEntrada.Historial?.Anno;
 
             DateTime fechaActual = await cuotaUfComisionDAO.UltimaFechaTodas();
+            long elapsedTimeFechaTodas = stopwatch.ElapsedMilliseconds;
             
             // Se añaden valores por defecto para inputs...
             inputAnno ??= fechaActual.Year;
@@ -47,6 +51,17 @@ namespace QueTalMiAFPCdk.Controllers {
 
             if (User.Identity == null || !User.Identity.IsAuthenticated) {
                 if (inputAnno != fechaActual.Year) {
+
+                    logger.LogInformation(
+                        "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                        "Se redirecciona a challenge dado que usuario no está autenticado - " +
+                        "HistorialAfp: {HistorialAfp} - HistorialMes: {HistorialMes} - HistorialAnno: {HistorialAnno} - " +
+                        "Elapsed Time Fecha Todas: {ElapsedTimeFechaTodas}.",
+                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
+                        modeloEntrada.Historial?.Afp, modeloEntrada.Historial?.Mes, modeloEntrada.Historial?.Anno,
+                        elapsedTimeFechaTodas);
+
                     return Challenge();
                 }
             }
@@ -98,6 +113,7 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se espera por task en caso de que aún no haya terminado de procesar...
             List<CuotaUf> valoresHistorial = await taskValoresHistorial;
+            long elapsedTimeValoresCuota = stopwatch.ElapsedMilliseconds;
 
             foreach (string fondo in "A,B,C,D,E".Split(",")) {
                 DateTime fecha = fechaHastaHistorial;
@@ -123,6 +139,16 @@ namespace QueTalMiAFPCdk.Controllers {
             }
 
             salida.Historial.NombreAfp = LISTA_AFPS[salida.Historial.Afp];
+
+            logger.LogInformation(
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
+                "Se retorna exitosamente la página de acceder cuotas - " +
+                "HistorialAfp: {HistorialAfp} - HistorialMes: {HistorialMes} - HistorialAnno: {HistorialAnno} - " +
+                "Elapsed Time Fecha Todas: {ElapsedTimeFechaTodas} - Elapsed Time Valores Cuota: {ElapsedTimeValoresCuota}.",
+                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
+                modeloEntrada.Historial?.Afp, modeloEntrada.Historial?.Mes, modeloEntrada.Historial?.Anno,
+                elapsedTimeFechaTodas, elapsedTimeValoresCuota);
 
             return View(salida);
         }
