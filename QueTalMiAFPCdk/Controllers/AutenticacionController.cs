@@ -17,19 +17,15 @@ namespace QueTalMiAFPCdk.Controllers {
         public IActionResult Login(string? redirect = null) {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            string? nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            string? email = User.FindFirstValue(ClaimTypes.Email);
-            string? givenName = User.FindFirstValue(ClaimTypes.GivenName);
-            string? surname = User.FindFirstValue(ClaimTypes.Surname);
-
+            string? validatedRedirect = null;
             if (!string.IsNullOrEmpty(redirect)) {
                 Uri url = new(redirect, UriKind.RelativeOrAbsolute);
-                if (url.IsAbsoluteUri) {
-                    redirect = null;
+                if (!url.IsAbsoluteUri) {
+                    validatedRedirect = url.ToString();
                 }
             }
 
-            if (!string.IsNullOrEmpty(redirect)) {
+            if (!string.IsNullOrEmpty(validatedRedirect)) {
 
                 logger.LogInformation(
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
@@ -37,9 +33,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "Redirect: {Redirect}.",
                     HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
-                    redirect.Replace(Environment.NewLine, " "));
+                    redirect?.Replace(Environment.NewLine, " "));
 
-                return Redirect(redirect);
+                return Redirect(validatedRedirect);
             }
 
             logger.LogInformation(
@@ -57,10 +53,11 @@ namespace QueTalMiAFPCdk.Controllers {
         public async Task<IActionResult> Logout(string? redirect = null) {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
+            string? validatedRedirect = null;
             if (!string.IsNullOrEmpty(redirect)) {
                 Uri url = new(redirect, UriKind.RelativeOrAbsolute);
-                if (url.IsAbsoluteUri) {
-                    redirect = null;
+                if (!url.IsAbsoluteUri) {
+                    validatedRedirect = url.ToString();
                 }
             }
 
@@ -77,8 +74,8 @@ namespace QueTalMiAFPCdk.Controllers {
                     logoutUrl = cognitoLogouts.First(l => l.Contains("localhost"));
                 }
 
-                if (!string.IsNullOrEmpty(redirect)) {
-                    TempData["PostLogoutRedirect"] = redirect;
+                if (!string.IsNullOrEmpty(validatedRedirect)) {
+                    TempData["PostLogoutRedirect"] = validatedRedirect;
                 }
 
                 logger.LogInformation(
