@@ -23,14 +23,13 @@ namespace QueTalMiAFPCdk.Controllers {
             string? surname = User.FindFirstValue(ClaimTypes.Surname);
 
             if (!string.IsNullOrEmpty(redirect)) {
-
-                string validatedRedirect = "";
                 Uri url = new(redirect, UriKind.RelativeOrAbsolute);
                 if (url.IsAbsoluteUri) {
-                    validatedRedirect = url.AbsolutePath + url.Query + url.Fragment;
-                } else {
-                    validatedRedirect = url.ToString();
+                    redirect = null;
                 }
+            }
+
+            if (!string.IsNullOrEmpty(redirect)) {
 
                 logger.LogInformation(
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
@@ -40,7 +39,7 @@ namespace QueTalMiAFPCdk.Controllers {
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
                     redirect.Replace(Environment.NewLine, " "));
 
-                return Redirect(validatedRedirect);
+                return Redirect(redirect);
             }
 
             logger.LogInformation(
@@ -58,6 +57,13 @@ namespace QueTalMiAFPCdk.Controllers {
         public async Task<IActionResult> Logout(string? redirect = null) {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
+            if (!string.IsNullOrEmpty(redirect)) {
+                Uri url = new(redirect, UriKind.RelativeOrAbsolute);
+                if (url.IsAbsoluteUri) {
+                    redirect = null;
+                }
+            }
+
             if (User.Identity != null && User.Identity.IsAuthenticated) {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
@@ -72,16 +78,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
 
                 if (!string.IsNullOrEmpty(redirect)) {
-
-                    string validatedRedirect = "";
-                    Uri url = new(redirect, UriKind.RelativeOrAbsolute);
-                    if (url.IsAbsoluteUri) {
-                        validatedRedirect = url.AbsolutePath + url.Query + url.Fragment;
-                    } else {
-                        validatedRedirect = url.ToString();
-                    }
-
-                    TempData["PostLogoutRedirect"] = validatedRedirect;
+                    TempData["PostLogoutRedirect"] = redirect;
                 }
 
                 logger.LogInformation(
