@@ -89,6 +89,9 @@ namespace Cdk
             string arnParameterQueTalMiAFPApiBucketName = System.Environment.GetEnvironmentVariable("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME") ?? throw new ArgumentNullException("ARN_PARAMETER_QUETALMIAFP_API_BUCKET_NAME");
             #endregion
 
+            string arnCertificate = System.Environment.GetEnvironmentVariable("ARN_CERTIFICATE") ?? throw new ArgumentNullException("ARN_CERTIFICATE");
+            string distributionSubdomainName = System.Environment.GetEnvironmentVariable("DISTRIBUTION_SUBDOMAIN_NAME") ?? throw new ArgumentNullException("DISTRIBUTION_SUBDOMAIN_NAME");
+
             IHostedZone hostedZone = HostedZone.FromLookup(this, $"{appName}WebServerHostedZone", new HostedZoneProviderProps {
                 DomainName = domainName
             });
@@ -367,6 +370,32 @@ namespace Cdk
                     }
                 }
             });
+
+            #region CDN
+            // Se crea distribución para CDN de aplicación...
+            ICertificate certificate = Certificate.FromCertificateArn(this, $"{appName}Certificate", arnCertificate);
+
+            Distribution distribution = new(this, $"{appName}Distribution", new DistributionProps { 
+                Comment = $"{appName} Distribution",
+                DomainNames = [distributionSubdomainName],
+                Certificate = certificate,
+                DefaultBehavior = new BehaviorOptions {
+                    Origin = new HttpOrigin(subdomainName, new HttpOriginProps {
+                        ProtocolPolicy = OriginProtocolPolicy.HTTPS_ONLY,
+                    }),
+                    Compress = true,
+                    AllowedMethods = AllowedMethods.ALLOW_ALL,
+                    ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    CachePolicy = CachePolicy.CACHING_DISABLED,
+                }
+            });
+
+            _ = new ARecord(this, $"{appName}DistributionARecord", new ARecordProps {
+                Zone = hostedZone,
+                RecordName = distributionSubdomainName,
+                Target = RecordTarget.FromAlias(new CloudFrontTarget(distribution)),
+            });
+            #endregion
         }
     }
 }
