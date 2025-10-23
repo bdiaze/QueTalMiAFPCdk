@@ -32,9 +32,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"listaAFPs\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -48,9 +48,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"listaFondos\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -72,9 +72,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, formato incorrecto del parámetro \"fechaInicial\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -87,9 +87,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, formato incorrecto del parámetro \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -109,9 +109,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, fecha inválida en parámetro \"fechaInicial\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -129,9 +129,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, fecha inválida en parámetro \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -144,9 +144,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, \"fechaInicial\" es mayor a \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -161,9 +161,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                         "API key no es válida - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                        listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                        listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                     return Unauthorized();
                 }
@@ -185,9 +185,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                         "Se solicitan fechas distintas a mínimo o máximo para usuario no autenticado - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false, apiKeyValida,
-                        listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                        listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                     return Unauthorized();
                 }
@@ -203,9 +203,9 @@ namespace QueTalMiAFPCdk.Controllers {
                             "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                             "Se solicita una sola AFP pero no todos los fondos para usuario no autenticado - " +
                             "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                            HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                            HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                             stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false, apiKeyValida,
-                            listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                            listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                         return Unauthorized();
                     }
@@ -216,9 +216,9 @@ namespace QueTalMiAFPCdk.Controllers {
                             "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                             "Se solicita un solo fondo pero no todas las AFP para usuario no autenticado - " +
                             "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                            HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                            HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                             stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false, apiKeyValida,
-                            listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                            listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                         return Unauthorized();
                     }
@@ -228,9 +228,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
                         "Se solicita más de un fondo y más de una AFP para usuario no autenticado - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false, apiKeyValida,
-                        listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                        listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                     return Unauthorized();
                 }
@@ -261,9 +261,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - Fecha Final: {FechaFinal} - " +
                 "Cant. Registros: {CantRegistros} - " +
                 "Elapsed Time Obtener Cuotas: {ElapsedTimeObtenerCuotas}",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false, apiKeyValida,
-                listaAFPs, listaFondos, fechaInicial, fechaFinal, salida.Count,
+                listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "), salida.Count,
                 elapsedTimeObtenerCuotas);
 
             return salida; 
@@ -285,9 +285,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"ListaAFPs\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                    entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                 return ValidationProblem();
             }
@@ -301,9 +301,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"ListaFondos\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                    entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                 return ValidationProblem();
             }
@@ -317,9 +317,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, no se incluye el parámetro \"ListaFechas\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                    entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                 return ValidationProblem();
             }
@@ -346,9 +346,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                         "Se solicita más de un fondo o no todas las AFP - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                        entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                        entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                     return Unauthorized();
                 }
@@ -366,9 +366,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                         "Error en validación de parámetros de entrada, formato de fecha inválida en parámetro \"ListaFechas\" - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                        entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                        entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                     return ValidationProblem();
                 }
@@ -394,9 +394,9 @@ namespace QueTalMiAFPCdk.Controllers {
                                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                                 "Se solicita fecha intermedia menor o mayor a mínima/máximo - " +
                                 "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                                 stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                                entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                                entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                             return Unauthorized();
                         } else {
@@ -412,9 +412,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                         "Error en validación de parámetros de entrada, fecha inválida en parámetro \"ListaFechas\" - " +
                         "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                        entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                        entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                     return ValidationProblem();
                 }
@@ -427,9 +427,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "No se solicita fecha mínima para usuario no autenticado - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                    entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                    entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                 return Unauthorized();
             }
@@ -440,9 +440,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "No se solicita fecha máxima para usuario no autenticado - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                    entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                    entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                 return Unauthorized();
             }
@@ -454,9 +454,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Se solicitan más de doce fechas intermedias para usuario no autenticado - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                    entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision);
+                    entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision);
 
                 return Unauthorized();
             }
@@ -468,9 +468,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Se retornan exitosamente las últimas cuotas - " +
                 "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - ListaFechas: {ListaFechas} - TipoComision: {TipoComision} - " +
                 "Cant. Registros: {CantRegistros}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
-                entrada.ListaAFPs, entrada.ListaFondos, entrada.ListaFechas, entrada.TipoComision, salida.Count);
+                entrada.ListaAFPs.Replace(Environment.NewLine, " "), entrada.ListaFondos.Replace(Environment.NewLine, " "), entrada.ListaFechas.Replace(Environment.NewLine, " "), entrada.TipoComision, salida.Count);
 
             return salida;
         }
@@ -488,9 +488,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Se redirecciona a challenge dado que usuario no está autenticado - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - FechaFinal: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return Challenge();
             }
@@ -502,9 +502,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Se redirecciona a pantalla de acceder cuotas dado que no encuentre referer - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - FechaFinal: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return RedirectToAction("Index", "AccederCuotas");
             }
@@ -532,9 +532,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Error en validación de parámetros de entrada, \"fechaInicial\" es mayor a \"fechaFinal\" - " +
                     "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - FechaFinal: {FechaFinal}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status400BadRequest, User.Identity?.IsAuthenticated ?? false,
-                    listaAFPs, listaFondos, fechaInicial, fechaFinal);
+                    listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "));
 
                 return ValidationProblem();
             }
@@ -559,9 +559,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Se retornan exitosamente archivo csv - " +
                 "ListaAFPs: {ListaAFPs} - ListaFondos: {ListaFondos} - FechaInicial: {FechaInicial} - FechaFinal: {FechaFinal} - " +
                 "Cant. Registros: {CantRegistros} - Cant. Bytes: {CantBytes}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
-                listaAFPs, listaFondos, fechaInicial, fechaFinal, retorno.Count, bytes.Length);
+                listaAFPs.Replace(Environment.NewLine, " "), listaFondos.Replace(Environment.NewLine, " "), fechaInicial.Replace(Environment.NewLine, " "), fechaFinal.Replace(Environment.NewLine, " "), retorno.Count, bytes.Length);
 
             return File(bytes, "text/csv", $"QueTalMiAFP_{DateTime.Now:yyyyMMddHHmmss}.csv");
         }

@@ -28,9 +28,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Se redirecciona a redirect indicado - " +
                     "Redirect: {Redirect}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
-                    redirect);
+                    redirect.Replace(Environment.NewLine, " "));
 
                 return Redirect(redirect);
             }
@@ -39,9 +39,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se redirecciona a página de notificaciones - " +
                 "Redirect: {Redirect}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
-                redirect);
+                redirect?.Replace(Environment.NewLine, " "));
 
             return RedirectToAction("Index", "Notificaciones");
         }
@@ -71,9 +71,9 @@ namespace QueTalMiAFPCdk.Controllers {
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                     "Se redirecciona a login de cognito almacenando redirect - " +
                     "Redirect: {Redirect}.",
-                    HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                    HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                     stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
-                    redirect);
+                    redirect?.Replace(Environment.NewLine, " "));
 
                 return Redirect($"{cognitoBaseUrl}/logout?client_id={userPoolClientId}&logout_uri={logoutUrl}");
             }
@@ -86,9 +86,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                         "Se redirecciona a stored redirect - " +
                         "Stored Redirect: {StoredRedirect} - Redirect: {Redirect}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
-                        storedRedirect, redirect);
+                        storedRedirect.Replace(Environment.NewLine, " "), redirect?.Replace(Environment.NewLine, " "));
 
                     return Redirect(storedRedirect);
                 }
@@ -98,9 +98,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se redirecciona a página de resumen - " +
                 "Redirect: {Redirect}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status302Found, User.Identity?.IsAuthenticated ?? false,
-                redirect);
+                redirect?.Replace(Environment.NewLine, " "));
 
             return RedirectToAction("Index", "Resumen");
         }
@@ -112,7 +112,7 @@ namespace QueTalMiAFPCdk.Controllers {
             logger.LogInformation(
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se retorna exitosamente la página de política de privacidad.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false);
 
             return View();

@@ -17,11 +17,12 @@ namespace QueTalMiAFPCdk.Controllers {
             }
 
             logger.LogInformation(
-                "[GET] - [Error] - [Index] - [{ElapsedTime} ms] - [{StatusCode}] - " +
+                "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - " +
                 "Ocurrió un error no controlado en la aplicación. Autenticado: {IsAutheticated} - " +
                 "Path: {Path} - Error: {Error}.",
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
-                exception?.Path, exception?.Error.ToString().Replace("\r", "").Replace("\n", "\\n"));
+                exception?.Path.Replace(Environment.NewLine, " "), exception?.Error.ToString().Replace(Environment.NewLine, " "));
 
             return View();
 		}

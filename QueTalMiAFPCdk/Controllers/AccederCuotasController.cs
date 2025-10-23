@@ -57,9 +57,9 @@ namespace QueTalMiAFPCdk.Controllers {
                         "Se redirecciona a challenge dado que usuario no está autenticado - " +
                         "HistorialAfp: {HistorialAfp} - HistorialMes: {HistorialMes} - HistorialAnno: {HistorialAnno} - " +
                         "Elapsed Time Fecha Todas: {ElapsedTimeFechaTodas}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
-                        modeloEntrada.Historial?.Afp, modeloEntrada.Historial?.Mes, modeloEntrada.Historial?.Anno,
+                        modeloEntrada.Historial?.Afp?.Replace(Environment.NewLine, " "), modeloEntrada.Historial?.Mes, modeloEntrada.Historial?.Anno,
                         elapsedTimeFechaTodas);
 
                     return Challenge();
@@ -145,9 +145,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Se retorna exitosamente la página de acceder cuotas - " +
                 "HistorialAfp: {HistorialAfp} - HistorialMes: {HistorialMes} - HistorialAnno: {HistorialAnno} - " +
                 "Elapsed Time Fecha Todas: {ElapsedTimeFechaTodas} - Elapsed Time Valores Cuota: {ElapsedTimeValoresCuota}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
-                modeloEntrada.Historial?.Afp, modeloEntrada.Historial?.Mes, modeloEntrada.Historial?.Anno,
+                modeloEntrada.Historial?.Afp?.Replace(Environment.NewLine, " "), modeloEntrada.Historial?.Mes, modeloEntrada.Historial?.Anno,
                 elapsedTimeFechaTodas, elapsedTimeValoresCuota);
 
             return View(salida);

@@ -29,7 +29,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se retorna exitosamente la página de mensajes - " +
                 "Elapsed Time Tipos Mensajes: {ElapsedTimeTiposMensajes}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 elapsedTimeTiposMensajes);
 
@@ -67,7 +67,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se ingresa exitosamente el mensaje - " +
                 "Elapsed Time Ingreso Mensaje: {ElapsedTimeIngresoMensaje} - Elapsed Time Envío Correo: {ElapsedTimeEnvioCorreo}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 elapsedTimeIngresoMensaje, elapsedTimeEnvioCorreo);
 

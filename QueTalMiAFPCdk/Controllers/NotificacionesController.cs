@@ -37,7 +37,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se retorna exitosamente la página de notificaciones - " +
                 "Elapsed Time Notificaciones: {ElapsedTimeNotificaciones}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 elapsedTimeNotificaciones);
 
@@ -93,7 +93,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Se retorna exitosamente la página de notificaciones - " +
                 "Selección: {Seleccion} - " +
                 "Elapsed Time Notificaciones: {ElapsedTimeNotificaciones} - Elapsed Time Ingresos/Modificaciones: {ElapsedTimeIngresosModificaciones} - Elapsed Time Tipos: {ElapsedTimeTipos}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 "[" + string.Join(", ", model.Seleccion.Select(s => $"{{{s.Key}, {s.Value}}}")) + "]",
                 elapsedTimeNotificaciones, elapsedTimeIngresosModificaciones, elapsedTimeTipos);

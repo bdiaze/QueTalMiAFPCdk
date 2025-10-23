@@ -78,7 +78,7 @@ namespace QueTalMiAFPCdk.Controllers {
                         "Se redirecciona a challenge para inicio de sesión - " +
                         "AnnoPremios: {AnnoPremios} - " +
                         "Elapsed Time Fecha Todas: {FechaTodas}.",
-                        HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                        HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                         stopwatch.ElapsedMilliseconds, StatusCodes.Status401Unauthorized, User.Identity?.IsAuthenticated ?? false,
                         modeloEntrada.Premios.Anno,
                         elapsedTimeFechaTodas);
@@ -232,7 +232,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Se retorna exitosamente la página de resumen - " +
                 "AnnoPremios: {AnnoPremios} - " +
                 "Elapsed Time Fecha Todas: {FechaTodas} - Elapsed Time Fecha Alguna: {FechaAlgunas} - Elapsed Time Valores Cuota: {ValoresCuota} - Elapsed Time Cuotas Premio: {CuotasPremio}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName, 
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName, 
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 modeloEntrada.Premios.Anno,
                 elapsedTimeFechaTodas, elapsedTimeFechaHasta, elapsedTimeValoresCuota, elapsedTimeCuotasPremio);

@@ -28,7 +28,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se retorna exitosamente la página de api keys - " +
                 "Elapsed Time Obtener Por Sub: {ElapsedTimeObtenerPorSub}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 elapsedTimeObtenerPorSub);
 
@@ -89,9 +89,9 @@ namespace QueTalMiAFPCdk.Controllers {
                 "Accion: {Accion} - IdRevocacion: {IdRevocacion} - " +
                 "Elapsed Time Obtener Por Sub: {ElapsedTimeObtenerPorSub} - Elapsed Time Eliminar: {ElapsedTimeEliminar} - " +
                 "Elapsed Time Crear: {ElapsedTimeCrear} - Elapsed Time Segundo Por Sub: {ElapsedTimeSegundoPorSub}.",
-                HttpContext.Request.Method, ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
+                HttpContext.Request.Method.Replace(Environment.NewLine, " "), ControllerContext.ActionDescriptor.ControllerName, ControllerContext.ActionDescriptor.ActionName,
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
-                modelEntrada.Accion, modelEntrada.IdRevocacion,
+                modelEntrada.Accion?.Replace(Environment.NewLine, " "), modelEntrada.IdRevocacion,
                 elapsedTimeObtenerPorSub, elapsedTimeEliminar, elapsedTimeCrear, elapsedTimeSegundoPorSub);
 
             return View(model);
