@@ -350,7 +350,26 @@ p, h6 {
 }
 
 @media (max-width:768px) {
-    div.input-group input, div.input-group span {
-        font-size: .95rem;
+    div.input-group input, div.input-group span, div.input-group select {
+        font-size: .90rem;
     }
+}
+
+.datepicker table tr td.selected, .datepicker table tr td span.selected {
+    background-image: none !important;
+    background-color: #6c757d !important;
+}
+
+.datepicker table tr td.active, .datepicker table tr td span.active {
+    background-image: none !important;
+    background-color: #1b6ec2 !important;
+}
+
+.datepicker th {
+    font-weight: normal;
+}
+
+
+.datepicker-switch {
+    font-size: 1.1rem;
 }
