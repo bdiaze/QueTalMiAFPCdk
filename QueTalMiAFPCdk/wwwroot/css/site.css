@@ -350,7 +350,7 @@ p, h6 {
 }
 
 @media (max-width:768px) {
-    div.input-group input, div.input-group span, div.input-group select {
+    div.input-group input, div.input-group span, div.input-group select, div.input-group button {
         font-size: .90rem;
     }
 }
@@ -368,7 +368,6 @@ p, h6 {
 .datepicker th {
     font-weight: normal;
 }
-
 
 .datepicker-switch {
     font-size: 1.1rem;
