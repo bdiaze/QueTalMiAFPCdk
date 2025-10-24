@@ -10,7 +10,7 @@
     {
         mensajeBienvenida = $"¡Bienvenid@ { User.FindFirstValue(ClaimTypes.GivenName) }! 😊";
     }
-    ViewData["Title"] = mensajeBienvenida;
+    ViewData["Title"] = "Conoce la AFP y el fondo más rentable en ¿Qué tal mi AFP?";
     ViewData["Description"] = "¿Quieres saber los valores cuota de AFP Modelo? ¿Seguir la evolución de los fondos en AFP ProVida? ¿O encontrar la AFP con la mejor rentabilidad del momento? En un solo lugar tendrás todo: valores cuota actualizados al día, gráficas interactivas para comparar rentabilidades y un simulador que te dirá cuánto podrías haber ganado (o perdido) en el fondo y la AFP que tú elijas.";
 }
 
@@ -30,7 +30,7 @@
     DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>@mensajeBienvenida</h1>
 
 <p class="mt-3 text-muted">
     ¿Quieres saber los valores cuota de AFP Modelo? ¿Seguir la evolución de los fondos en AFP ProVida? ¿O encontrar la AFP con la mejor rentabilidad del momento?
