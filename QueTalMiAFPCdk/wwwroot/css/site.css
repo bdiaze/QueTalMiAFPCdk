@@ -181,13 +181,22 @@ p, h6 {
 }
 
 .contenedor-completo {
-    top: -2.5rem;
+    top: -1.5rem;
     right: 0;
     overflow: hidden;
-    width: 18rem;
-    height: 8rem;
-    padding-top: 2.3rem;
+    width: 16rem;
+    height: 6rem;
+    padding-top: 1.5rem;
     position: absolute;
+}
+
+@media (max-width:768px) {
+    .contenedor-completo {
+        width: 13.5rem;
+        height: 3.5rem;
+        top: 0rem;
+        padding-top: 0rem;
+    }
 }
 
 @keyframes slideInFromRight {
