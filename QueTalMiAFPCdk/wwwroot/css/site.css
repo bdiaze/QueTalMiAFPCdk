@@ -315,3 +315,27 @@ p, h6 {
     font-size: 1rem;
     font-weight: 400;
 }
+
+.nombreUsuario p {
+    font-size: 1.1rem;
+}
+
+.nombreUsuario a {
+    font-size: 0.8rem;
+}
+
+.nombreUsuario {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+}
+
+.centered-item {
+    grid-column: 2;
+    text-align: center;
+}
+
+.right-item {
+    grid-column: 3;
+    text-align: left;
+}

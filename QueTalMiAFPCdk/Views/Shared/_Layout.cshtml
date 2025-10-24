@@ -87,14 +87,11 @@
                                     <p class="ml-1 mb-0 d-inline new-menu">¡NUEVO!</p>
                                 </a>
                             </li>
-                            <li class="nav-item text-center d-flex align-items-center px-3">
+                            <li class="nav-item text-center d-flex align-items-center pl-3">
                                 <a class="nav-link text-dark text-center text-muted" asp-controller="ApiKeys" asp-action="Index">
                                     Mi API Key
                                     <p class="ml-1 mb-0 d-inline new-menu">¡NUEVO!</p>
                                 </a>
-                            </li>
-                            <li class="nav-item text-center d-flex align-items-center pl-3">
-                                <a class="nav-link text-dark text-center text-muted" asp-controller="Autenticacion" asp-action="Logout" asp-route-redirect="@ViewData["LogoutRedirect"]">Cerrar Sesión</a>
                             </li>
                         } else 
                         {
@@ -136,6 +133,18 @@
                     });
                 });
             </script>
+        </div>
+    }
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        string mensajeBienvenida = $"¡Bienvenid@ {User.FindFirstValue(ClaimTypes.GivenName)}! 😊";
+
+        <div class="container">
+            <div class="text-muted text-center mb-2 nombreUsuario">
+                <div class="centered-item"><p class="mb-0 text-center">@mensajeBienvenida</p></div>
+                <div class="right-item pl-2"><a class="text-danger" asp-controller="Autenticacion" asp-action="Logout" asp-route-redirect="@ViewData["LogoutRedirect"]">Cerrar Sesión</a></div>
+            </div>
         </div>
     }
 
