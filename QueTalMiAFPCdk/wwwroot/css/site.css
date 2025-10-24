@@ -339,3 +339,9 @@ p, h6 {
     grid-column: 3;
     text-align: left;
 }
+
+@media (max-width:768px) {
+    div.input-group input, div.input-group span {
+        font-size: .95rem;
+    }
+}
