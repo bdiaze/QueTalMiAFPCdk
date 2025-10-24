@@ -309,7 +309,7 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
         // Create axes
         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
         dateAxis.dateFormats.setKey("month", "MMM yyyy");
-        dateAxis.groupData = true;
+        // dateAxis.groupData = true;
         dateAxis.tooltipDateFormat = "EEE, dd MMM yyyy";
         dateAxis.tooltip.background.fill = am4core.color("#6794dc");
         dateAxis.tooltip.background.cornerRadius = 4;
@@ -412,33 +412,31 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
 
         // Se configura la opción de congelar los datos al hacer click...
         chart.cursor.behavior = "none";
-        let cursorFixed = false;
+        let fixedPosition = undefined;
         chart.plotContainer.events.on("hit", function (ev) {
-            if (!cursorFixed) {
+            if (isMobile() || fixedPosition == undefined) {
+                fixedPosition = dateAxis.pointToPosition(ev.spritePoint);
                 chart.cursor.triggerMove(
-                    dateAxis.renderer.positionToPoint(dateAxis.toAxisPosition(chart.cursor.xPosition)),
+                    dateAxis.renderer.positionToPoint(fixedPosition),
                     "hard",
-                    true
+                    false
                 );
-                cursorFixed = true;
             } else {
+                fixedPosition = undefined;
                 chart.cursor.triggerMove(
-                    dateAxis.renderer.positionToPoint(dateAxis.toAxisPosition(chart.cursor.xPosition)),
+                    dateAxis.renderer.positionToPoint(dateAxis.pointToPosition(ev.spritePoint)),
                     "none",
-                    true
+                    false
                 );
-                cursorFixed = false;
             }
         });
         chart.scrollbarX.events.on("rangechanged", function (ev) {
-            if (cursorFixed) {
+            if (fixedPosition != undefined) {
                 chart.cursor.triggerMove(
-                    { x: 0, y: 0 },
-                    "none",
-                    true
+                    dateAxis.renderer.positionToPoint(fixedPosition),
+                    "hard",
+                    false
                 );
-                chart.cursor.hide();
-                cursorFixed = false;
             }
         });
 

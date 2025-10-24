@@ -724,33 +724,31 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
 
         // Se configura la opción de congelar los datos al hacer click...
         chart.cursor.behavior = "none";
-        let cursorFixed = false;
+        let fixedPosition = undefined;
         chart.plotContainer.events.on("hit", function (ev) {
-            if (!cursorFixed) {
+            if (isMobile() || fixedPosition == undefined) { 
+                fixedPosition = xAxis.pointToPosition(ev.spritePoint);
                 chart.cursor.triggerMove(
-                    xAxis.renderer.positionToPoint(xAxis.toAxisPosition(chart.cursor.xPosition)),
+                    xAxis.renderer.positionToPoint(fixedPosition),
                     "hard",
-                    true
+                    false
                 );
-                cursorFixed = true;
             } else {
+                fixedPosition = undefined;
                 chart.cursor.triggerMove(
-                    xAxis.renderer.positionToPoint(xAxis.toAxisPosition(chart.cursor.xPosition)),
+                    xAxis.renderer.positionToPoint(xAxis.pointToPosition(ev.spritePoint)),
                     "none",
-                    true
+                    false
                 );
-                cursorFixed = false;
             }
         });
         chart.scrollbarX.events.on("rangechanged", function (ev) {
-            if (cursorFixed) {
+            if (fixedPosition != undefined) {
                 chart.cursor.triggerMove(
-                    { x: 0, y: 0 },
-                    "none",
-                    true
+                    xAxis.renderer.positionToPoint(fixedPosition),
+                    "hard",
+                    false
                 );
-                chart.cursor.hide();
-                cursorFixed = false;
             }
         });
 
