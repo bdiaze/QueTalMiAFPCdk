@@ -69,41 +69,45 @@
         </tr>
         <tr>
             <td colspan="2" class="px-0 @((User.Identity == null || !User.Identity.IsAuthenticated) ? "pt-2": "")">
-                <div style="width: calc(80% - 1rem); position: relative;" class="d-inline-block mr-2">
-                    <div class="input-group input-daterange">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="far fa-calendar-alt"></i>
-                            </span>
-                        </div>
+                <div style="display: grid; grid-template-columns: auto auto;">
+                    <div style="grid-column: 1;" class="mr-2">
+                        <div class="input-group input-daterange">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
 
-                        <input value="@ViewBag.UltimaFechaTodosValoresCuota.AddYears(-1).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaInicio" id="fechaInicio" />
-                        <div class="input-group-append input-group-prepend">
-                            <span class="input-group-text">
-                                <label style="margin-bottom:0px; font-size: 0.9rem;">al</label>
-                            </span>
-                        </div>
+                            <input value="@ViewBag.UltimaFechaTodosValoresCuota.AddYears(-1).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaInicio" id="fechaInicio" />
+                            <div class="input-group-append input-group-prepend">
+                                <span class="input-group-text">
+                                    <label style="margin-bottom:0px; font-size: 0.9rem;">al</label>
+                                </span>
+                            </div>
 
-                        <input value="@ViewBag.UltimaFechaTodosValoresCuota.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
-                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="far fa-calendar-alt"></i>
-                            </span>
+                            <input value="@ViewBag.UltimaFechaTodosValoresCuota.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
                         </div>
+                        @if (User.Identity == null || !User.Identity.IsAuthenticated)
+                        {
+                            <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span><span><u>Rango de Fechas</u></span><br/>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
+                                <a href="/login?redirect=@(Url.Action("Index", "Simulador"))" style="font-size: 0.8rem;" class="btn btn-primary py-1 px-4">
+                                    ¡Iniciar Sesión!
+                                </a>
+                            </div>
+                        }
                     </div>
-                    @if (User.Identity == null || !User.Identity.IsAuthenticated)
-                    {
-                        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span><span><u>Rango de Fechas</u></span><br/>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
-                            <a href="/login?redirect=@(Url.Action("Index", "Simulador"))" style="font-size: 0.8rem;" class="btn btn-primary py-1 px-4">
-                                ¡Iniciar Sesión!
-                            </a>
-                        </div>
-                    }
+                    <div style="grid-column: 2;">
+                        <button id="btnFiltrarFechas" type="button" style="width:100%;" class="btn btn-primary" onclick="btnFiltrarGanancias()">
+                            <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <div style="display:inline-block;">Filtrar</div>
+                        </button>
+                    </div>
                 </div>
-                <button id="btnFiltrarFechas" type="button" style="width:20%; position:relative; top: -0.11rem;" class="btn btn-primary pb-1 pt-1 d-inline" onclick="btnFiltrarGanancias()">
-                    <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <div style="display:inline-block;">Filtrar</div>
-                </button>
             </td>
         </tr>
     </table>
