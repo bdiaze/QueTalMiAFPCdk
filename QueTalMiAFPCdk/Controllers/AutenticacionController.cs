@@ -91,6 +91,8 @@ namespace QueTalMiAFPCdk.Controllers {
 
             if (TempData.TryGetValue("PostLogoutRedirect", out object? value)) {
                 string? storedRedirect = value?.ToString();
+                TempData.Remove("PostLogoutRedirect");
+
                 if (!string.IsNullOrEmpty(storedRedirect)) {
 
                     logger.LogInformation(
