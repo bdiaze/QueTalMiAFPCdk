@@ -480,6 +480,7 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
 
                 let fechaInicio = new Date(first_data["fecha"].getTime());
                 let fechaFinal = new Date(last_data["fecha"].getTime());
+                fechaFinal.setDate(fechaFinal.getDate() + 1);
 
                 dateAxis.zoomToDates(
                     fechaInicio,
