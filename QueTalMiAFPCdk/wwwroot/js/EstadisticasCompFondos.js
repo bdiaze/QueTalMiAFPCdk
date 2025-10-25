@@ -325,9 +325,9 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
         dateAxis.skipEmptyPeriods = true;
         dateAxis.showOnInit = false;
         if (isMobile()) {
-            dateAxis.renderer.minGridDistance = 60;
+            dateAxis.renderer.minGridDistance = 70;
         } else {
-            dateAxis.renderer.minGridDistance = 90;
+            dateAxis.renderer.minGridDistance = 110;
         }
         dateAxis.gridIntervals.setAll([
             { timeUnit: "day", count: 1 },
