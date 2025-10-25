@@ -16,8 +16,6 @@
         }
     });
 
-    // am4core.useTheme(am4themes_animated);
-
     am4core.ready(function () {
         am4core.options.queue = true;
 
@@ -289,6 +287,13 @@ function consultarFondo(tipoFondo, fechaInicial, fechaFinal) {
 var graficos = {};
 
 function actualizarDataGrafica(idDiv, data) {
+    graficos[idDiv].fixedPosition = undefined;
+    graficos[idDiv].cursor.triggerMove(
+        { x: 0, y: 0 },
+        "none",
+        false
+    );
+    graficos[idDiv].cursor.hide();
     graficos[idDiv].data = data;
 }
 
@@ -309,14 +314,36 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
 
         // Create axes
         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-        dateAxis.dateFormats.setKey("month", "MMM yyyy");
+        dateAxis.dateFormats.setKey("day", "d MMM.");
+        dateAxis.dateFormats.setKey("month", "MMM. yyyy");
+        dateAxis.dateFormats.setKey("year", "yyyy");
+        dateAxis.periodChangeDateFormats.setKey("day", "d MMM.");
+        dateAxis.periodChangeDateFormats.setKey("month", "MMM. yyyy");
+        dateAxis.periodChangeDateFormats.setKey("year", "yyyy");
         // dateAxis.groupData = true;
-        dateAxis.tooltipDateFormat = "EEE, dd MMM yyyy";
+        dateAxis.tooltipDateFormat = "EEEE dd 'de' MMM. yyyy";
         dateAxis.tooltip.background.fill = am4core.color("#6794dc");
         dateAxis.tooltip.background.cornerRadius = 4;
         dateAxis.tooltip.background.strokeWidth = 0;
         dateAxis.skipEmptyPeriods = true;
         dateAxis.showOnInit = false;
+        if (isMobile()) {
+            dateAxis.renderer.minGridDistance = 60;
+        } else {
+            dateAxis.renderer.minGridDistance = 90;
+        }
+        dateAxis.gridIntervals.setAll([
+            { timeUnit: "day", count: 1 },
+            { timeUnit: "day", count: 7 },
+            { timeUnit: "day", count: 14 },
+            { timeUnit: "month", count: 1 },
+            { timeUnit: "month", count: 2 },
+            { timeUnit: "month", count: 4 },
+            { timeUnit: "month", count: 6 },
+            { timeUnit: "year", count: 1 },
+            { timeUnit: "year", count: 2 },
+            { timeUnit: "year", count: 4 }
+        ]);
 
         let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
         valueAxis.title.text = tituloEjeY;
@@ -374,6 +401,10 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
             chart.scrollbarX.series.push(serie);
         });
 
+        for (let i = 0; i < chart.scrollbarX.scrollbarChart.series.length; i++) {
+            chart.scrollbarX.scrollbarChart.series.getIndex(i).strokeWidth = 0.2;
+        }
+
         // Add cursor
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.behavior = "panX";
@@ -413,17 +444,17 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
 
         // Se configura la opción de congelar los datos al hacer click...
         chart.cursor.behavior = "none";
-        let fixedPosition = undefined;
+        chart.fixedPosition = undefined;
         chart.plotContainer.events.on("hit", function (ev) {
-            if (isMobile() || fixedPosition == undefined) {
-                fixedPosition = dateAxis.pointToPosition(ev.spritePoint);
+            if (isMobile() || chart.fixedPosition == undefined) {
+                chart.fixedPosition = dateAxis.pointToPosition(ev.spritePoint);
                 chart.cursor.triggerMove(
-                    dateAxis.renderer.positionToPoint(fixedPosition),
+                    dateAxis.renderer.positionToPoint(chart.fixedPosition),
                     "hard",
                     false
                 );
             } else {
-                fixedPosition = undefined;
+                chart.fixedPosition = undefined;
                 chart.cursor.triggerMove(
                     dateAxis.renderer.positionToPoint(dateAxis.pointToPosition(ev.spritePoint)),
                     "none",
@@ -432,9 +463,9 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
             }
         });
         chart.scrollbarX.events.on("rangechanged", function (ev) {
-            if (fixedPosition != undefined) {
+            if (chart.fixedPosition != undefined) {
                 chart.cursor.triggerMove(
-                    dateAxis.renderer.positionToPoint(fixedPosition),
+                    dateAxis.renderer.positionToPoint(chart.fixedPosition),
                     "hard",
                     false
                 );
@@ -444,11 +475,11 @@ function crearGrafica(idDiv, data, tituloEjeY, charPrepend, charAppend) {
         // Config initial zoom
         chart.events.on("datavalidated", function () {
             if (chart.data != null && chart.data.length > 0) {
+                let first_data = chart.data[Math.round(chart.data.length * 2 / 3)];
                 let last_data = chart.data[chart.data.length - 1];
-                let fechaInicio = new Date(last_data["fecha"].getTime());
-                let fechaFinal = new Date(last_data["fecha"].getTime());;
-                fechaInicio.setMonth(fechaInicio.getMonth() - 3);
-                fechaFinal.setDate(fechaFinal.getDate() + 1);
+
+                let fechaInicio = new Date(first_data["fecha"].getTime());
+                let fechaFinal = new Date(last_data["fecha"].getTime());
 
                 dateAxis.zoomToDates(
                     fechaInicio,

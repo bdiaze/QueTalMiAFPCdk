@@ -279,7 +279,7 @@ function obtenerGananPesos(tipoFondo, sueldoImponible, diaCotizacion, fechaInici
     let formateador = new Intl.NumberFormat("es-ES");
 
     let zoomInicio = "$0";
-    let zoomFin = "$" + formateador.format(Math.max(Math.floor(ahorroInicialMaximo * 0.2 / efectuarSimulacionCada) * efectuarSimulacionCada, efectuarSimulacionCada));
+    let zoomFin = "$" + formateador.format(Math.max(Math.floor(ahorroInicialMaximo * 0.33 / efectuarSimulacionCada) * efectuarSimulacionCada, efectuarSimulacionCada));
 
     crearGrafica(
         "chartGananPesos" + tipoFondo,
@@ -536,6 +536,13 @@ function obtenerCAV(tipoFondo, sueldoImponible, diaCotizacion, fechaInicio, fech
 var graficos = {};
 
 function actualizarDataGrafica(idDiv, data) {
+    graficos[idDiv].fixedPosition = undefined;
+    graficos[idDiv].cursor.triggerMove(
+        { x: 0, y: 0 },
+        "none",
+        false
+    );
+    graficos[idDiv].cursor.hide();
     graficos[idDiv].data = data;
 }
 
@@ -544,64 +551,21 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
         // Create chart instance
         let chart = am4core.create(idDiv, am4charts.XYChart);
         chart.language.locale = am4lang_es_ES;
-        // chart.dateFormatter.dateFormat = "x";
-        // chart.dateFormatter.utc = true;
-
-        // Add data
-        // chart.data = data;
 
         // Create axes
         let xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-        // let xAxis = chart.xAxes.push(new am4charts.DateAxis());
         xAxis.dataFields.category = "montoInicial";
         xAxis.title.text = "Ahorros Iniciales al " + fechaInicio;
-        // xAxis.groupData = true;
-        // xAxis.groupCount = 50;
-        /* 
-        xAxis.tooltipDateFormat = "x";
-        xAxis.adapter.add("getTooltipText", (text) => {
-            return "$" + text.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        });
-        */
-        // xAxis.tooltipDateFormat = "dd/MM/yyyy HH:mm:ss SSS";
-        // xAxis.tooltipText = "'$'{dateX.formatDate('x').formatNumber('###,###,##0.00')}";
-
-        /*
-        xAxis.dateFormats.setKey("millisecond", "$x");
-        xAxis.dateFormats.setKey("second", "$x");
-        xAxis.dateFormats.setKey("minute", "$x");
-        xAxis.dateFormats.setKey("hour", "$x");
-        xAxis.dateFormats.setKey("day", "$x");
-        xAxis.dateFormats.setKey("week", "$x");
-        xAxis.dateFormats.setKey("month", "$x");
-        xAxis.dateFormats.setKey("year", "$x");
-        xAxis.periodChangeDateFormats.setKey("millisecond", "$x");
-        xAxis.periodChangeDateFormats.setKey("second", "$x");
-        xAxis.periodChangeDateFormats.setKey("minute", "$x");
-        xAxis.periodChangeDateFormats.setKey("hour", "$x");
-        xAxis.periodChangeDateFormats.setKey("day", "$x");
-        xAxis.periodChangeDateFormats.setKey("week", "$x");
-        xAxis.periodChangeDateFormats.setKey("month", "$x");
-        xAxis.periodChangeDateFormats.setKey("year", "$x");
-        */
-
-        // xAxis.baseInterval = { "timeUnit": "second", "count": 10 };
-
-        /*
-        xAxis.groupIntervals.setAll([
-            { timeUnit: "second", count: 10 },
-            { timeUnit: "second", count: 30 },
-            { timeUnit: "minute", count: 1 },
-            { timeUnit: "minute", count: 10 },
-            { timeUnit: "minute", count: 30 },
-            { timeUnit: "hour", count: 1 }
-        ]);
-        */
 
         xAxis.tooltip.background.fill = am4core.color("#6794dc");
         xAxis.tooltip.background.cornerRadius = 4;
         xAxis.tooltip.background.strokeWidth = 0;
-        // xAxis.skipEmptyPeriods = true;
+        xAxis.showOnInit = false;
+        if (isMobile()) {
+            xAxis.renderer.minGridDistance = 85;
+        } else {
+            xAxis.renderer.minGridDistance = 110;
+        }
 
         let yAxis = chart.yAxes.push(new am4charts.ValueAxis());
         yAxis.title.text = "Ganancias/Perdidas (millones de pesos)";
@@ -687,6 +651,10 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
             chart.scrollbarX.series.push(serie);
         });
 
+        for (let i = 0; i < chart.scrollbarX.scrollbarChart.series.length; i++) {
+            chart.scrollbarX.scrollbarChart.series.getIndex(i).strokeWidth = 0.2;
+        }
+
         // Add cursor
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.behavior = "panX";
@@ -725,17 +693,17 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
 
         // Se configura la opción de congelar los datos al hacer click...
         chart.cursor.behavior = "none";
-        let fixedPosition = undefined;
+        chart.fixedPosition = undefined;
         chart.plotContainer.events.on("hit", function (ev) {
-            if (isMobile() || fixedPosition == undefined) { 
-                fixedPosition = xAxis.pointToPosition(ev.spritePoint);
+            if (isMobile() || chart.fixedPosition == undefined) { 
+                chart.fixedPosition = xAxis.pointToPosition(ev.spritePoint);
                 chart.cursor.triggerMove(
-                    xAxis.renderer.positionToPoint(fixedPosition),
+                    xAxis.renderer.positionToPoint(chart.fixedPosition),
                     "hard",
                     false
                 );
             } else {
-                fixedPosition = undefined;
+                chart.fixedPosition = undefined;
                 chart.cursor.triggerMove(
                     xAxis.renderer.positionToPoint(xAxis.pointToPosition(ev.spritePoint)),
                     "none",
@@ -744,9 +712,9 @@ function crearGrafica(idDiv, data, fechaInicio, zoomInicio, zoomFin, tipo = 1) {
             }
         });
         chart.scrollbarX.events.on("rangechanged", function (ev) {
-            if (fixedPosition != undefined) {
+            if (chart.fixedPosition != undefined) {
                 chart.cursor.triggerMove(
-                    xAxis.renderer.positionToPoint(fixedPosition),
+                    xAxis.renderer.positionToPoint(chart.fixedPosition),
                     "hard",
                     false
                 );
