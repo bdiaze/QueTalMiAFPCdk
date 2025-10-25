@@ -9,9 +9,10 @@
         autoclose: true,
         startDate: "01/08/2002",
         endDate: dd + '/' + mm + '/' + yyyy,
+        maxViewMode: 2,
         templates: {
-            leftArrow: '<i class="fa fa-long-arrow-left"></i>',
-            rightArrow: '<i class="fa fa-long-arrow-right"></i>'
+            leftArrow: '<i class="fa fa-chevron-left px-3"></i>',
+            rightArrow: '<i class="fa fa-chevron-right px-3"></i>'
         }
     });
 
