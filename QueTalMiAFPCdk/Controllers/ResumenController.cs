@@ -29,7 +29,7 @@ namespace QueTalMiAFPCdk.Controllers {
             { "HABITAT", "/images/logos_afps/LogoAFPHabitat.svg" },
             { "MODELO", "/images/logos_afps/LogoAFPModelo.svg" },
             { "PLANVITAL", "/images/logos_afps/LogoAFPPlanvital.svg" },
-            { "PROVIDA", "/images/logos_afps/LogoAFPProvida.png" },
+            { "PROVIDA", "/images/logos_afps/LogoAFPProvida.svg" },
             { "UNO", "/images/logos_afps/LogoAFPUno.png" },
         };
 

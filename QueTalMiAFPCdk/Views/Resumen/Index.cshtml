@@ -159,7 +159,8 @@
                      style="width: @(Model.Premios.PorcMesPremio)%" 
                      aria-valuenow="@(Model.Premios.PorcMesPremio)" 
                      aria-valuemin="0" 
-                     aria-valuemax="100">
+                     aria-valuemax="100"
+                     aria-label="Progreso del mes actual">
                      @(Model.Premios.PorcMesPremio.ToString("N0", cultureInfo))%
                  </div>
             </div>
@@ -180,7 +181,7 @@
     <div style="position: relative;" class="px-2 d-inline-block">
         <p class="d-inline-block my-0 text-muted mr-1" style="font-size: 0.9rem; position:relative; top: 0.1rem;">Meses anteriores</p>
         <div class="input-group input-group-sm d-inline-block" style="width: 5rem;">
-            <select asp-for="Premios.Anno" asp-items="@Model.Premios?.ListaAnnos" class="custom-select w-100 text-muted" id="selectPremioRentabilidad"></select>
+            <select asp-for="Premios.Anno" asp-items="@Model.Premios?.ListaAnnos" class="custom-select w-100 text-muted" id="selectPremioRentabilidad" aria-label="Mejores rentabilidades según el año"></select>
         </div>
         @if (User.Identity == null || !User.Identity.IsAuthenticated)
         {
