@@ -3,6 +3,10 @@
 
     // Se graba en cookie la timezone del cliente...
     $.cookie("Timezone", Intl.DateTimeFormat().resolvedOptions().timeZone, { expires: 365, path: '/' });
+
+    $('#noticias20250913').on('closed.bs.alert', function () {
+        $.cookie("NoticiaYaCerrada20250913", "S", { expires: 365, path: '/' });
+    });
 })
 
 var cuotasConsultadas = {};

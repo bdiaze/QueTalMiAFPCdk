@@ -16,11 +16,12 @@
 }
 
 @section Head {
-    <link rel="stylesheet" href="~/css/Resumen.css" asp-append-version="true" />
+    <link rel="preload" href="~/css/Resumen.css" asp-append-version="true" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/css/Resumen.css" asp-append-version="true" /></noscript>
 }
 
 @section Scripts {
-    <script src="~/js/Resumen.js" asp-append-version="true"></script>
+    <script src="~/js/Resumen.js" asp-append-version="true" defer></script>
 }
 
 @{

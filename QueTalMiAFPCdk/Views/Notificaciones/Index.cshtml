@@ -7,11 +7,12 @@
 }
 
 @section Head {
-    <link rel="stylesheet" href="~/css/Notificaciones.css" asp-append-version="true" />
+    <link rel="preload" href="~/css/Notificaciones.css" asp-append-version="true" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="~/css/Notificaciones.css" asp-append-version="true" /></noscript>
 }
 
 @section Scripts {
-    <script src="~/js/Notificaciones.js" asp-append-version="true"></script>
+    <script src="~/js/Notificaciones.js" asp-append-version="true" defer></script>
 }
 
 <p class="mb-0 new-titulo d-inline-block">¡NUEVO!</p>
