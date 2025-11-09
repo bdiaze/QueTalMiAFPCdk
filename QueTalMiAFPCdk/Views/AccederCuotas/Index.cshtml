@@ -298,11 +298,12 @@
 
 <h5>Y para los computines... ¡Una API!</h5>
 
+<p class="text-muted mt-3">
+    Si lo que requieres no es un archivo sino acceso a una API de consulta, puedes utilizar la siguiente
+    configuración:
+</p>
+
 <div style="position: relative;">
-    <p class="text-muted mt-3">
-        Si lo que requieres no es un archivo sino acceso a una API de consulta, puedes utilizar la siguiente
-        configuración:
-    </p>
     <table class="table table-bordered mt-3 mb-3">
         <tr>
             <th style="text-align: center; min-width: 9em;">URL API</th>
@@ -350,12 +351,12 @@
         </tr>
     </table>
     <div class="overlay">
-        <div class="alert alert-primary my-3 w-75 text-center" role="alert">
+        <div class="alert alert-primary px-4 py-4 w-75 text-center" role="alert">
             <p class="text-center"><b>¡¿Qué?! ¿Ya no cuentan con una API pública 😭?</b></p>
             <p class="text-center">
             ¡No te preocupes! Solo hicimos algunos ajustes. Primero, añadimos el requerimiento de una API key; y segundo, 
             cambiamos el lugar donde se encuentra la documentación de nuestra API pública.</p>
-             <a href="@(Url.Action("Index", "ApiKeys"))" class="btn btn-primary py-2 px-3">
+             <a href="@(Url.Action("Index", "ApiKeys"))" class="btn btn-primary py-2 px-3 mt-2">
                 ¡Llevame a la documentación actualizada!
             </a>
         </div>
