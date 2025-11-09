@@ -75,7 +75,7 @@
             {
                 <tr>
                     <th class="align-middle p-0 text-center">
-                        <img class="rounded mx-auto d-block" style="width: @(resumenAfp.Ancho)vw; height: min(@(resumenAfp.Alto)vw, 55px);" src="@resumenAfp.UrlLogo" alt="AFP @resumenAfp.Nombre"/>
+                        <img class="rounded mx-auto d-block" style="width: @(resumenAfp.Ancho)vw; @(resumenAfp.Alto != null ? $"height: min({resumenAfp.Alto}vw, 55px);" : "")" src="@resumenAfp.UrlLogo" alt="AFP @resumenAfp.Nombre"/>
                     </th>
                 </tr>
             }
