@@ -350,8 +350,8 @@ p, h6 {
 }
 
 @media (max-width:768px) {
-    div.input-group input, div.input-group span, div.input-group select, div.input-group button {
-        font-size: .90rem;
+    div.input-group input, div.input-group label, div.input-group span, div.input-group select, div.input-group button {
+        font-size: .85rem;
     }
 }
 
