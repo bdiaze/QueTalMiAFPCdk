@@ -76,8 +76,17 @@ div:has(> table.valoresCuota) {
     font-size: 0.70rem;
 }
 
+.valoresCuota tr:not(:first-child) td p:not(:first-child).rentabilidadCritica {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
 .valoresCuota tr:not(:first-child) td p:not(:first-child) b {
     font-size: 0.80rem;
+}
+
+.valoresCuota tr:not(:first-child) td p:not(:first-child).rentabilidadCritica b {
+    font-size: 1rem;
 }
 
 div:has(> table.grillaPremioRentabilidad) {

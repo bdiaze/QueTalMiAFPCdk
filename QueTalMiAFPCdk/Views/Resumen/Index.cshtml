@@ -101,7 +101,7 @@
                         {
                             <td class="m-0 text-muted align-middle p-0">
                                 <p class="mb-1 text-center">@(cuota != null ? cuota.ValorCuota.ToString("N2", cultureInfo) : "")</p>
-                                <p class="m-0 text-center @(cuota?.RentabilidadDia > 0 ? "text-success": (cuota?.RentabilidadDia < 0 ? "text-danger" : ""))">
+                                <p class="m-0 text-center @(cuota?.RentabilidadDia > 0 ? "text-success": (cuota?.RentabilidadDia < 0 ? "text-danger" : "")) @(cuota?.RentabilidadDia != null && Math.Abs(cuota.RentabilidadDia) > 1 ? "rentabilidadCritica" : "")">
                                     <b>@(cuota?.RentabilidadDia > 0 ? "⇧" : (cuota?.RentabilidadDia < 0 ? "⇩" : ""))</b>
                                     @(cuota != null ? (cuota.RentabilidadDia != 0 ? cuota.RentabilidadDia.ToString("N5", cultureInfo) + "%" : "0,0%") : "")
                                 </p>
