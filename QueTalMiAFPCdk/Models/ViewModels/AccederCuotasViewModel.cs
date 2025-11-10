@@ -16,12 +16,24 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
         public SelectList? ListaAnnos { get; set; }
         public string? NombreAfp { get; set; }
         public string? FiltroHistorialFondoSeleccionado { get; set; }
-        public Dictionary<string, List<decimal?>> ValoresCuota { get; set; } = new Dictionary<string, List<decimal?>> {
+        public Dictionary<string, decimal?> RentabilidadMensual { get; set; } = new Dictionary<string, decimal?> {
+            { "A", null },
+            { "B", null },
+            { "C", null },
+            { "D", null },
+            { "E", null },
+        };
+        public Dictionary<string, List<CuotaRentabilidad>> ValoresCuota { get; set; } = new Dictionary<string, List<CuotaRentabilidad>> {
             { "A", [] },
             { "B", [] },
             { "C", [] },
             { "D", [] },
             { "E", [] },
         };
+    }
+
+    public class CuotaRentabilidad {
+        public decimal? ValorCuota { get; set; }
+        public decimal? Rentabilidad { get; set; }
     }
 }

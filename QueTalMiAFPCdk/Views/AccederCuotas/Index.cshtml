@@ -1,4 +1,5 @@
-﻿@using QueTalMiAFPCdk.Models.ViewModels
+﻿@using QueTalMiAFPCdk.Controllers
+@using QueTalMiAFPCdk.Models.ViewModels
 @using System.Globalization
 @model AccederCuotasViewModel
 
@@ -79,17 +80,40 @@
 
 @{
     DateTime primerDia = new DateTime(Model.Historial!.Anno.GetValueOrDefault(), Model.Historial!.Mes.GetValueOrDefault(), 1);
-    int diasPrevios = ((int)primerDia.DayOfWeek) - 1;
+    // Se calculan la cantidad de días de la primera semana que no pertenecen al mes...
+    // Ojo con el domingo, DayOfWeek sería 0 por lo que es necesario transformarlo a 7...
+    int diasPrevios = (primerDia.DayOfWeek != DayOfWeek.Sunday ? (int)primerDia.DayOfWeek : 7) - 1;
     int cantDiasMes = primerDia.AddMonths(1).AddDays(-1).Day;
 }
 @foreach(string fondo in "A,B,C,D,E".Split(",")) {
     int diaAux = 1;
 
     <div class="p-0 m-0 mb-3" style="display:@(fondo == Model.Historial?.FiltroHistorialFondoSeleccionado ? "block" : "none");" id="historial@(fondo)"Historial>
+
+        @if (Model.Historial?.NombreAfp?.ToUpperInvariant() != null)
+        {
+            string? urlLogo = AccederCuotasController.IMAGENES_AFP[Model.Historial?.NombreAfp?.ToUpperInvariant()!];
+            string? widthLogo = AccederCuotasController.WIDTH_IMAGENES_AFP[Model.Historial?.NombreAfp?.ToUpperInvariant()!];
+            string? topLogo = AccederCuotasController.TOP_IMAGENES_AFP[Model.Historial?.NombreAfp?.ToUpperInvariant()!];
+            string? heightLogo = AccederCuotasController.HEIGHT_IMAGENES_AFP[Model.Historial?.NombreAfp?.ToUpperInvariant()!];
+            if (urlLogo != null && widthLogo != null && topLogo != null && heightLogo != null)
+            {
+                <div>
+                    <img class="logoAfp rounded" src="@urlLogo" alt="Logo AFP @(Model.Historial?.NombreAfp)" style="@widthLogo @topLogo @heightLogo"/>
+                </div>
+            }
+        }
+
         <table class="table table-bordered text-center mb-1 grillaHistorial">
             <tr>
-                <td class="px-0 pt-0" colspan="7" style="border: none;">
-                    <span class="text-muted tituloHistorial">AFP @(Model.Historial?.NombreAfp) - @(primerDia.ToString("MMMM", cultureInfo)[0].ToString().ToUpper() + primerDia.ToString("MMMM", cultureInfo).Substring(1) + primerDia.ToString(" yyyy"))</span>
+                <td class="px-0 pt-1 pb-4" colspan="7" style="border: none;">
+                    <span class="text-muted tituloHistorial">@(primerDia.ToString("MMMM", cultureInfo)[0].ToString().ToUpper() + primerDia.ToString("MMMM", cultureInfo).Substring(1) + primerDia.ToString(" yyyy"))</span>
+                    <br/>
+                    <p class="d-inline text-muted my-1 text-center">Rentabilidad Mensual:</p>
+                    <p class="d-inline @(Model.Historial?.RentabilidadMensual[fondo] > 0 ? "text-success": (Model.Historial?.RentabilidadMensual[fondo] < 0 ? "text-danger" : "text-muted"))">
+                        <b>@(Model.Historial?.RentabilidadMensual[fondo] > 0 ? "⇧" : (Model.Historial?.RentabilidadMensual[fondo] < 0 ? "⇩" : ""))</b>
+                        @(Model.Historial?.RentabilidadMensual[fondo].GetValueOrDefault().ToString("N5", cultureInfo))%
+                    </p>
                 </td>
             </tr>    
             <tr>
@@ -109,9 +133,14 @@
                         <td>
                             @if ((semana != 1 && diaAux <= cantDiasMes) || (semana == 1 && dia > diasPrevios))
                             {
-                                decimal? valor = (Model.Historial?.ValoresCuota[fondo])?[diaAux - 1];
+                                decimal? valor = (Model.Historial?.ValoresCuota[fondo])?[diaAux - 1].ValorCuota;
+                                decimal? rentabilidad = (Model.Historial?.ValoresCuota[fondo])?[diaAux - 1].Rentabilidad;
                                 <p class="m-0 text-muted">@diaAux</p>
                                 <p class="text-center m-0 text-muted">@(valor != null ? valor.GetValueOrDefault().ToString("N2", cultureInfo) : "")</p>
+                                <p class="text-center m-0 @(rentabilidad > 0 ? "text-success": (rentabilidad < 0 ? "text-danger" : "text-muted")) @(rentabilidad != null && Math.Abs(rentabilidad.Value) > 1 ? "rentabilidadCritica" : "")">
+                                    <b>@(rentabilidad > 0 ? "⇧" : (rentabilidad < 0 ? "⇩" : ""))</b>
+                                    @(rentabilidad != null ? $"{rentabilidad.GetValueOrDefault().ToString("N5", cultureInfo)}%" : "")
+                                </p>
                                 diaAux++;
                             }
                         </td>

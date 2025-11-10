@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using QueTalMiAFPCdk.Models.Entities;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
@@ -31,6 +32,38 @@ namespace QueTalMiAFPCdk.Controllers {
             { 10, "Octubre" },
             { 11, "Noviembre" },
             { 12, "Diciembre" },
+        };
+
+        public static readonly Dictionary<string, string> IMAGENES_AFP = ResumenController.IMAGENES_AFP;
+
+        public static readonly Dictionary<string, string> WIDTH_IMAGENES_AFP = new() {
+            { "CAPITAL", "width: 8.0rem;" },
+            { "CUPRUM", "width: 8.0rem;" },
+            { "HABITAT", "width: 8.2rem;" },
+            { "MODELO", "width: 7.5rem;" },
+            { "PLANVITAL", "width: 7.5rem;" },
+            { "PROVIDA", "width: 8.8rem;" },
+            { "UNO", "width: 7.5rem;" },
+        };
+
+        public static readonly Dictionary<string, string> TOP_IMAGENES_AFP = new() {
+            { "CAPITAL", "top: 1.0rem;" },
+            { "CUPRUM", "top: 1.0rem;" },
+            { "HABITAT", "top: 1.3rem;" },
+            { "MODELO", "top: 0.25rem;" },
+            { "PLANVITAL", "top: 0.6rem;" },
+            { "PROVIDA", "top: 1.1rem;" },
+            { "UNO", "top: 1.1rem;" },
+        };
+
+        public static readonly Dictionary<string, string?> HEIGHT_IMAGENES_AFP = new() {
+            { "CAPITAL", "" },
+            { "CUPRUM", "" },
+            { "HABITAT", "" },
+            { "MODELO", "" },
+            { "PLANVITAL", "height: 3.3rem;" },
+            { "PROVIDA", "" },
+            { "UNO", "" },
         };
 
         public async Task<IActionResult> Index(AccederCuotasViewModel modeloEntrada) {
@@ -124,18 +157,44 @@ namespace QueTalMiAFPCdk.Controllers {
                     if (cuotaUf == null) {
                         if (valoresHistorial.Any(c => c.Afp == inputAfp && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) > fecha)) {
                             cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) <= fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
-                            salida.Historial.ValoresCuota[fondo].Add(cuotaUf?.Valor);
+                            salida.Historial.ValoresCuota[fondo].Add(new CuotaRentabilidad { ValorCuota = cuotaUf?.Valor });
                         } else {
-                            salida.Historial.ValoresCuota[fondo].Add(null);
+                            salida.Historial.ValoresCuota[fondo].Add(new CuotaRentabilidad { ValorCuota = null, Rentabilidad = null });
                         }
                     } else {
-                        salida.Historial.ValoresCuota[fondo].Add(cuotaUf.Valor);
+                        salida.Historial.ValoresCuota[fondo].Add(new CuotaRentabilidad { ValorCuota = cuotaUf.Valor });
                     }
 
                     fecha = fecha.AddDays(-1);
                 }
 
                 salida.Historial.ValoresCuota[fondo].Reverse();
+
+                // Se calculan rentabilidades diarias...
+                CuotaUf? cuotaUfMesAnterior = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) < fechaDesdeHistorial).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                CuotaRentabilidad? cuotaRentabilidadAnterior = null;
+                foreach (CuotaRentabilidad cuotaRentabilidad in salida.Historial.ValoresCuota[fondo]) {
+                    if (cuotaRentabilidad.ValorCuota != null) {
+                        // Se calcula rentabilidad según valor cuota del día anterior...
+                        if (cuotaRentabilidadAnterior?.ValorCuota != null) {
+                            cuotaRentabilidad.Rentabilidad = (cuotaRentabilidad.ValorCuota - cuotaRentabilidadAnterior?.ValorCuota) * 100 / cuotaRentabilidadAnterior?.ValorCuota;
+                        
+                        // si no tenemos valor cuota del día anterior (porque estamos en el primer día del mes), se usa el valor cuota del mes anterior...
+                        } else {
+                            if (cuotaUfMesAnterior != null) {
+                                cuotaRentabilidad.Rentabilidad = (cuotaRentabilidad.ValorCuota - cuotaUfMesAnterior.Valor) * 100 / cuotaUfMesAnterior.Valor;
+                            }
+                        }
+                    }
+
+                   cuotaRentabilidadAnterior = cuotaRentabilidad;
+                }
+
+                // Se calcula la rentabilidad mensual...
+                CuotaRentabilidad? ultimaCuota = salida.Historial.ValoresCuota[fondo].Where(vc => vc.ValorCuota != null).LastOrDefault();
+                if (ultimaCuota?.ValorCuota != null && cuotaUfMesAnterior?.Valor != null) {
+                    salida.Historial.RentabilidadMensual[fondo] = (ultimaCuota.ValorCuota - cuotaUfMesAnterior.Valor) * 100 / cuotaUfMesAnterior.Valor;
+                }
             }
 
             salida.Historial.NombreAfp = LISTA_AFPS[salida.Historial.Afp];

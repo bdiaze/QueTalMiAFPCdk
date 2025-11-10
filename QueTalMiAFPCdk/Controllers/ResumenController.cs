@@ -23,7 +23,7 @@ namespace QueTalMiAFPCdk.Controllers {
             { "UNO", "Uno" },
         };
 
-        private static readonly Dictionary<string, string> IMAGENES_AFP = new() {
+        public static readonly Dictionary<string, string> IMAGENES_AFP = new() {
             { "CAPITAL", "/images/logos_afps/LogoAFPCapital.svg" },
             { "CUPRUM", "/images/logos_afps/LogoAFPCuprum.svg" },
             { "HABITAT", "/images/logos_afps/LogoAFPHabitat.svg" },

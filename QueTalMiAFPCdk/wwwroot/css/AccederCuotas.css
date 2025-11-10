@@ -51,6 +51,46 @@ div:has(> table.grillaHistorial) {
     font-size: 0.85rem;
 }
 
+.grillaHistorial tr:not(:nth-child(-n + 2)) td p:last-child {
+    position: relative;
+    top: -0.05rem;
+    font-size: 0.7rem;
+}
+
+.grillaHistorial tr:not(:nth-child(-n + 2)) td p:last-child.rentabilidadCritica {
+    position: relative;
+    top: -0.2rem;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.grillaHistorial tr:not(:nth-child(-n + 2)) td p:last-child b {
+    font-size: 0.8rem;
+}
+
+.grillaHistorial tr:not(:nth-child(-n + 2)) td p:last-child.rentabilidadCritica b {
+    font-size: 1rem;
+}
+
+.grillaHistorial tr:first-child p:last-child {
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.grillaHistorial tr:first-child p:last-child b {
+    font-size: 1.2rem;
+}
+
+div:has(> .logoAfp) {
+    width: 0;
+    height: 0;
+}
+
+.logoAfp {
+    position: relative;
+    margin-left: 1.25rem;
+}
+
 form div.input-group {
     width: 50vw;
     max-width: calc(45rem - 4px);
