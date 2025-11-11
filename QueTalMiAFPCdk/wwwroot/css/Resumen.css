@@ -1,7 +1,7 @@
 ﻿#filtroFondos label {
     width: 10vw;
     max-width: 9rem;
-    min-width: 5.2rem;
+    min-width: 5.0rem;
 }
 
 div:has(> table.grillaLogos) {
