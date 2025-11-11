@@ -37,7 +37,10 @@
 
 <hr />
 
-<h5>¡Llegaron nuevos valores cuota!</h5>
+<div class="d-flex align-items-center">
+    <h5 class="d-inline m-0">¡Llegaron nuevos valores cuota!</h5>
+    <button type="button" class="btn btn-info tutorial ml-3" data-toggle="modal" data-target="#tutorialResumenSemana">?</button>
+</div>
 
 <p class="mt-3 text-muted">
     A continuación, te presentamos los valores cuota de la última semana para cada AFP, puedes seleccionar el fondo deseado en el filtro superior.
@@ -93,14 +96,15 @@
                         </td>
                     }
                 </tr>
-
                 @foreach(UltimaSemanaAfp resumenAfp in Model.Resumen.UltimaSemana)
                 {
                     <tr>
                         @foreach(CuotaRentabilidadDia? cuota in resumenAfp.ValoresCuota[fondo])
                         {
                             <td class="m-0 text-muted align-middle p-0">
-                                <p class="mb-1 text-center">@(cuota != null ? cuota.ValorCuota.ToString("N2", cultureInfo) : "")</p>
+                                <p class="mb-1 text-center">
+                                    @(cuota != null ? cuota.ValorCuota.ToString("N2", cultureInfo) : "")
+                                </p>
                                 <p class="m-0 text-center @(cuota?.RentabilidadDia > 0 ? "text-success": (cuota?.RentabilidadDia < 0 ? "text-danger" : "")) @(cuota?.RentabilidadDia != null && Math.Abs(cuota.RentabilidadDia) > 1 ? "rentabilidadCritica" : "")">
                                     <b>@(cuota?.RentabilidadDia > 0 ? "⇧" : (cuota?.RentabilidadDia < 0 ? "⇩" : ""))</b>
                                     @(cuota != null ? (cuota.RentabilidadDia != 0 ? cuota.RentabilidadDia.ToString("N5", cultureInfo) + "%" : "0,0%") : "")
@@ -223,4 +227,36 @@
             }
         </tr>
     </table>
+</div>
+
+<div class="modal fade tutorial" id="tutorialResumenSemana" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-info">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title">¿Necesitas ayuda? 🤓</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Primero, debes <u>seleccionar el fondo que te interesa</u>, por ejemplo el fondo C:<br/>
+                <div class="text-center mt-0 mb-2">
+                    <img style="width:100%; max-width:364px;" src='/images/tutoriales/resumen/filtro_fondos.png'/>
+                </div>
+                Esto cargará la grilla con los valores cuota de la última semana:
+                <ul class="mt-2" style="font-size:0.8rem;">
+                    <li>Cada fila representa a una AFP distinta.</li>
+                    <li>Cada columna representa un día de la última semana.</li>
+                    <li>Cada celda incluye el <u>valor cuota y la rentabilidad diaria.</u></li>
+                </ul>
+                <div class="text-center mt-3 mb-2">
+                    <img style="width:100%; max-width:462px;" src='/images/tutoriales/resumen/valores_ultima_semana.png'/>
+                </div>
+                ¿Y qué representan las celdas vacías? <br />
+                <span style="font-size: 0.8rem;">
+                    Que la AFP aún no informa el valor cuota para dicho día 😞, habrá que esperar...
+                </span>
+            </div>
+        </div>
+    </div>
 </div>

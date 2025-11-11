@@ -1,5 +1,6 @@
 ﻿$(function () {
     $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover();
 
     // Se graba en cookie la timezone del cliente...
     $.cookie("Timezone", Intl.DateTimeFormat().resolvedOptions().timeZone, { expires: 365, path: '/' });

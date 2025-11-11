@@ -325,6 +325,50 @@ p, h6 {
     font-weight: 400;
 }
 
+button.tutorial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: .9rem;
+    font-weight: bold;
+    border-radius: 50%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+button.tutorial:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+div.tutorial .modal-header, div.tutorial .modal-header button {
+    color: white;
+}
+
+.popover {
+    border: 2px solid #d1ecf1;
+}
+
+.popover .arrow::before {
+    border-right-color: #d1ecf1;
+}
+
+.popover .arrow::after {
+    border-right-color: #d1ecf1;
+}
+
+.popover-header {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    font-weight: normal;
+}
+
+.popover-body {
+    color: #6c757d;
+}
+
 .nombreUsuario p {
     font-size: 1.1rem;
 }
