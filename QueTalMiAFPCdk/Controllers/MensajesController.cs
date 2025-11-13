@@ -6,6 +6,7 @@ using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -46,11 +47,17 @@ namespace QueTalMiAFPCdk.Controllers {
 			}
 
             MensajeUsuario? mensajeResultado = await mensajeDAO.IngresarMensaje(model.IdTipoMensaje, model.Nombre, model.Correo, model.Mensaje);
-            long elapsedTimeIngresoMensaje = stopwatch.ElapsedMilliseconds;
 
-            Dictionary<string, string> datos = new() {
+			long elapsedTimeIngresoMensaje = stopwatch.ElapsedMilliseconds;
+
+
+			// Se formatea fecha de ingreso según timezone de America/Santiago para el envío de correo...
+			TimeZoneInfo timeZoneInfoCorreo = TimeZoneInfo.FindSystemTimeZoneById("America/Santiago");
+			DateTime localTimeCorreo = TimeZoneInfo.ConvertTimeFromUtc(mensajeResultado.FechaIngreso.UtcDateTime, timeZoneInfoCorreo);
+
+			Dictionary<string, string> datos = new() {
                 { "[IdMensaje]", WebUtility.HtmlEncode(mensajeResultado!.IdMensaje.ToString()) },
-                { "[FechaIngreso]", WebUtility.HtmlEncode(mensajeResultado!.FechaIngreso.ToString("dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture)) },
+                { "[FechaIngreso]", WebUtility.HtmlEncode(localTimeCorreo.ToString("dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture)) },
                 { "[Nombre]", WebUtility.HtmlEncode(mensajeResultado!.Nombre) },
                 { "[Correo]", WebUtility.HtmlEncode(mensajeResultado!.Correo) },
                 { "[Mensaje]", WebUtility.HtmlEncode(mensajeResultado!.Mensaje) },
@@ -61,7 +68,22 @@ namespace QueTalMiAFPCdk.Controllers {
 			await envioCorreo.Notificar($"¡Ha llegado un mensaje de {mensajeResultado.Nombre}!", body, mensajeResultado.Correo, mensajeResultado.Nombre);
             long elapsedTimeEnvioCorreo = stopwatch.ElapsedMilliseconds;
 
-            logger.LogInformation(
+			// Se formatea fecha de ingreso según timezone de cliente para ser mostrado en pantalla...
+			string? timezoneCliente = Request.Cookies["Timezone"];
+            if (timezoneCliente != null) {
+                TimeZoneInfo timeZoneInfoCliente;
+				try {
+					timeZoneInfoCliente = TimeZoneInfo.FindSystemTimeZoneById(timezoneCliente);
+				} catch (TimeZoneNotFoundException) {
+					timeZoneInfoCliente = TimeZoneInfo.Utc;
+				} catch (InvalidTimeZoneException) {
+					timeZoneInfoCliente = TimeZoneInfo.Utc;
+				}
+				mensajeResultado.FechaIngreso = new DateTimeOffset(TimeZoneInfo.ConvertTimeFromUtc(mensajeResultado.FechaIngreso.UtcDateTime, timeZoneInfoCliente));
+			}
+
+
+			logger.LogInformation(
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se ingresa exitosamente el mensaje - " +
                 "Elapsed Time Ingreso Mensaje: {ElapsedTimeIngresoMensaje} - Elapsed Time Envío Correo: {ElapsedTimeEnvioCorreo}.",
