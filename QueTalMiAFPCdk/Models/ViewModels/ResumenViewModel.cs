@@ -13,7 +13,7 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
     public class ResumenSemanal {
         public string? FiltroResumenFondoSeleccionado { get; set; }
 
-        public List<DateTime>? FechasUltimaSemana { get; set; }
+        public List<DateOnly>? FechasUltimaSemana { get; set; }
 
         public List<UltimaSemanaAfp> UltimaSemana { get; set; } = [];
     }
@@ -37,13 +37,13 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
     public class CuotaRentabilidadDia {
         public required decimal ValorCuota { get; set; }
         public required decimal RentabilidadDia { get; set; }
-        public required DateTime Fecha { get; set; }
+        public required DateOnly Fecha { get; set; }
     }
 
     public class PremiosRentabilidad {
-        public DateTime FechasTodas { get; set; }
-        public DateTime PrimerDiaMesPremio { get; set; }
-        public DateTime UltimoDiaMesPremio { get; set; }
+        public DateOnly FechasTodas { get; set; }
+        public DateOnly PrimerDiaMesPremio { get; set; }
+        public DateOnly UltimoDiaMesPremio { get; set; }
         public decimal PorcMesPremio { get; set; }
         public int? Anno { get; set; }
         public SelectList? ListaAnnos { get; set; }
@@ -54,7 +54,7 @@ namespace QueTalMiAFPCdk.Models.ViewModels {
         public string? Afp { get; set; }
         public string? Fondo { get; set; }
         public decimal? Rentabilidad { get; set; }
-        public DateTime FechaDesde { get; set; }
-        public DateTime FechaHasta { get; set; }
+        public DateOnly FechaDesde { get; set; }
+        public DateOnly FechaHasta { get; set; }
     }
 }

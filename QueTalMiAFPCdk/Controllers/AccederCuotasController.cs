@@ -73,7 +73,7 @@ namespace QueTalMiAFPCdk.Controllers {
             int? inputMes = modeloEntrada.Historial?.Mes;
             int? inputAnno = modeloEntrada.Historial?.Anno;
 
-            DateTime fechaActual = await cuotaUfComisionDAO.UltimaFechaTodas();
+			DateOnly fechaActual = await cuotaUfComisionDAO.UltimaFechaTodas();
             long elapsedTimeFechaTodas = stopwatch.ElapsedMilliseconds;
             
             // Se añaden valores por defecto para inputs...
@@ -99,14 +99,14 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             }
 
-            // Se prepara rango de fecha a utilizar para historial de valores cuota...
-            DateTime? fechaDesdeHistorial = null;
+			// Se prepara rango de fecha a utilizar para historial de valores cuota...
+			DateOnly? fechaDesdeHistorial = null;
             try {
-                fechaDesdeHistorial = new DateTime(inputAnno.GetValueOrDefault(), inputMes.GetValueOrDefault(), 1);
+                fechaDesdeHistorial = new DateOnly(inputAnno.GetValueOrDefault(), inputMes.GetValueOrDefault(), 1);
             } catch {
-                fechaDesdeHistorial = new DateTime(fechaActual.Year, fechaActual.Month, 1);
+                fechaDesdeHistorial = new DateOnly(fechaActual.Year, fechaActual.Month, 1);
             }
-            DateTime fechaHastaHistorial = fechaDesdeHistorial.GetValueOrDefault().AddMonths(1).AddDays(-1);
+			DateOnly fechaHastaHistorial = fechaDesdeHistorial.GetValueOrDefault().AddMonths(1).AddDays(-1);
 
             // Se añade consulta para historial inferior mediante Task, para no detener las consultas asociadas a resumen semanal...
             Task<List<CuotaUf>> taskValoresHistorial = cuotaUfComisionDAO.ObtenerCuotas(
@@ -149,14 +149,14 @@ namespace QueTalMiAFPCdk.Controllers {
             long elapsedTimeValoresCuota = stopwatch.ElapsedMilliseconds;
 
             foreach (string fondo in "A,B,C,D,E".Split(",")) {
-                DateTime fecha = fechaHastaHistorial;
+				DateOnly fecha = fechaHastaHistorial;
                 while (fecha >= fechaDesdeHistorial) {
-                    CuotaUf? cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha == fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).FirstOrDefault();
+                    CuotaUf? cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha == fecha).FirstOrDefault();
 
                     // Si no tenemos valor cuota para la fecha indicada, se marca como null o con la valor cuota anterior.
                     if (cuotaUf == null) {
-                        if (valoresHistorial.Any(c => c.Afp == inputAfp && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) > fecha)) {
-                            cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) <= fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                        if (valoresHistorial.Any(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha > fecha)) {
+                            cuotaUf = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha <= fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
                             salida.Historial.ValoresCuota[fondo].Add(new CuotaRentabilidad { ValorCuota = cuotaUf?.Valor });
                         } else {
                             salida.Historial.ValoresCuota[fondo].Add(new CuotaRentabilidad { ValorCuota = null, Rentabilidad = null });
@@ -171,7 +171,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 salida.Historial.ValoresCuota[fondo].Reverse();
 
                 // Se calculan rentabilidades diarias...
-                CuotaUf? cuotaUfMesAnterior = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) < fechaDesdeHistorial).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                CuotaUf? cuotaUfMesAnterior = valoresHistorial.Where(c => c.Afp == inputAfp && c.Fondo == fondo && c.Fecha < fechaDesdeHistorial).OrderByDescending(c => c.Fecha).FirstOrDefault();
                 CuotaRentabilidad? cuotaRentabilidadAnterior = null;
                 foreach (CuotaRentabilidad cuotaRentabilidad in salida.Historial.ValoresCuota[fondo]) {
                     if (cuotaRentabilidad.ValorCuota != null) {

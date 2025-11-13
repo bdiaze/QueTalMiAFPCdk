@@ -4,14 +4,16 @@ using Newtonsoft.Json;
 using QueTalMiAFPCdk.Models.Entities;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Services;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Repositories {
-    public class NotificacionDAO(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey) {
-        private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
-        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
+    public class NotificacionDAO(IHostEnvironment environment, IConfiguration configuration, ParameterStoreHelper parameterStore, ApiKeyHelper apiKey) {
+        private readonly string _baseUrl = environment.IsProduction() ? parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result : configuration.GetValue<string>("ApiUrl")!;
+		private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
 
         public async Task<List<TipoNotificacion>> ObtenerTipoNotificaciones(short habilitado = 1) {
             using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));

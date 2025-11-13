@@ -20,6 +20,16 @@
         am4core.options.queue = true;
 
         ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
+            $("#TabRentRango" + afp).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRentRango" + afp);
+            });
+
+            $("#TabRentRango" + afp).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRentRango" + afp);
+            });
+        });
+
+        ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
             $("#TabRR" + afp).on("shown.bs.tab", function () {
                 marcarGraficoAbierto("TabRR" + afp);
                 obtenerRentRealSoloTipo(afp);
@@ -54,11 +64,8 @@
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
         let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
-        if (graficosAbiertos == undefined || graficosAbiertos.length == 0) {
-            graficosAbiertos = ["TabRRCapital", "TabRTCapital", "TabVCCapital"];
-        } else {
-            graficosAbiertos = graficosAbiertos.split(",");
-        }
+        graficosAbiertos = graficosAbiertos.split(",");
+
         graficosAbiertos.forEach(grafico => {
             $("#" + grafico).tab('show');
         });

@@ -6,7 +6,7 @@ namespace QueTalMiAFPCdk.Models.Entities {
 
 		public short IdTipoMensaje { get; set; }
 
-		public DateTime FechaIngreso { get; set; }
+		public DateTimeOffset FechaIngreso { get; set; }
 
 		public required string Nombre { get; set; }
 

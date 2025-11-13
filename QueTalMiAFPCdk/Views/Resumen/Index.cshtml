@@ -88,7 +88,7 @@
         <div style="display:@(fondo == Model.Resumen.FiltroResumenFondoSeleccionado ? "" : "none");" id="resumen@(fondo)">
             <table class="table table-bordered text-center m-0 mb-1 valoresCuota">
                 <tr>
-                    @foreach(DateTime fecha in Model.Resumen.FechasUltimaSemana!)
+                    @foreach(DateOnly fecha in Model.Resumen.FechasUltimaSemana!)
                     {
                         <td class="p-0 align-middle">
                             <p class="m-0 text-center text-muted text-truncate">@fecha.ToString("dddd", cultureInfo).ToUpper()</p>

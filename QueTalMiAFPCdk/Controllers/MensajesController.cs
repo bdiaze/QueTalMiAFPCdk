@@ -12,9 +12,7 @@ using System.Net;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Controllers {
-	public class MensajesController(ILogger<MensajesController> logger, ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, MensajeDAO mensajeDAO, EnvioCorreo envioCorreo) : Controller {
-		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
-        private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
+	public class MensajesController(ILogger<MensajesController> logger, ParameterStoreHelper parameterStore, MensajeDAO mensajeDAO, EnvioCorreo envioCorreo) : Controller {
         private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
 
         public async Task<IActionResult> Index() {

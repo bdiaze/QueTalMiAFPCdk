@@ -37,10 +37,10 @@ namespace QueTalMiAFPCdk.Controllers {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             // Se comienza con consulta de última fecha, mediante Task para poder avanzar en las otras tareas...
-            Task<DateTime> taskFechaHasta = cuotaUfComisionDAO.UltimaFechaAlguna();
-            Task<DateTime> taskFechaTodas = cuotaUfComisionDAO.UltimaFechaTodas();
+            Task<DateOnly> taskFechaHasta = cuotaUfComisionDAO.UltimaFechaAlguna();
+            Task<DateOnly> taskFechaTodas = cuotaUfComisionDAO.UltimaFechaTodas();
 
-            DateTime fechaActual = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+			DateOnly fechaActual = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")));
 
             // Se obtienen los valores cuota de todas las AFP y fondo seleccionado, para el rango de fechas a mostrar en la tabla, mediante Task...
             Task <List<CuotaUf>> taskValoresCuota = cuotaUfComisionDAO.ObtenerCuotas(
@@ -65,8 +65,8 @@ namespace QueTalMiAFPCdk.Controllers {
             fondoSeleccionado ??= "A";
             salida.Resumen.FiltroResumenFondoSeleccionado = fondoSeleccionado;
 
-            // Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
-            DateTime fechasTodas = await taskFechaTodas;
+			// Se consultan los valores cuotas de las fechas a utilizar para los premios mensuales de rentabilidad...
+			DateOnly fechasTodas = await taskFechaTodas;
             long elapsedTimeFechaTodas = stopwatch.ElapsedMilliseconds;
 
             modeloEntrada.Premios.Anno ??= fechasTodas.Year;
@@ -97,10 +97,10 @@ namespace QueTalMiAFPCdk.Controllers {
             salida.Premios.ListaAnnos = new SelectList(listaAnnos.Select(l => new SelectListItem { Value = l.ToString(), Text = l.ToString() }).ToList(), nameof(SelectListItem.Value), nameof(SelectListItem.Text));
 
             // Se arma listado de fechas que se necesitan para calcular las rentabilidades mensuales...
-            List <DateTime> listaFechasPremios = [];
-            DateTime fechaHastaRentMensual = fechasTodas;
+            List <DateOnly> listaFechasPremios = [];
+			DateOnly fechaHastaRentMensual = fechasTodas;
             listaFechasPremios.Add(fechaHastaRentMensual);
-            DateTime fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+			DateOnly fechaDesdeRentMensual = new DateOnly(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
             listaFechasPremios.Add(fechaDesdeRentMensual);
             salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
                 FechaDesde = fechaDesdeRentMensual,
@@ -116,13 +116,13 @@ namespace QueTalMiAFPCdk.Controllers {
                 }
             // En su defecto, se carga el año completo desde diciembre hasta enero...
             } else {
-                fechaHastaRentMensual = new DateTime(salida.Premios.Anno.GetValueOrDefault(), 12, 31);
+                fechaHastaRentMensual = new DateOnly(salida.Premios.Anno.GetValueOrDefault(), 12, 31);
                 listaFechasPremios.Add(fechaHastaRentMensual);
             }
 
             // Se añaden los meses anteriores asociados al año deseado...
             while (fechaHastaRentMensual.Year >= salida.Premios.Anno) {
-                fechaDesdeRentMensual = new DateTime(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
+                fechaDesdeRentMensual = new DateOnly(fechaHastaRentMensual.Year, fechaHastaRentMensual.Month, 1).AddDays(-1);
                 listaFechasPremios.Add(fechaDesdeRentMensual);
 
                 salida.Premios.Ganadores.Add(fechaHastaRentMensual.Year * 100 + fechaHastaRentMensual.Month, new GanadorMes {
@@ -136,20 +136,20 @@ namespace QueTalMiAFPCdk.Controllers {
             Task<List<SalObtenerUltimaCuota>> taskCuotasPremio = cuotaUfComisionDAO.ObtenerUltimaCuota(
                 "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
                 "A,B,C,D,E",
-                String.Join(",", listaFechasPremios.Select(f => f.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))),
+                String.Join(",", listaFechasPremios.Select(f => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))),
                 1
             );
 
-            // Se espera a obtener por última fecha para usar resultado como parámetro de consulta de valores cuota...
-            DateTime? fechaHasta = await taskFechaHasta;
+			// Se espera a obtener por última fecha para usar resultado como parámetro de consulta de valores cuota...
+			DateOnly? fechaHasta = await taskFechaHasta;
             long elapsedTimeFechaHasta = stopwatch.ElapsedMilliseconds;
 
             if (fechaHasta == null) {
-                fechaHasta = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+                fechaHasta = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")));
             }
 
             // Se crea listado de fechas que será usado en la cabecera de la tabla de valores cuota...
-            List<DateTime> fechas = [fechaHasta.GetValueOrDefault()];
+            List<DateOnly> fechas = [fechaHasta.GetValueOrDefault()];
             for (int i = -1; i >= -1 * (CANTIDAD_DIAS_RESUMEN - 1); i--) {
                 fechas.Add(fechaHasta.GetValueOrDefault().AddDays(i));
             }
@@ -163,27 +163,27 @@ namespace QueTalMiAFPCdk.Controllers {
             // Se arman las listas de valores cuotas para cada AFP, según el listado de fechas...
             foreach (UltimaSemanaAfp ultimaSemanaAfp in salida.Resumen.UltimaSemana) {
                 foreach (string fondo in "A,B,C,D,E".Split(",")) {
-                    foreach (DateTime fecha in salida.Resumen.FechasUltimaSemana) {
-                        CuotaUf? cuotaUf = valoresCuota.FirstOrDefault(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) == fecha);
+                    foreach (DateOnly fecha in salida.Resumen.FechasUltimaSemana) {
+                        CuotaUf? cuotaUf = valoresCuota.FirstOrDefault(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && c.Fecha == fecha);
 
                         // Si no tenemos valor cuota para la fecha indicada, se marca como null o con la valor cuota anterior.
                         if (cuotaUf == null) {
                             if (ultimaSemanaAfp.ValoresCuota[fondo].Count > 0 && ultimaSemanaAfp.ValoresCuota[fondo].Last() != null) {
-                                cuotaUf = valoresCuota.Where(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) < fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                                cuotaUf = valoresCuota.Where(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && c.Fecha < fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
                                 ultimaSemanaAfp.ValoresCuota[fondo].Add(new CuotaRentabilidadDia {
                                     ValorCuota = cuotaUf!.Valor,
-                                    Fecha = DateTime.ParseExact(cuotaUf.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                    Fecha = cuotaUf.Fecha,
                                     RentabilidadDia = 0 // Rentabilidad 0 ya que se está usando el valor cuota heredado de un día anterior (sin variación)...
                                 });
                             } else {
                                 ultimaSemanaAfp.ValoresCuota[fondo].Add(null);
                             }
                         } else {
-                            CuotaUf? cuotaUfAnterior = valoresCuota.Where(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && DateTime.ParseExact(c.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture) < fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
+                            CuotaUf? cuotaUfAnterior = valoresCuota.Where(c => c.Afp.Equals(ultimaSemanaAfp.Nombre, StringComparison.InvariantCultureIgnoreCase) && c.Fondo == fondo && c.Fecha < fecha).OrderByDescending(c => c.Fecha).FirstOrDefault();
 
                             ultimaSemanaAfp.ValoresCuota[fondo].Add(new CuotaRentabilidadDia {
                                 ValorCuota = cuotaUf.Valor,
-                                Fecha = DateTime.ParseExact(cuotaUf.Fecha, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                Fecha = cuotaUf.Fecha,
                                 RentabilidadDia = cuotaUfAnterior != null ? 100 * (cuotaUf.Valor - cuotaUfAnterior!.Valor) / cuotaUfAnterior.Valor : 0
                             });
                         }
@@ -193,9 +193,9 @@ namespace QueTalMiAFPCdk.Controllers {
 
             salida.Premios.FechasTodas = fechasTodas;
 
-            // Se calcula porcentaje que se lleva del mes para el premio de la rentabilidad del mes...
-            DateTime primerDiaMes = new(fechasTodas.Year, fechasTodas.Month, 1);
-            DateTime ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
+			// Se calcula porcentaje que se lleva del mes para el premio de la rentabilidad del mes...
+			DateOnly primerDiaMes = new(fechasTodas.Year, fechasTodas.Month, 1);
+			DateOnly ultimoDiaMes = primerDiaMes.AddMonths(1).AddDays(-1);
             decimal porcMesPremio = 100 * fechasTodas.Day / ultimoDiaMes.Day;
             salida.Premios.PorcMesPremio = porcMesPremio;
             salida.Premios.PrimerDiaMesPremio = primerDiaMes;

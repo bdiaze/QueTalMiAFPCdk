@@ -93,10 +93,10 @@ namespace QueTalMiAFPCdk.Controllers {
 
                 return ValidationProblem();
             }
-            DateTime dtFechaInicio;
-            DateTime dtFechaFinal;
+			DateOnly dtFechaInicio;
+			DateOnly dtFechaFinal;
             try {
-                dtFechaInicio = new DateTime(
+                dtFechaInicio = new DateOnly(
                     int.Parse(diaMesAnnoInicio[2]),
                     int.Parse(diaMesAnnoInicio[1]),
                     int.Parse(diaMesAnnoInicio[0]));
@@ -116,7 +116,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 return ValidationProblem();
             }
             try {
-                dtFechaFinal = new DateTime(
+                dtFechaFinal = new DateOnly(
                     int.Parse(diaMesAnnoFinal[2]),
                     int.Parse(diaMesAnnoFinal[1]),
                     int.Parse(diaMesAnnoFinal[0]));
@@ -171,15 +171,15 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se valida que si el usuario no ha iniciado sesión (y no incluye una API key válida)...
             if ((User.Identity == null || !User.Identity.IsAuthenticated) && !apiKeyValida) {
-                // Solo consulte por el año actual +/ -7 días...
-                DateTime? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
+				// Solo consulte por el año actual +/ -7 días...
+				DateOnly? ultimaFechaAlgunValorCuota = await cuotaUfComisionDAO.UltimaFechaAlguna();
                 if (ultimaFechaAlgunValorCuota == null) {
-                    ultimaFechaAlgunValorCuota = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time"));
+                    ultimaFechaAlgunValorCuota = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")));
                 }
 
-                DateOnly fechaMinima = DateOnly.FromDateTime(ultimaFechaAlgunValorCuota.Value.AddYears(-1).AddDays(-7));
-                DateOnly fechaMaxima = DateOnly.FromDateTime(ultimaFechaAlgunValorCuota.Value.AddDays(7));
-                if (fechaMinima != DateOnly.FromDateTime(dtFechaInicio) || fechaMaxima != DateOnly.FromDateTime(dtFechaFinal)) {
+                DateOnly fechaMinima = ultimaFechaAlgunValorCuota.Value.AddYears(-1).AddDays(-7);
+                DateOnly fechaMaxima = ultimaFechaAlgunValorCuota.Value.AddDays(7);
+                if (fechaMinima != dtFechaInicio || fechaMaxima != dtFechaFinal) {
 
                     logger.LogInformation(
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - [Con API Key: {ApiKeyValida}] - " +
@@ -311,7 +311,7 @@ namespace QueTalMiAFPCdk.Controllers {
             if (string.IsNullOrWhiteSpace(entrada.ListaFechas)) {
                 ModelState.AddModelError(
                     nameof(entrada.ListaFechas),
-                    "El parámetro listaFechas debe incluir por lo menos una fecha. Ejemplo: 31/12/2020.");
+                    "El parámetro listaFechas debe incluir por lo menos una fecha. Ejemplo: 2020-12-31.");
 
                 logger.LogInformation(
                     "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
@@ -330,9 +330,9 @@ namespace QueTalMiAFPCdk.Controllers {
             bool? incluyeMinimo = null;
             bool? incluyeMaximo = null;
             if (User.Identity == null || !User.Identity.IsAuthenticated) {
-                DateTime ultimaFechaTodosValoresCuota = await cuotaUfComisionDAO.UltimaFechaTodas();
-                fechaMinima = DateOnly.FromDateTime(ultimaFechaTodosValoresCuota.AddYears(-1));
-                fechaMaxima = DateOnly.FromDateTime(ultimaFechaTodosValoresCuota);
+				DateOnly ultimaFechaTodosValoresCuota = await cuotaUfComisionDAO.UltimaFechaTodas();
+                fechaMinima = ultimaFechaTodosValoresCuota.AddYears(-1);
+                fechaMaxima = ultimaFechaTodosValoresCuota;
                 cantFechasIntermedias = 0;
                 incluyeMinimo = false;
                 incluyeMaximo = false;
@@ -356,11 +356,11 @@ namespace QueTalMiAFPCdk.Controllers {
 
             string[] fechas = entrada.ListaFechas.Replace(" ", "").Split(",");
             foreach (string fecha in fechas) {
-                string[] diaMesAnno = fecha.Split("/");
-                if (diaMesAnno.Length != 3) {
+                string[] annoMesDia = fecha.Split("-");
+                if (annoMesDia.Length != 3) {
                     ModelState.AddModelError(
                         nameof(entrada.ListaFechas),
-                        "Las fechas en el parámetro listaFechas deben tener formato dd/mm/yyyy. Ejemplo: 31/12/2020.");
+                        "Las fechas en el parámetro listaFechas deben tener formato yyyy-mm-dd. Ejemplo: 2020-12-31.");
 
                     logger.LogInformation(
                         "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
@@ -373,16 +373,16 @@ namespace QueTalMiAFPCdk.Controllers {
                     return ValidationProblem();
                 }
 
-                DateTime dtFecha;
+				DateOnly dtFecha;
                 try {
-                    dtFecha = new DateTime(
-                        int.Parse(diaMesAnno[2]),
-                        int.Parse(diaMesAnno[1]),
-                        int.Parse(diaMesAnno[0]));
+                    dtFecha = new DateOnly(
+                        int.Parse(annoMesDia[0]),
+                        int.Parse(annoMesDia[1]),
+                        int.Parse(annoMesDia[2]));
 
                     // Se valida que si el usuario no ha iniciado sesión se incluya la consulta dentro del rango de mínimos y máximos...
                     if (fechaMinima != null && fechaMaxima != null && cantFechasIntermedias != null) {
-                        DateOnly auxDateOnly = DateOnly.FromDateTime(dtFecha);
+                        DateOnly auxDateOnly = dtFecha;
                         
                         if (auxDateOnly == fechaMinima) {
                             incluyeMinimo = true;
@@ -512,12 +512,12 @@ namespace QueTalMiAFPCdk.Controllers {
             string[] diaMesAnnoInicio = fechaInicial.Split("/");
             string[] diaMesAnnoFinal = fechaFinal.Split("/");
 
-            DateTime dtFechaInicio = new(
+			DateOnly dtFechaInicio = new(
                     int.Parse(diaMesAnnoInicio[2]),
                     int.Parse(diaMesAnnoInicio[1]),
                     int.Parse(diaMesAnnoInicio[0])
             );
-            DateTime dtFechaFinal = new(
+			DateOnly dtFechaFinal = new(
                     int.Parse(diaMesAnnoFinal[2]),
                     int.Parse(diaMesAnnoFinal[1]),
                     int.Parse(diaMesAnnoFinal[0]
@@ -546,7 +546,7 @@ namespace QueTalMiAFPCdk.Controllers {
             foreach (CuotaUf cuota in retorno) {
                 sb.AppendLine(
                     $"{cuota.Afp};" +
-                    $"{cuota.Fecha};" +
+                    $"{cuota.Fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)};" +
                     $"{cuota.Fondo};" +
                     $"{cuota.Valor.ToString(CultureInfo.InvariantCulture).Replace(".", ",")};" +
                     $"{cuota.ValorUf?.ToString(CultureInfo.InvariantCulture).Replace(".", ",")}");

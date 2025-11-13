@@ -1,4 +1,6 @@
 ﻿@using System.Globalization
+@using QueTalMiAFPCdk.Models.ViewModels
+@model ComparandoFondosViewModel;
 @{
     ViewData["Title"] = "Rentabilidad por AFP";
     ViewData["Description"] = "Aquí podrás conocer la evolución histórica de la rentabilidad y los valores cuota de los fondos de pensiones para cada una de las AFP.";
@@ -19,7 +21,97 @@
     <script src="~/js/EstadisticasCompFondos.js" asp-append-version="true" defer></script>
 }
 
+@{
+    CultureInfo cultureInfo = new CultureInfo("es-CL");
+}
+
 <h1>@ViewData["Title"]</h1>
+
+<!--
+<ul class="nav nav-tabs" id="TabRentRangoAfp" role="tablist">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="TabRentRango@(afp)" data-toggle="tab" data-target="#ContRentRango@(afp)" type="button" role="tab" aria-controls="RentRango@(afp)" aria-selected="false">@(afp)</button>
+        </li>
+    }
+</ul>
+<div class="tab-content px-3 pt-3 pb-1 mb-3" id="TabContentRentRangoAfp">
+    @foreach (string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+    {
+        <div class="tab-pane fade" id="ContRentRango@(afp)" role="tabpanel" aria-labelledby="TabRentRango@(afp)">
+            <div>
+                <table class="table table-bordered text-center grillaCabecera">
+                    <tr><td></td></tr>
+                    @foreach(string fondo in "A,B,C,D,E".Split(",")) 
+                    {
+                        <tr>
+                            <th class="align-middle p-0 text-center text-muted">Fondo @fondo</th>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div>
+                <table class="table table-bordered text-center m-0 mb-1 grillaValores">
+                    <tr>
+                        @foreach(RentabilidadPorRango rentPorRango in Model.Rentabilidades)
+                        {
+                            <td class="align-middle text-muted py-2 px-0">
+                                <p class="mx-2 mb-0 text-center text-muted font-weight-bold">@(rentPorRango.TipoRango)</p>
+                                @if (rentPorRango.FechaHasta.Year == Model.UltimaFechaAlgunValorCuota.Year && rentPorRango.FechaHasta.Month == Model.UltimaFechaAlgunValorCuota.Month)
+                                {
+                                    // Si la fecha hasta es del mes actual, se usa formato "Del 01 al 10 de noviembre"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Del @(rentPorRango.FechaDesde.AddDays(1).ToString("dd", cultureInfo)) al
+                                        @(rentPorRango.FechaHasta.ToString("dd", cultureInfo))<br/> 
+                                        de @(rentPorRango.FechaHasta.ToString("MMMM", cultureInfo)) 
+                                    </p>
+                                
+                                } else if (rentPorRango.FechaDesde.AddDays(1).Year == rentPorRango.FechaHasta.Year && rentPorRango.FechaDesde.AddDays(1).Month == rentPorRango.FechaHasta.Month)
+                                {
+                                    // Si la fecha desde y hasta son del mismo mes, se usa el formato "Octubre 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        @(rentPorRango.FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpperInvariant() +
+                                          rentPorRango.FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
+                                    </p>
+                                } else if (rentPorRango.FechaDesde.AddDays(1).Year == rentPorRango.FechaHasta.Year)
+                                {
+                                    // Si la fecha desde y hasta son del mismo año, se usa el formato "De ago. a oct. 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Desde @(rentPorRango.FechaDesde.AddDays(1).ToString("MMM", cultureInfo))<br/>
+                                        a @(rentPorRango.FechaHasta.ToString("MMM yyyy", cultureInfo))
+                                    </p>
+                                } else
+                                {
+                                    // Si la fecha desde y hasta son de distinto año, se usa el formato "De oct. 2024 a oct. 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Desde @(rentPorRango.FechaDesde.AddDays(1).ToString("MMM yyyy", cultureInfo))<br/>
+                                        a @(rentPorRango.FechaHasta.ToString("MMM yyyy", cultureInfo))
+                                    </p>
+                                }
+                            </td>
+                        }
+                    </tr>
+                    @foreach(string fondo in "A,B,C,D,E".Split(","))
+                    {
+                        <tr>
+                            @foreach(RentabilidadPorRango rentPorRango in Model.Rentabilidades)
+                            {
+                                <td class="m-0 text-muted align-middle p-0">
+                                    <p class="m-0 text-center @(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] > 0 ? "text-success": (rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] < 0 ? "text-danger" : ""))">
+                                        <b>@(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] > 0 ? "⇧" : (rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] < 0 ? "⇩" : ""))</b>
+                                        @(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo]?.ToString("N2", cultureInfo))@(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] != null ? "%" : "")
+                                    </p>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    }
+</div>
+-->
 
 <p class="mt-3 text-muted">
     Aquí podrás conocer la evolución histórica de la rentabilidad y los valores cuota
@@ -34,14 +126,14 @@
             </span>
         </div>
 
-        <input value="@ViewBag.UltimaFechaAlgunValorCuota.AddYears(-1).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaInicial" id="fechaInicial" />
+        <input value="@Model.UltimaFechaAlgunValorCuota.AddYears(-1).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaInicial" id="fechaInicial" />
         <div class="input-group-append input-group-prepend">
             <span class="input-group-text">
                 <label style="margin-bottom:0px;">al</label>
             </span>
         </div>
 
-        <input value="@ViewBag.UltimaFechaAlgunValorCuota.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
+        <input value="@Model.UltimaFechaAlgunValorCuota.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
         <div class="input-group-append">
             <span class="input-group-text" style="border-top-right-radius: .25rem; border-bottom-right-radius: .25rem;">
                 <i class="fa-regular fa-calendar"></i>

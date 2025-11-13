@@ -2,19 +2,19 @@
     width: 20%;
 }
 
-#TabRRAfp li:first-child, #TabRTAfp li:first-child, #TabVCAfp li:first-child {
+#TabRRAfp li:first-child, #TabRTAfp li:first-child, #TabVCAfp li:first-child, #TabRentRangoAfp li:first-child {
     width: 16%;
 }
 
-#TabRRAfp li:not(:first-child), #TabRTAfp li:not(:first-child), #TabVCAfp li:not(:first-child) {
+#TabRRAfp li:not(:first-child), #TabRTAfp li:not(:first-child), #TabVCAfp li:not(:first-child), #TabRentRangoAfp li:not(:first-child) {
     width: 14%;
 }
 
-#TabRRFondos li button, #TabRTFondos li button, #TabFondos li button, #TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button {
+#TabRRFondos li button, #TabRTFondos li button, #TabFondos li button, #TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRentRangoAfp li button {
     width: 100%;
 }
 
-#TabRRFondos li button.active, #TabRTFondos li button.active, #TabFondos li button.active, #TabRRAfp li button.active, #TabRTAfp li button.active, #TabVCAfp li button.active {
+#TabRRFondos li button.active, #TabRTFondos li button.active, #TabFondos li button.active, #TabRRAfp li button.active, #TabRTAfp li button.active, #TabVCAfp li button.active, #TabRentRangoAfp li button.active {
     text-decoration: underline;
 }
 
@@ -61,47 +61,47 @@
     color: #fff;
 }
 
-#TabRRCapital.active, #TabRTCapital.active, #TabVCCapital.active {
+#TabRRCapital.active, #TabRTCapital.active, #TabVCCapital.active, #TabRentRangoCapital.active {
     background-color: #E3E829;
     border-color: #E3E829;
 }
 
-#TabRRCuprum.active, #TabRTCuprum.active, #TabVCCuprum.active {
+#TabRRCuprum.active, #TabRTCuprum.active, #TabVCCuprum.active, #TabRentRangoCuprum.active {
     background-color: #f2af32;
     border-color: #f2af32;
 }
 
-#TabRRHabitat.active, #TabRTHabitat.active, #TabVCHabitat.active {
+#TabRRHabitat.active, #TabRTHabitat.active, #TabVCHabitat.active, #TabRentRangoHabitat.active {
     background-color: #2E8ECD;
     border-color: #2E8ECD;
     color: #fff;
 }
 
-#TabRRModelo.active, #TabRTModelo.active, #TabVCModelo.active {
+#TabRRModelo.active, #TabRTModelo.active, #TabVCModelo.active, #TabRentRangoModelo.active {
     background-color: #72b500;
     border-color: #72b500;
     color: #fff;
 }
 
-#TabRRPlanVital.active, #TabRTPlanVital.active, #TabVCPlanVital.active {
+#TabRRPlanVital.active, #TabRTPlanVital.active, #TabVCPlanVital.active, #TabRentRangoPlanVital.active {
     background-color: #c23b33;
     border-color: #c23b33;
     color: #fff;
 }
 
-#TabRRProVida.active, #TabRTProVida.active, #TabVCProVida.active {
+#TabRRProVida.active, #TabRTProVida.active, #TabVCProVida.active, #TabRentRangoProVida.active {
     background-color: #0061a0;
     border-color: #0061a0;
     color: #fff;
 }
 
-#TabRRUno.active, #TabRTUno.active, #TabVCUno.active {
+#TabRRUno.active, #TabRTUno.active, #TabVCUno.active, #TabRentRangoUno.active {
     background-color: #e3007d;
     border-color: #e3007d;
     color: #fff;
 }
 
-#TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRRFondos li button, #TabRTFondos li button, #TabFondos li button {
+#TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRentRangoAfp li button, #TabRRFondos li button, #TabRTFondos li button, #TabFondos li button {
     font-size: 0.8rem;
     padding-left: 0;
     padding-right: 0;
@@ -110,4 +110,83 @@
 .chartFondo {
     width: 100%;
     height: 40rem;
+}
+
+div:has(> table.grillaCabecera) {
+    float: left;
+}
+
+.grillaCabecera {
+    table-layout: fixed;
+    border: none;
+}
+
+.grillaCabecera, .grillaCabecera td {
+    width: 6rem;
+}
+
+.grillaCabecera th {
+    font-weight: normal;
+}
+
+.grillaCabecera tr:first-child {
+    height: 6.1rem;
+    position: relative;
+    top: 1px;
+}
+
+.grillaCabecera tr:not(:first-child) {
+    height: 2.5rem;
+}
+
+.grillaCabecera td {
+    border-top-color: transparent;
+    border-left-color: transparent;
+}
+
+.grillaCabecera img {
+    max-width: 120px;
+}
+
+div:has(> table.grillaValores) {
+    overflow: auto;
+}
+
+.grillaValores {
+    table-layout: fixed;
+    width: 100%;
+    border: none;
+}
+
+.grillaValores tr:first-child {
+    height: 6.1rem;
+}
+
+.grillaValores tr:first-child td {
+    width: 6.5rem;
+    border-left: none;
+}
+
+.grillaValores tr:first-child td p:first-child {
+    font-size: .9rem;
+}
+
+.grillaValores tr:first-child td p:last-child {
+    font-size: 0.70rem;
+}
+
+.grillaValores tr:not(:first-child) {
+    height: 2.5rem;
+}
+
+.grillaValores tr:not(:first-child) td {
+    border-left: none;
+}
+
+.grillaValores tr:not(:first-child) td p {
+    font-size: 0.85rem;
+}
+
+.grillaValores tr:not(:first-child) td p b {
+    font-size: 1.0rem;
 }

@@ -14,7 +14,7 @@ namespace QueTalMiAFPCdk.Models.Entities {
 
 		public string? Afp { get; set; }
 
-		public DateTime Fecha { get; set; }
+		public DateOnly Fecha { get; set; }
 
 		public decimal Valor { get; set; }
 

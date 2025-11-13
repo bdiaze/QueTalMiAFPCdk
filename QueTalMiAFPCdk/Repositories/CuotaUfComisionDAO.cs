@@ -3,13 +3,15 @@ using Newtonsoft.Json;
 using QueTalMiAFPCdk.Models.Entities;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Services;
+using System;
+using System.Configuration;
 using System.Globalization;
 using System.Net;
 using System.Text;
 
 namespace QueTalMiAFPCdk.Repositories {
-	public class CuotaUfComisionDAO(ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) {
-		private readonly string _baseUrl = parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result;
+	public class CuotaUfComisionDAO(IHostEnvironment environment, IConfiguration configuration, ParameterStoreHelper parameterStore, ApiKeyHelper apiKey, S3BucketHelper s3BucketHelper) {
+		private readonly string _baseUrl = environment.IsProduction() ? parameterStore.ObtenerParametro("/QueTalMiAFP/Api/Url").Result : configuration.GetValue<string>("ApiUrl")!;
 		private readonly string _xApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/KeyId").Result).Result;
 		private readonly int _milisegForzarTimeout = int.Parse(parameterStore.ObtenerParametro("/QueTalMiAFP/Api/MilisegForzarTimeout").Result);
 
@@ -17,7 +19,7 @@ namespace QueTalMiAFPCdk.Repositories {
 		private readonly string _hermesBaseUrl = parameterStore.ObtenerParametro("/Hermes/Api/Url").Result;
 		private readonly string _hermesApiKey = apiKey.ObtenerApiKey(parameterStore.ObtenerParametro("/Hermes/Api/KeyId").Result).Result;
 
-		public async Task<DateTime> UltimaFechaTodas() {
+		public async Task<DateOnly> UltimaFechaTodas() {
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
@@ -25,10 +27,10 @@ namespace QueTalMiAFPCdk.Repositories {
 			string responseString = await response.Content.ReadAsStringAsync();
 			responseString = responseString.Replace("\"", "");
 
-			return DateTime.ParseExact(responseString, "s", CultureInfo.InvariantCulture);
+			return DateOnly.Parse(responseString, CultureInfo.InvariantCulture);
 		}
 
-		public async Task<DateTime> UltimaFechaAlguna() {
+		public async Task<DateOnly> UltimaFechaAlguna() {
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
@@ -36,10 +38,10 @@ namespace QueTalMiAFPCdk.Repositories {
 			string responseString = await response.Content.ReadAsStringAsync();
 			responseString = responseString.Replace("\"", "");
 
-			return DateTime.ParseExact(responseString, "s", CultureInfo.InvariantCulture);
+			return DateOnly.Parse(responseString, CultureInfo.InvariantCulture);
 		}
 
-		public async Task<DateTime?> UltimaFechaAlgunaConTimeout() {
+		public async Task<DateOnly?> UltimaFechaAlgunaConTimeout() {
 			using HttpClient client = new();
 			client.DefaultRequestHeaders.Add("x-api-key", _xApiKey);
 
@@ -49,7 +51,7 @@ namespace QueTalMiAFPCdk.Repositories {
 				HttpResponseMessage response = await client.GetAsync(_baseUrl + "CuotaUfComision/UltimaFechaAlguna", cts.Token);
 				string responseString = await response.Content.ReadAsStringAsync();
 				responseString = responseString.Replace("\"", "");
-				return DateTime.ParseExact(responseString, "s", CultureInfo.InvariantCulture);
+				return DateOnly.Parse(responseString, CultureInfo.InvariantCulture);
 			} catch (TaskCanceledException) {
 				if (!cts.Token.IsCancellationRequested) {
 					throw;
@@ -60,12 +62,12 @@ namespace QueTalMiAFPCdk.Repositories {
 		}
 
 
-		public async Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateTime fechaInicial, DateTime fechaFinal) {
+		public async Task<List<CuotaUf>> ObtenerCuotas(string listaAFPs, string listaFondos, DateOnly fechaInicial, DateOnly fechaFinal) {
 			Dictionary<string, string?> parameters = new() {
 				{ "listaAFPs", listaAFPs },
 				{ "listaFondos", listaFondos },
-				{ "fechaInicial", fechaInicial.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) },
-				{ "fechaFinal", fechaFinal.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) }
+				{ "fechaInicial", fechaInicial.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) },
+				{ "fechaFinal", fechaFinal.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) }
 			};
 
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));

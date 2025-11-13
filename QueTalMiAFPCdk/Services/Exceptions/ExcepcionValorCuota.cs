@@ -7,8 +7,8 @@ using System.Text.Json;
 namespace QueTalMiAFPCdk.Services.Exceptions {
 	class ExcepcionValorCuota(Exception ex) : Exception(null, ex) {
         public string? Afp { get; set; }
-		public DateTime FechaInicio { get; set; }
-		public DateTime FechaFinal { get; set; }
+		public DateOnly FechaInicio { get; set; }
+		public DateOnly FechaFinal { get; set; }
 		public string? Fondo { get; set; }
 
 		public override string ToString() {

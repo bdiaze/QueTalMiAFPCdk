@@ -244,14 +244,14 @@ function obtenerGananPesos(tipoFondo, sueldoImponible, diaCotizacion, fechaInici
 
     let montoPesosCotizMensual = sueldoImponible * 0.1;
 
-    let lstFechas = dtFechaInicio.getDate() + "/" + (dtFechaInicio.getMonth() + 1) + "/" + dtFechaInicio.getFullYear() + ",";
+    let lstFechas = dtFechaInicio.getFullYear() + "-" + (dtFechaInicio.getMonth() + 1) + "-" + dtFechaInicio.getDate() + ",";
     let dtFechaAux = new Date(dtFechaInicio.getFullYear(), dtFechaInicio.getMonth(), 1);
     let dtFechaAuxFin = new Date(dtFechaFinal.getFullYear(), dtFechaFinal.getMonth(), 1);
     while (dtFechaAux <= dtFechaAuxFin) {
         let dtFecha = new Date(dtFechaAux.getFullYear(), dtFechaAux.getMonth(), dtFechaAux.getDate());
         dtFecha.setDate(dtFecha.getDate() + diaCotizacion - 1);
         if (dtFechaInicio.getTime() < dtFecha.getTime() && dtFecha.getTime() < dtFechaFinal.getTime()) {
-            lstFechas += dtFecha.getDate() + "/" + (dtFecha.getMonth() + 1) + "/" + dtFecha.getFullYear() + ",";
+            lstFechas += dtFecha.getFullYear() + "-" + (dtFecha.getMonth() + 1) + "-" + dtFecha.getDate() + ",";
         }
 
         if (dtFechaInicio.getTime() == dtFecha.getTime()) {
@@ -266,7 +266,7 @@ function obtenerGananPesos(tipoFondo, sueldoImponible, diaCotizacion, fechaInici
     }
 
     if (dtFechaInicio.getTime() != dtFechaFinal.getTime()) {
-        lstFechas += dtFechaFinal.getDate() + "/" + (dtFechaFinal.getMonth() + 1) + "/" + dtFechaFinal.getFullYear();
+        lstFechas += dtFechaFinal.getFullYear() + "-" + (dtFechaFinal.getMonth() + 1) + "-" + dtFechaFinal.getDate();
     }
 
     if (lstFechas.charAt(lstFechas.length - 1) == ",") {
@@ -408,7 +408,7 @@ function obtenerCAV(tipoFondo, sueldoImponible, diaCotizacion, fechaInicio, fech
     let esFechaInicialPagoComision = false;
     let esFechaFinalPagoComision = false;
 
-    let lstFechas = dtFechaInicio.getDate() + "/" + (dtFechaInicio.getMonth() + 1) + "/" + dtFechaInicio.getFullYear() + ",";
+    let lstFechas = dtFechaInicio.getFullYear() + "-" + (dtFechaInicio.getMonth() + 1) + "-" + dtFechaInicio.getDate() + ",";
     let dtFechaAux = new Date(dtFechaInicio.getFullYear(), dtFechaInicio.getMonth(), 1);
     let dtFechaAuxFin = new Date(dtFechaFinal.getFullYear(), dtFechaFinal.getMonth(), 1);
     while (dtFechaAux <= dtFechaAuxFin) {
@@ -416,7 +416,7 @@ function obtenerCAV(tipoFondo, sueldoImponible, diaCotizacion, fechaInicio, fech
         dtFecha.setMonth(dtFecha.getMonth() + 1);
         dtFecha.setDate(dtFecha.getDate() - 1);
         if (dtFechaInicio.getTime() < dtFecha.getTime() && dtFecha.getTime() < dtFechaFinal.getTime()) {
-            lstFechas += dtFecha.getDate() + "/" + (dtFecha.getMonth() + 1) + "/" + dtFecha.getFullYear() + ",";
+            lstFechas += dtFecha.getFullYear() + "-" + (dtFecha.getMonth() + 1) + "-" + dtFecha.getDate() + ",";
         }
 
         if (dtFechaInicio.getTime() == dtFecha.getTime()) {
@@ -431,7 +431,7 @@ function obtenerCAV(tipoFondo, sueldoImponible, diaCotizacion, fechaInicio, fech
     }
 
     if (dtFechaInicio.getTime() != dtFechaFinal.getTime()) {
-        lstFechas += dtFechaFinal.getDate() + "/" + (dtFechaFinal.getMonth() + 1) + "/" + dtFechaFinal.getFullYear();
+        lstFechas += dtFechaFinal.getFullYear() + "-" + (dtFechaFinal.getMonth() + 1) + "-" + dtFechaFinal.getDate();
     }
 
     if (lstFechas.charAt(lstFechas.length - 1) == ",") {
