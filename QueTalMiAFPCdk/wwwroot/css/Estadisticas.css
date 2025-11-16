@@ -1,20 +1,8 @@
-﻿#TabRRFondos li, #TabRTFondos li, #TabFondos li {
-    width: 20%;
-}
-
-#TabRRAfp li:first-child, #TabRTAfp li:first-child, #TabVCAfp li:first-child, #TabRentRangoAfp li:first-child {
-    width: 16%;
-}
-
-#TabRRAfp li:not(:first-child), #TabRTAfp li:not(:first-child), #TabVCAfp li:not(:first-child), #TabRentRangoAfp li:not(:first-child) {
-    width: 14%;
-}
-
-#TabRRFondos li button, #TabRTFondos li button, #TabFondos li button, #TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRentRangoAfp li button {
+﻿#TabRRFondos li button, #TabRTFondos li button, #TabFondos li button, #TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRentRangoAfp li button, #TabRentRealRangoAfp li button {
     width: 100%;
 }
 
-#TabRRFondos li button.active, #TabRTFondos li button.active, #TabFondos li button.active, #TabRRAfp li button.active, #TabRTAfp li button.active, #TabVCAfp li button.active, #TabRentRangoAfp li button.active {
+#TabRRFondos li button.active, #TabRTFondos li button.active, #TabFondos li button.active, #TabRRAfp li button.active, #TabRTAfp li button.active, #TabVCAfp li button.active, #TabRentRangoAfp li button.active, #TabRentRealRangoAfp li button.active {
     text-decoration: underline;
 }
 
@@ -61,50 +49,53 @@
     color: #fff;
 }
 
-#TabRRCapital.active, #TabRTCapital.active, #TabVCCapital.active, #TabRentRangoCapital.active {
+#TabRRCapital.active, #TabRTCapital.active, #TabVCCapital.active, #TabRentRangoCapital.active, #TabRentRealRangoCapital.active {
     background-color: #E3E829;
     border-color: #E3E829;
+    color: #212529;
 }
 
-#TabRRCuprum.active, #TabRTCuprum.active, #TabVCCuprum.active, #TabRentRangoCuprum.active {
+#TabRRCuprum.active, #TabRTCuprum.active, #TabVCCuprum.active, #TabRentRangoCuprum.active, #TabRentRealRangoCuprum.active {
     background-color: #f2af32;
     border-color: #f2af32;
+    color: #212529;
 }
 
-#TabRRHabitat.active, #TabRTHabitat.active, #TabVCHabitat.active, #TabRentRangoHabitat.active {
+#TabRRHabitat.active, #TabRTHabitat.active, #TabVCHabitat.active, #TabRentRangoHabitat.active, #TabRentRealRangoHabitat.active {
     background-color: #2E8ECD;
     border-color: #2E8ECD;
     color: #fff;
 }
 
-#TabRRModelo.active, #TabRTModelo.active, #TabVCModelo.active, #TabRentRangoModelo.active {
+#TabRRModelo.active, #TabRTModelo.active, #TabVCModelo.active, #TabRentRangoModelo.active, #TabRentRealRangoModelo.active {
     background-color: #72b500;
     border-color: #72b500;
     color: #fff;
 }
 
-#TabRRPlanVital.active, #TabRTPlanVital.active, #TabVCPlanVital.active, #TabRentRangoPlanVital.active {
+#TabRRPlanVital.active, #TabRTPlanVital.active, #TabVCPlanVital.active, #TabRentRangoPlanVital.active, #TabRentRealRangoPlanVital.active {
     background-color: #c23b33;
     border-color: #c23b33;
     color: #fff;
 }
 
-#TabRRProVida.active, #TabRTProVida.active, #TabVCProVida.active, #TabRentRangoProVida.active {
+#TabRRProVida.active, #TabRTProVida.active, #TabVCProVida.active, #TabRentRangoProVida.active, #TabRentRealRangoProVida.active {
     background-color: #0061a0;
     border-color: #0061a0;
     color: #fff;
 }
 
-#TabRRUno.active, #TabRTUno.active, #TabVCUno.active, #TabRentRangoUno.active {
+#TabRRUno.active, #TabRTUno.active, #TabVCUno.active, #TabRentRangoUno.active, #TabRentRealRangoUno.active {
     background-color: #e3007d;
     border-color: #e3007d;
     color: #fff;
 }
 
-#TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRentRangoAfp li button, #TabRRFondos li button, #TabRTFondos li button, #TabFondos li button {
+#TabRRAfp li button, #TabRTAfp li button, #TabVCAfp li button, #TabRentRangoAfp li button, #TabRentRealRangoAfp li button, #TabRRFondos li button, #TabRTFondos li button, #TabFondos li button {
     font-size: 0.8rem;
     padding-left: 0;
     padding-right: 0;
+    color: #6c757d;
 }
 
 .chartFondo {
@@ -189,4 +180,28 @@ div:has(> table.grillaValores) {
 
 .grillaValores tr:not(:first-child) td p b {
     font-size: 1.0rem;
+}
+
+div.sinBordeExternos table.grillaCabecera tr th:first-child {
+    border-left-color: transparent;
+}
+
+div.sinBordeExternos table.grillaCabecera tr:last-child th {
+    border-bottom-color: transparent;
+}
+
+div.sinBordeExternos table.grillaValores tr:first-child td {
+    border-top-color: transparent;
+}
+
+div.sinBordeExternos table.grillaValores tr td:last-child {
+    border-right-color: transparent;
+}
+
+div.sinBordeExternos table.grillaValores tr:last-child td {
+    border-bottom-color: transparent;
+}
+
+#btnMostrarGraficos {
+    max-width: 300px;
 }

@@ -30,6 +30,16 @@
         });
 
         ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
+            $("#TabRentRealRango" + afp).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRentRealRango" + afp);
+            });
+
+            $("#TabRentRealRango" + afp).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRentRealRango" + afp);
+            });
+        });
+
+        ["Capital", "Cuprum", "Habitat", "Modelo", "PlanVital", "ProVida", "Uno"].forEach(afp => {
             $("#TabRR" + afp).on("shown.bs.tab", function () {
                 marcarGraficoAbierto("TabRR" + afp);
                 obtenerRentRealSoloTipo(afp);
@@ -63,14 +73,26 @@
         });
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
+
+        /*
         let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
         graficosAbiertos = graficosAbiertos.split(",");
-
         graficosAbiertos.forEach(grafico => {
             $("#" + grafico).tab('show');
         });
+        */
     });
 });
+
+function mostrarGraficos() {
+    $("#btnMostrarGraficos").hide();
+    $("#seccionGraficos").show();
+    let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
+    graficosAbiertos = graficosAbiertos.split(",");
+    graficosAbiertos.forEach(grafico => {
+        $("#" + grafico).tab('show');
+    });
+}
 
 function marcarGraficoAbierto(grafico) {
     let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
