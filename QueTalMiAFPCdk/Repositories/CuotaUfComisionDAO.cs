@@ -84,12 +84,14 @@ namespace QueTalMiAFPCdk.Repositories {
 			}
 		}
 
-		public async Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision) {
+		public async Task<List<SalObtenerUltimaCuota>> ObtenerUltimaCuota(string listaAFPs, string listaFondos, string listaFechas, int tipoComision, bool usarUfValorCuota = true) {
 			EntObtenerUltimaCuota entradaSanitizada = new() {
 				ListaAFPs = WebUtility.HtmlEncode(listaAFPs),
 				ListaFondos = WebUtility.HtmlEncode(listaFondos),
 				ListaFechas = WebUtility.HtmlEncode(listaFechas),
-				TipoComision = tipoComision
+				TipoComision = tipoComision,
+				UsarUfValorCuota = usarUfValorCuota,
+
 			};
 
 			using HttpClient client = new(new RetryHandler(new HttpClientHandler(), parameterStore));
