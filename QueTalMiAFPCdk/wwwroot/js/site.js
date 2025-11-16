@@ -131,6 +131,7 @@ function consultarCuotas(afps, fondo, fechaInicial, fechaFinal, beforeSendCallba
             cuotasErrorCallbacks[fondo] = undefined;
         },
         success: function (data, textStatus, jqXHR) {
+            // Se carga en memoria listado de valores cuota según lo obtenido...
             let listaCuotas = [];
             for (let i = 0; i < data.length; i++) {
                 let valorCuota = data[i];
@@ -149,6 +150,7 @@ function consultarCuotas(afps, fondo, fechaInicial, fechaFinal, beforeSendCallba
                 }
             }
 
+            // Se marcan los valores cuotas no informados como "Sin Informar", para no confundirlos con los fines de semana/feriados al rellenar valores...
             let valoresEncontrados = new Object();
             ["Capital", "Cuprum", "Habitat", "Modelo", "Planvital", "Provida", "Uno"].forEach(afp => {
                 valoresEncontrados["valor" + afp] = false;
@@ -176,6 +178,7 @@ function consultarCuotas(afps, fondo, fechaInicial, fechaFinal, beforeSendCallba
                 }
             }
 
+            // Se rellenan todos los valores cuota vacíos con el del día anterior, o como undefined si son casos cuyo valor aún no ha sido informado...
             let ultimosValores = {};
             let indicesEliminar = [];
             for (let i = 0; i < listaCuotas.length; i++) {
@@ -195,12 +198,15 @@ function consultarCuotas(afps, fondo, fechaInicial, fechaFinal, beforeSendCallba
                     ultimosValores["valor" + afp] = listaCuotas[i]["valor" + afp];
                 });
 
-                if (soloRepetidos) indicesEliminar.unshift(i);
+                // Además, si la fecha contiene solo valores repetidos con el día anterior, se marca para su eliminación dado que es fin de semana (a menos que sea el primer día del mes)...
+                if (soloRepetidos /*&& listaCuotas[i]["fecha"].getDate() != 1*/) indicesEliminar.unshift(i);
             }
+            // Se eliminan fechas que solo contienen valores iguales al día anterior...
             indicesEliminar.forEach(indice => {
                 listaCuotas.splice(indice, 1);
             });
-            
+
+            // Se acota búsqueda completa según los rangos solicitados por el usuario...
             let indexInicio = 0;
             for (let i = 0; i < listaCuotas.length; i++) {
                 if (listaCuotas[i]["fecha"] >= dtFechaInicial) {
@@ -208,7 +214,6 @@ function consultarCuotas(afps, fondo, fechaInicial, fechaFinal, beforeSendCallba
                     break;
                 }
             }
-
             let indexFinal = listaCuotas.length;
             for (let i = listaCuotas.length - 1; i >= 0; i--) {
                 if (listaCuotas[i]["fecha"] <= dtFechaFinal) {
@@ -216,7 +221,6 @@ function consultarCuotas(afps, fondo, fechaInicial, fechaFinal, beforeSendCallba
                     break;
                 }
             }
-
             listaCuotas = listaCuotas.slice(indexInicio, indexFinal);
 
             cuotasConsultadas[fondo]["success"] = {
@@ -395,6 +399,7 @@ function consultarCuotasPorAFP(afp, fondos, fechaInicial, fechaFinal, beforeSend
             cuotasPorAFPErrorCallbacks[afp] = undefined;
         },
         success: function (data, textStatus, jqXHR) {
+            // Se carga en memoria listado de valores cuota según lo obtenido...
             let listaCuotas = [];
             for (let i = 0; i < data.length; i++) {
                 let valorCuota = data[i];
@@ -413,6 +418,7 @@ function consultarCuotasPorAFP(afp, fondos, fechaInicial, fechaFinal, beforeSend
                 }
             }
 
+            // Se marcan los valores cuotas no informados como "Sin Informar", para no confundirlos con los fines de semana/feriados al rellenar valores...
             let valoresEncontrados = new Object();
             ["A", "B", "C", "D", "E"].forEach(fondo => {
                 valoresEncontrados["valor" + fondo] = false;
@@ -440,6 +446,7 @@ function consultarCuotasPorAFP(afp, fondos, fechaInicial, fechaFinal, beforeSend
                 }
             }
 
+            // Se rellenan todos los valores cuota vacíos con el del día anterior, o como undefined si son casos cuyo valor aún no ha sido informado...
             let ultimosValores = {};
             let indicesEliminar = [];
             for (let i = 0; i < listaCuotas.length; i++) {
@@ -459,12 +466,15 @@ function consultarCuotasPorAFP(afp, fondos, fechaInicial, fechaFinal, beforeSend
                     ultimosValores["valor" + fondo] = listaCuotas[i]["valor" + fondo];
                 });
 
-                if (soloRepetidos) indicesEliminar.unshift(i);
+                // Además, si la fecha contiene solo valores repetidos con el día anterior, se marca para su eliminación dado que es fin de semana (a menos que sea el primer día del mes)...
+                if (soloRepetidos /*&& listaCuotas[i]["fecha"].getDate() != 1*/) indicesEliminar.unshift(i);
             }
+            // Se eliminan fechas que solo contienen valores iguales al día anterior...
             indicesEliminar.forEach(indice => {
                 listaCuotas.splice(indice, 1);
             });
 
+            // Se acota búsqueda completa según los rangos solicitados por el usuario...
             let indexInicio = 0;
             for (let i = 0; i < listaCuotas.length; i++) {
                 if (listaCuotas[i]["fecha"] >= dtFechaInicial) {
@@ -472,7 +482,6 @@ function consultarCuotasPorAFP(afp, fondos, fechaInicial, fechaFinal, beforeSend
                     break;
                 }
             }
-
             let indexFinal = listaCuotas.length;
             for (let i = listaCuotas.length - 1; i >= 0; i--) {
                 if (listaCuotas[i]["fecha"] <= dtFechaFinal) {
@@ -480,7 +489,6 @@ function consultarCuotasPorAFP(afp, fondos, fechaInicial, fechaFinal, beforeSend
                     break;
                 }
             }
-
             listaCuotas = listaCuotas.slice(indexInicio, indexFinal);
 
             cuotasPorAFPConsultadas[afp]["success"] = {
