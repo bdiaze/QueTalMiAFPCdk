@@ -1,4 +1,6 @@
 ﻿@using System.Globalization
+@using QueTalMiAFPCdk.Models.ViewModels
+@model ComparandoFondosViewModel
 @{
     ViewData["Title"] = "Rentabilidad por Fondo";
     ViewData["Description"] = "Aquí podrás conocer la evolución histórica de la rentabilidad y los valores cuota de las AFP para cada uno de los fondos de pensiones.";
@@ -19,124 +21,322 @@
     <script src="~/js/Estadisticas.js" asp-append-version="true" defer></script>
 }
 
+@{
+    CultureInfo cultureInfo = new CultureInfo("es-CL");
+}
+
 <h1>@ViewData["Title"]</h1>
 
 <p class="mt-3 text-muted">
-    Aquí podrás conocer la evolución histórica de la rentabilidad y los valores cuota
-    de las AFP para cada uno de los fondos de pensiones. Favor, ingresa a continuación 
-    el rango de fechas que deseas graficar:
+    Aquí podrás conocer la rentabilidad histórica, tanto real como nominal, para cada uno de los fondos de pensiones.
 </p>
-<div class="w-100 mt-3" style="position: relative;">
-    <div class="input-group input-daterange">
-        <div class="input-group-prepend">
-            <span class="input-group-text">
-                <i class="fa-regular fa-calendar"></i>
-            </span>
-        </div>
-
-        <input value="@ViewBag.UltimaFechaAlgunValorCuota.AddYears(-1).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaInicial" id="fechaInicial" />
-        <div class="input-group-append input-group-prepend">
-            <span class="input-group-text">
-                <label style="margin-bottom:0px;">al</label>
-            </span>
-        </div>
-
-        <input value="@ViewBag.UltimaFechaAlgunValorCuota.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
-        <div class="input-group-append">
-            <span class="input-group-text" style="border-top-right-radius: .25rem; border-bottom-right-radius: .25rem;">
-                <i class="fa-regular fa-calendar"></i>
-            </span>
-        </div>
-        <button id="btnFiltrarFechas" type="button" style="width:20%;" class="btn btn-primary pb-1 pt-1 ml-3" onclick="btnFiltrarRentabilidad()">
-            <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            <div style="display:inline-block;">Filtrar</div>
-        </button>
-    </div>
-    @if (User.Identity == null || !User.Identity.IsAuthenticated)
-    {
-        <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span><span><u>Rango de Fechas</u></span><br/>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
-            <a href="/login?redirect=@(Url.Action("Index", "Estadisticas"))" style="font-size: 0.8rem;" class="btn btn-primary py-1 px-4">
-                ¡Iniciar Sesión!
-            </a>
-        </div>
-    }
-</div>
 
 <hr />
-<h5>Rentabilidad Real</h5>
+
+<h5 class="d-inline m-0">Rentabilidad Real</h5>
 
 <p class="mt-3 text-muted">
     A continuación, se presentan las rentabilidades reales <b>ajustadas según variación
-    de la UF</b>, de los diferentes fondos de pensiones, usando una fecha inicial
-    como referencia:
+    de la UF</b>:
 </p>
 
-<ul class="nav nav-tabs nav-justified" id="TabRRFondos" role="tablist">
-    @foreach(string fondo in "A,B,C,D,E".Split(","))
+<ul class="nav nav-tabs nav-justified" id="TabRentRealRangoFondos" role="tablist">
+    @foreach (string fondo in "A,B,C,D,E".Split(","))
     {
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="TabRRFondo@(fondo)" data-toggle="tab" data-target="#ContRRFondo@(fondo)" type="button" role="tab" aria-controls="RRFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+            <button class="nav-link @(Model.GraficosAbiertos.Contains($"TabRentRealRangoFondo{fondo}") ? "active" : "")" id="TabRentRealRangoFondo@(fondo)" data-toggle="tab" data-target="#ContRentRealRangoFondo@(fondo)" type="button" role="tab" aria-controls="RentRealRangoFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
         </li>
     }
 </ul>
-<div class="tab-content p-1 mb-3" id="TabContentRRFondos">
-    @foreach(string fondo in "A,B,C,D,E".Split(","))
+<div class="tab-content px-3 pt-3 pb-2 mb-3" id="TabContentRentRealRangoFondos">
+    @foreach (string fondo in "A,B,C,D,E".Split(","))
     {
-        <div class="tab-pane fade" id="ContRRFondo@(fondo)" role="tabpanel" aria-labelledby="TabRRFondo@(fondo)">
-            <div class="chartFondo" id="chartRentReal@(fondo)"></div>
+        <div class="tab-pane fade sinBordeExternos @(Model.GraficosAbiertos.Contains($"TabRentRealRangoFondo{fondo}") ? "active show" : "")" id="ContRentRealRangoFondo@(fondo)" role="tabpanel" aria-labelledby="TabRentRealRangoFondo@(fondo)">
+            <div>
+                <table class="table table-bordered text-center grillaCabecera">
+                    <tr><td></td></tr>
+                    @foreach(string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(",")) 
+                    {
+                        <tr>
+                            <th class="align-middle p-0 text-center text-muted">@afp</th>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div>
+                <table class="table table-bordered text-center m-0 mb-1 grillaValores">
+                    <tr>
+                        @foreach(RentabilidadPorRango rentPorRango in Model.Rentabilidades)
+                        {
+                            <td class="align-middle text-muted py-2 px-0">
+                                <p class="mx-2 mb-0 text-center text-muted font-weight-bold">@(rentPorRango.TipoRango)</p>
+                                @if (rentPorRango.FechaHasta.Year == Model.UltimaFechaAlgunValorCuota.Year && rentPorRango.FechaHasta.Month == Model.UltimaFechaAlgunValorCuota.Month)
+                                {
+                                    // Si la fecha hasta es del mes actual, se usa formato "Del 01 al 10 de noviembre"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Del @(rentPorRango.FechaDesde.AddDays(1).ToString("dd", cultureInfo)) al
+                                        @(rentPorRango.FechaHasta.ToString("dd", cultureInfo))<br/> 
+                                        de @(rentPorRango.FechaHasta.ToString("MMMM", cultureInfo)) 
+                                    </p>
+                                
+                                } else if (rentPorRango.FechaDesde.AddDays(1).Year == rentPorRango.FechaHasta.Year && rentPorRango.FechaDesde.AddDays(1).Month == rentPorRango.FechaHasta.Month)
+                                {
+                                    // Si la fecha desde y hasta son del mismo mes, se usa el formato "Octubre 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        @(rentPorRango.FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpperInvariant() +
+                                          rentPorRango.FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
+                                    </p>
+                                } else if (rentPorRango.FechaDesde.AddDays(1).Year == rentPorRango.FechaHasta.Year)
+                                {
+                                    // Si la fecha desde y hasta son del mismo año, se usa el formato "De ago. a oct. 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Desde @(rentPorRango.FechaDesde.AddDays(1).ToString("MMM", cultureInfo))<br/>
+                                        a @(rentPorRango.FechaHasta.ToString("MMM yyyy", cultureInfo))
+                                    </p>
+                                } else
+                                {
+                                    // Si la fecha desde y hasta son de distinto año, se usa el formato "De oct. 2024 a oct. 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Desde @(rentPorRango.FechaDesde.AddDays(1).ToString("MMM yyyy", cultureInfo))<br/>
+                                        a @(rentPorRango.FechaHasta.ToString("MMM yyyy", cultureInfo))
+                                    </p>
+                                }
+                            </td>
+                        }
+                    </tr>
+                    @foreach(string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+                    {
+                        <tr>
+                            @foreach(RentabilidadPorRango rentPorRango in Model.Rentabilidades)
+                            {
+                                <td class="m-0 text-muted align-middle p-0">
+                                    <p class="m-0 text-center @(rentPorRango.RentabilidadesReales[afp.ToUpperInvariant()][fondo] > 0 ? "text-success": (rentPorRango.RentabilidadesReales[afp.ToUpperInvariant()][fondo] < 0 ? "text-danger" : ""))">
+                                        <b>@(rentPorRango.RentabilidadesReales[afp.ToUpperInvariant()][fondo] > 0 ? "⇧" : (rentPorRango.RentabilidadesReales[afp.ToUpperInvariant()][fondo] < 0 ? "⇩" : ""))</b>
+                                        @(rentPorRango.RentabilidadesReales[afp.ToUpperInvariant()][fondo]?.ToString("N2", cultureInfo))@(rentPorRango.RentabilidadesReales[afp.ToUpperInvariant()][fondo] != null ? "%" : "")
+                                    </p>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
     }
 </div>
 
 <hr />
 
-<h5>Rentabilidad</h5>
+<h5 class="d-inline m-0">Rentabilidad</h5>
 
 <p class="mt-3 text-muted">
-    A continuación, se presentan las rentabilidades de los valores cuotas, sin aplicar
-    ajustes por inflación, de los diferentes fondos de pensiones, usando una fecha
-    inicial como referencia:
+    A continuación, se presentan las rentabilidades nominales:
 </p>
 
-<ul class="nav nav-tabs nav-justified" id="TabRTFondos" role="tablist">
-    @foreach(string fondo in "A,B,C,D,E".Split(","))
+<ul class="nav nav-tabs nav-justified" id="TabRentRangoFondos" role="tablist">
+    @foreach (string fondo in "A,B,C,D,E".Split(","))
     {
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="TabRTFondo@(fondo)" data-toggle="tab" data-target="#ContRTFondo@(fondo)" type="button" role="tab" aria-controls="RTFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+            <button class="nav-link @(Model.GraficosAbiertos.Contains($"TabRentRangoFondo{fondo}") ? "active" : "")" id="TabRentRangoFondo@(fondo)" data-toggle="tab" data-target="#ContRentRangoFondo@(fondo)" type="button" role="tab" aria-controls="RentRangoFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
         </li>
     }
 </ul>
-<div class="tab-content p-1 mb-3" id="TabContentRTFondos">
-    @foreach(string fondo in "A,B,C,D,E".Split(","))
+<div class="tab-content px-3 pt-3 pb-2 mb-3" id="TabContentRentRangoFondos">
+    @foreach (string fondo in "A,B,C,D,E".Split(","))
     {
-        <div class="tab-pane fade" id="ContRTFondo@(fondo)" role="tabpanel" aria-labelledby="TabRTFondo@(fondo)">
-            <div class="chartFondo" id="chartRentabilidad@(fondo)"></div>
+        <div class="tab-pane fade sinBordeExternos @(Model.GraficosAbiertos.Contains($"TabRentRangoFondo{fondo}") ? "active show" : "")" 
+             id="ContRentRangoFondo@(fondo)" role="tabpanel" aria-labelledby="TabRentRangoFondo@(fondo)">
+            <div>
+                <table class="table table-bordered text-center grillaCabecera">
+                    <tr><td></td></tr>
+                    @foreach(string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(",")) 
+                    {
+                        <tr>
+                            <th class="align-middle p-0 text-center text-muted">@afp</th>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div>
+                <table class="table table-bordered text-center m-0 mb-1 grillaValores">
+                    <tr>
+                        @foreach(RentabilidadPorRango rentPorRango in Model.Rentabilidades)
+                        {
+                            <td class="align-middle text-muted py-2 px-0">
+                                <p class="mx-2 mb-0 text-center text-muted font-weight-bold">@(rentPorRango.TipoRango)</p>
+                                @if (rentPorRango.FechaHasta.Year == Model.UltimaFechaAlgunValorCuota.Year && rentPorRango.FechaHasta.Month == Model.UltimaFechaAlgunValorCuota.Month)
+                                {
+                                    // Si la fecha hasta es del mes actual, se usa formato "Del 01 al 10 de noviembre"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Del @(rentPorRango.FechaDesde.AddDays(1).ToString("dd", cultureInfo)) al
+                                        @(rentPorRango.FechaHasta.ToString("dd", cultureInfo))<br/> 
+                                        de @(rentPorRango.FechaHasta.ToString("MMMM", cultureInfo)) 
+                                    </p>
+                                
+                                } else if (rentPorRango.FechaDesde.AddDays(1).Year == rentPorRango.FechaHasta.Year && rentPorRango.FechaDesde.AddDays(1).Month == rentPorRango.FechaHasta.Month)
+                                {
+                                    // Si la fecha desde y hasta son del mismo mes, se usa el formato "Octubre 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        @(rentPorRango.FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(0, 1).ToUpperInvariant() +
+                                          rentPorRango.FechaHasta.ToString("MMMM yyyy", cultureInfo).Substring(1))
+                                    </p>
+                                } else if (rentPorRango.FechaDesde.AddDays(1).Year == rentPorRango.FechaHasta.Year)
+                                {
+                                    // Si la fecha desde y hasta son del mismo año, se usa el formato "De ago. a oct. 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Desde @(rentPorRango.FechaDesde.AddDays(1).ToString("MMM", cultureInfo))<br/>
+                                        a @(rentPorRango.FechaHasta.ToString("MMM yyyy", cultureInfo))
+                                    </p>
+                                } else
+                                {
+                                    // Si la fecha desde y hasta son de distinto año, se usa el formato "De oct. 2024 a oct. 2025"
+                                    <p class="mt-1 mb-0 text-center text-muted">
+                                        Desde @(rentPorRango.FechaDesde.AddDays(1).ToString("MMM yyyy", cultureInfo))<br/>
+                                        a @(rentPorRango.FechaHasta.ToString("MMM yyyy", cultureInfo))
+                                    </p>
+                                }
+                            </td>
+                        }
+                    </tr>
+                    @foreach(string afp in "Capital,Cuprum,Habitat,Modelo,PlanVital,ProVida,Uno".Split(","))
+                    {
+                        <tr>
+                            @foreach(RentabilidadPorRango rentPorRango in Model.Rentabilidades)
+                            {
+                                <td class="m-0 text-muted align-middle p-0">
+                                    <p class="m-0 text-center @(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] > 0 ? "text-success": (rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] < 0 ? "text-danger" : ""))">
+                                        <b>@(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] > 0 ? "⇧" : (rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] < 0 ? "⇩" : ""))</b>
+                                        @(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo]?.ToString("N2", cultureInfo))@(rentPorRango.Rentabilidades[afp.ToUpperInvariant()][fondo] != null ? "%" : "")
+                                    </p>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
     }
 </div>
 
 <hr />
 
-<h5>Valor Cuota</h5>
+<h5 class="d-inline m-0">¡Nuestros gráficos interactivos!</h5>
 
 <p class="mt-3 text-muted">
-    A continuación, se presentan gráficos de la evolución histórica del valor cuota, de
-    los diferentes fondos de pensiones:
+    Y si las tablas no son lo tuyo, <b>aquí tienes nuestros gráficos interactivos</b>. 
+    Solo haz clic en el botón y elige el rango de fechas que quieres visualizar:
 </p>
+<div class="text-center">
+    <button class="btn btn-primary mb-3 w-75" id="btnMostrarGraficos" onclick="mostrarGraficos()">Mostrar Gráficos Interactivos</button>
+</div>
+<div id="seccionGraficos" style="display:none;">
+    <div class="w-100 mt-3" style="position: relative;">
+        <div class="input-group input-daterange">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fa-regular fa-calendar"></i>
+                </span>
+            </div>
 
-<ul class="nav nav-tabs nav-justified" id="TabFondos" role="tablist">
-    @foreach(string fondo in "A,B,C,D,E".Split(","))
-    {
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="TabFondo@(fondo)" data-toggle="tab" data-target="#ContFondo@(fondo)" type="button" role="tab" aria-controls="Fondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
-        </li>
-    }
-</ul>
-<div class="tab-content p-1 mb-1" id="TabContentFondos">
-    @foreach(string fondo in "A,B,C,D,E".Split(","))
-    {
-        <div class="tab-pane fade" id="ContFondo@(fondo)" role="tabpanel" aria-labelledby="TabFondo@(fondo)">
-            <div class="chartFondo" id="chartFondo@(fondo)"></div>
+            <input value="@Model.UltimaFechaAlgunValorCuota.AddYears(-1).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaInicial" id="fechaInicial" />
+            <div class="input-group-append input-group-prepend">
+                <span class="input-group-text">
+                    <label style="margin-bottom:0px;">al</label>
+                </span>
+            </div>
+
+            <input value="@Model.UltimaFechaAlgunValorCuota.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)" type="text" class="form-control inputFiltrarRent" name="fechaFinal" id="fechaFinal" />
+            <div class="input-group-append">
+                <span class="input-group-text" style="border-top-right-radius: .25rem; border-bottom-right-radius: .25rem;">
+                    <i class="fa-regular fa-calendar"></i>
+                </span>
+            </div>
+            <button id="btnFiltrarFechas" type="button" style="width:20%;" class="btn btn-primary pb-1 pt-1 ml-3" onclick="btnFiltrarRentabilidad()">
+                <span style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <div style="display:inline-block;">Filtrar</div>
+            </button>
         </div>
-    }
+        @if (User.Identity == null || !User.Identity.IsAuthenticated)
+        {
+            <div class="overlay" data-toggle="tooltip" data-placement="top" data-html="true" title="<span><span><u>Rango de Fechas</u></span><br/>Inicia sesión para desbloquear esta función<br/><span>¡Es gratis! 😊</span></span>">
+                <a href="/login?redirect=@(Url.Action("Index", "Estadisticas"))" style="font-size: 0.8rem;" class="btn btn-primary py-1 px-4">
+                    ¡Iniciar Sesión!
+                </a>
+            </div>
+        }
+    </div>
+
+    <hr />
+    <h5>Rentabilidad Real</h5>
+
+    <p class="mt-3 text-muted">
+        A continuación se muestran las rentabilidades reales, <b>ajustadas según variación de la UF</b>, 
+        usando la fecha inicial como referencia:
+    </p>
+
+    <ul class="nav nav-tabs nav-justified" id="TabRRFondos" role="tablist">
+        @foreach(string fondo in "A,B,C,D,E".Split(","))
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="TabRRFondo@(fondo)" data-toggle="tab" data-target="#ContRRFondo@(fondo)" type="button" role="tab" aria-controls="RRFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+            </li>
+        }
+    </ul>
+    <div class="tab-content p-1 mb-3" id="TabContentRRFondos">
+        @foreach(string fondo in "A,B,C,D,E".Split(","))
+        {
+            <div class="tab-pane fade" id="ContRRFondo@(fondo)" role="tabpanel" aria-labelledby="TabRRFondo@(fondo)">
+                <div class="chartFondo" id="chartRentReal@(fondo)"></div>
+            </div>
+        }
+    </div>
+
+    <hr />
+
+    <h5>Rentabilidad</h5>
+
+    <p class="mt-3 text-muted">
+        A continuación se muestran las rentabilidades nominales, <b>sin aplicar ajustes por inflación</b>, usando la fecha inicial como referencia:
+    </p>
+
+    <ul class="nav nav-tabs nav-justified" id="TabRTFondos" role="tablist">
+        @foreach(string fondo in "A,B,C,D,E".Split(","))
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="TabRTFondo@(fondo)" data-toggle="tab" data-target="#ContRTFondo@(fondo)" type="button" role="tab" aria-controls="RTFondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+            </li>
+        }
+    </ul>
+    <div class="tab-content p-1 mb-3" id="TabContentRTFondos">
+        @foreach(string fondo in "A,B,C,D,E".Split(","))
+        {
+            <div class="tab-pane fade" id="ContRTFondo@(fondo)" role="tabpanel" aria-labelledby="TabRTFondo@(fondo)">
+                <div class="chartFondo" id="chartRentabilidad@(fondo)"></div>
+            </div>
+        }
+    </div>
+
+    <hr />
+
+    <h5>Valor Cuota</h5>
+
+    <p class="mt-3 text-muted">
+        A continuación, se muestra la evolución histórica del valor cuota:
+    </p>
+
+    <ul class="nav nav-tabs nav-justified" id="TabFondos" role="tablist">
+        @foreach(string fondo in "A,B,C,D,E".Split(","))
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="TabFondo@(fondo)" data-toggle="tab" data-target="#ContFondo@(fondo)" type="button" role="tab" aria-controls="Fondo@(fondo)" aria-selected="false">Fondo @(fondo)</button>
+            </li>
+        }
+    </ul>
+    <div class="tab-content p-1 mb-1" id="TabContentFondos">
+        @foreach(string fondo in "A,B,C,D,E".Split(","))
+        {
+            <div class="tab-pane fade" id="ContFondo@(fondo)" role="tabpanel" aria-labelledby="TabFondo@(fondo)">
+                <div class="chartFondo" id="chartFondo@(fondo)"></div>
+            </div>
+        }
+    </div>
 </div>

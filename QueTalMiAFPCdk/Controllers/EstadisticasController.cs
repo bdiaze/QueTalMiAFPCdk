@@ -18,20 +18,94 @@ namespace QueTalMiAFPCdk.Controllers {
             if (ultimaFechaAlgunValorCuota == null) {
 				ultimaFechaAlgunValorCuota = DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneConverter.TZConvert.GetTimeZoneInfo("Pacific SA Standard Time")));
 			}
-			ViewBag.UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value;
 
-            //Se limpian gráficas de cookies que ya no existen...
-            string? graficosAbiertos = Request.Cookies["GraficosAbiertos"];
-			if (graficosAbiertos != null) {
-				graficosAbiertos = String.Join(",", graficosAbiertos.Split(",").Where(g => g.StartsWith("Tab")));
+			//Se limpian gráficas de cookies que ya no existen...
+			string graficosAbiertos = Request.Cookies["GraficosAbiertos"] ?? "";
 
-                HttpContext.Response.Cookies.Append("GraficosAbiertos", graficosAbiertos, new CookieOptions {
-                    Expires = DateTime.Now.AddDays(365),
-					Path = "/Estadisticas"
-                });
-            }
+			if (!graficosAbiertos.Split(",").Where(g => g.StartsWith("TabRRFondo")).Any()) {
+				if (graficosAbiertos.Length > 0) graficosAbiertos += ",";
+				graficosAbiertos += "TabRRFondoA";
+			}
 
-            logger.LogInformation(
+			if (!graficosAbiertos.Split(",").Where(g => g.StartsWith("TabRTFondo")).Any()) {
+				if (graficosAbiertos.Length > 0) graficosAbiertos += ",";
+				graficosAbiertos += "TabRTFondoA";
+			}
+
+			if (!graficosAbiertos.Split(",").Where(g => g.StartsWith("TabFondo")).Any()) {
+				if (graficosAbiertos.Length > 0) graficosAbiertos += ",";
+				graficosAbiertos += "TabFondoA";
+			}
+
+			if (!graficosAbiertos.Split(",").Where(g => g.StartsWith("TabRentRangoFondo")).Any()) {
+				if (graficosAbiertos.Length > 0) graficosAbiertos += ",";
+				graficosAbiertos += "TabRentRangoFondoA";
+			}
+
+			if (!graficosAbiertos.Split(",").Where(g => g.StartsWith("TabRentRealRangoFondo")).Any()) {
+				if (graficosAbiertos.Length > 0) graficosAbiertos += ",";
+				graficosAbiertos += "TabRentRealRangoFondoA";
+			}
+
+			graficosAbiertos = String.Join(",", graficosAbiertos.Split(",").Where(g => g.StartsWith("Tab")));
+
+            HttpContext.Response.Cookies.Append("GraficosAbiertos", graficosAbiertos, new CookieOptions {
+                Expires = DateTime.Now.AddDays(365),
+				Path = "/Estadisticas"
+            });
+
+			ComparandoFondosViewModel model = new() {
+				UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value,
+				GraficosAbiertos = graficosAbiertos.Split(","),
+			};
+
+			// Se calcularán las rentabilidades para:
+			//      - mes actual
+			//      - mes anterior
+			//      - 3 meses anteriores
+			//      - 6 meses anteriores
+			//      - un año / 12 meses anteriores
+			//      - 3 años / 36 meses anteriores
+			//      - 5 años / 60 meses anteriores
+			//      - 10 años / 120 meses anteriores
+			List<DateOnly> listaFechasRentabilidades = [ultimaFechaAlgunValorCuota.Value];
+			DateOnly fechaAuxiliar = new DateOnly(listaFechasRentabilidades[0].Year, listaFechasRentabilidades[0].Month, 1).AddDays(-1);
+			foreach (int delta in new List<int> { 0, -1, -3, -6, -12, -36, -60, -120 }) {
+				model.Rentabilidades.Add(new RentabilidadPorRango {
+					TipoRango = delta == 0 ? "Mes Actual" :
+						Math.Abs(delta) == 1 ? "Mes Anterior" :
+						Math.Abs(delta) <= 12 ? $"Últimos {Math.Abs(delta)} meses" :
+						$"Últimos {Math.Abs(delta) / 12} años",
+					FechaDesde = fechaAuxiliar.AddMonths(delta),
+					FechaHasta = delta != 0 ? fechaAuxiliar : listaFechasRentabilidades.Last(),
+				});
+
+				listaFechasRentabilidades.Add(fechaAuxiliar.AddMonths(delta));
+			}
+
+			List<SalObtenerUltimaCuota> cuotas = await cuotaUfComisionDAO.ObtenerUltimaCuota(
+				"CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
+				"A,B,C,D,E",
+				String.Join(",", listaFechasRentabilidades.Select(f => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))),
+				1,
+				false
+			);
+			foreach (string fondo in "A,B,C,D,E".Split(',')) {
+				List<SalObtenerUltimaCuota> cuotasFondo = [.. cuotas.Where(c => c.Fondo == fondo)];
+				foreach (string afp in "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO".Split(',')) {
+					List<SalObtenerUltimaCuota> cuotasAfpFondo = [.. cuotasFondo.Where(c => c.Afp == afp)];
+					foreach (RentabilidadPorRango rentabilidad in model.Rentabilidades) {
+						SalObtenerUltimaCuota? cuotaDesde = cuotasAfpFondo.Where(c => c.Fecha <= rentabilidad.FechaDesde).OrderByDescending(c => c.Fecha).FirstOrDefault();
+						SalObtenerUltimaCuota? cuotaHasta = cuotasAfpFondo.Where(c => c.Fecha <= rentabilidad.FechaHasta).OrderByDescending(c => c.Fecha).FirstOrDefault();
+						if (cuotaDesde != null & cuotaHasta != null) {
+							rentabilidad.Rentabilidades[afp][fondo] = (cuotaHasta!.Valor - cuotaDesde!.Valor) * 100 / cuotaDesde!.Valor;
+							rentabilidad.RentabilidadesReales[afp][fondo] = cuotaHasta!.Valor * 100 / (cuotaDesde!.Valor * cuotaHasta!.ValorUf / cuotaDesde!.ValorUf) - 100;
+						}
+					}
+				}
+			}
+
+			logger.LogInformation(
                 "[{Method}] - [{Controller}] - [{Action}] - [{ElapsedTime} ms] - [{StatusCode}] - [Usuario Autenticado: {IsAuthenticated}] - " +
                 "Se retorna exitosamente la página de estadística - " +
                 "Elapsed Time Fecha Alguna: {ElapsedTimeFechaAlguna}.",
@@ -39,7 +113,7 @@ namespace QueTalMiAFPCdk.Controllers {
                 stopwatch.ElapsedMilliseconds, StatusCodes.Status200OK, User.Identity?.IsAuthenticated ?? false,
                 elapsedTimeFechaAlguna);
 
-            return View();
+            return View(model);
 		}
 
 		public async Task<IActionResult> ComparandoFondos() {

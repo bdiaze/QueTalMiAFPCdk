@@ -73,7 +73,6 @@
         });
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
-
         /*
         let graficosAbiertos = $.cookie("GraficosAbiertosPorAFP");
         graficosAbiertos = graficosAbiertos.split(",");

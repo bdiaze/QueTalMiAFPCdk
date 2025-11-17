@@ -19,6 +19,26 @@
     am4core.ready(function () {
         am4core.options.queue = true;
 
+        ["A", "B", "C", "D", "E"].forEach(fondo => {
+            $("#TabRentRangoFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRentRangoFondo" + fondo);
+            });
+
+            $("#TabRentRangoFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRentRangoFondo" + fondo);
+            });
+        });
+
+        ["A", "B", "C", "D", "E"].forEach(fondo => {
+            $("#TabRentRealRangoFondo" + fondo).on("shown.bs.tab", function () {
+                marcarGraficoAbierto("TabRentRealRangoFondo" + fondo);
+            });
+
+            $("#TabRentRealRangoFondo" + fondo).on("hide.bs.tab", function () {
+                marcarGraficoCerrado("TabRentRealRangoFondo" + fondo);
+            });
+        });
+
         // Se configuran funciones a ejecutar cuando se abre o cierran gráficos de rentabilidad real...
         ["A", "B", "C", "D", "E"].forEach(fondo => {
             $("#TabRRFondo" + fondo).on("shown.bs.tab", function () {
@@ -56,17 +76,25 @@
         });
 
         // Se abren los gráficos que ya estaban abiertos, si no hay ninguno se abre el primero por defecto...
+        /*
         let graficosAbiertos = $.cookie("GraficosAbiertos");
-        if (graficosAbiertos == undefined || graficosAbiertos.length == 0) {
-            graficosAbiertos = ["TabRRFondoA", "TabRTFondoA", "TabFondoA"];
-        } else {
-            graficosAbiertos = graficosAbiertos.split(",");
-        }
+        graficosAbiertos = graficosAbiertos.split(",");
         graficosAbiertos.forEach(grafico => {
             $("#" + grafico).tab('show');
         });
+        */
     });
 });
+
+function mostrarGraficos() {
+    $("#btnMostrarGraficos").hide();
+    $("#seccionGraficos").show();
+    let graficosAbiertos = $.cookie("GraficosAbiertos");
+    graficosAbiertos = graficosAbiertos.split(",");
+    graficosAbiertos.forEach(grafico => {
+        $("#" + grafico).tab('show');
+    });
+}
 
 function marcarGraficoAbierto(grafico) { 
     let graficosAbiertos = $.cookie("GraficosAbiertos");
