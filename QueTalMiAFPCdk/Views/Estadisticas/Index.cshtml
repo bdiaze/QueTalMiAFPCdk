@@ -222,11 +222,12 @@
 <h5 class="d-inline m-0">¡Nuestros gráficos interactivos!</h5>
 
 <p class="mt-3 text-muted">
-    Y si las tablas no son lo tuyo, <b>aquí tienes nuestros gráficos interactivos</b>. 
-    Solo haz clic en el botón y elige el rango de fechas que quieres visualizar:
+    Y si las tablas no son lo tuyo, aquí tienes nuestros gráficos interactivos. 
+    Solo <b>haz clic en el botón y elige el rango de fechas</b> que quieres visualizar:
 </p>
-<div class="text-center">
-    <button class="btn btn-primary mb-3 w-75" id="btnMostrarGraficos" onclick="mostrarGraficos()">Mostrar Gráficos Interactivos</button>
+<div class="text-center mb-3 position-relative" id="btnMostrarGraficos">
+    <img src="~/images/grafico_por_fondo.png" alt="Imagen de los gráficos interactivos" style="width:100%; filter: blur(2px); "/>
+    <button class="btn btn-primary mb-3 w-75 position-absolute" onclick="mostrarGraficos()" style="top:50%;left:50%;transform:translate(-50%,-50%);">Mostrar Gráficos Interactivos</button>
 </div>
 <div id="seccionGraficos" style="display:none;">
     <div class="w-100 mt-3" style="position: relative;">

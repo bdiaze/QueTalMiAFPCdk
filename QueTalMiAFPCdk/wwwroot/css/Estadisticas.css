@@ -202,6 +202,6 @@ div.sinBordeExternos table.grillaValores tr:last-child td {
     border-bottom-color: transparent;
 }
 
-#btnMostrarGraficos {
+#btnMostrarGraficos button {
     max-width: 300px;
 }
