@@ -6,4 +6,7 @@
     notifempty
     compress
     delaycompress
+    postrotate
+        systemctl restart QueTalMiAFP.service >/dev/null 2>&1 || true
+    endscript
 }
