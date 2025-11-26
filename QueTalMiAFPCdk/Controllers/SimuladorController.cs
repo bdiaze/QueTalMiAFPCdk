@@ -34,7 +34,8 @@ namespace QueTalMiAFPCdk.Controllers {
 
                 HttpContext.Response.Cookies.Append("GraficosAbiertosSimulador", graficosAbiertos, new CookieOptions {
                     Expires = DateTime.Now.AddDays(365),
-                    Path = "/Simulador"
+                    Path = "/Simulador",
+                    Secure = true
                 });
             }
 

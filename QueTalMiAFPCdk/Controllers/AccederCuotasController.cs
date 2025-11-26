@@ -136,8 +136,9 @@ namespace QueTalMiAFPCdk.Controllers {
 
             // Se graba en cookie última AFP seleccionada para usar como defecto en consultas posteriores...
             HttpContext.Response.Cookies.Append("FiltroHistorialAfpSeleccionada", inputAfp, new CookieOptions {
-                Expires = DateTime.Now.AddDays(365)
-            });
+                Expires = DateTime.Now.AddDays(365),
+				Secure = true
+			});
 
             // Se obtiene el filtro por defecto a mostrar en el historial...
             string? fondoHistorialSeleccionado = Request.Cookies["FiltroHistorialFondoSeleccionado"];

@@ -51,8 +51,9 @@ namespace QueTalMiAFPCdk.Controllers {
 
             HttpContext.Response.Cookies.Append("GraficosAbiertos", graficosAbiertos, new CookieOptions {
                 Expires = DateTime.Now.AddDays(365),
-				Path = "/Estadisticas"
-            });
+				Path = "/Estadisticas",
+				Secure = true
+			});
 
 			ComparandoFondosViewModel model = new() {
 				UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value,
@@ -157,8 +158,9 @@ namespace QueTalMiAFPCdk.Controllers {
 			graficosAbiertos = String.Join(",", graficosAbiertos.Split(",").Where(g => g.StartsWith("Tab")));
             HttpContext.Response.Cookies.Append("GraficosAbiertosPorAFP", graficosAbiertos, new CookieOptions {
                 Expires = DateTime.Now.AddDays(365),
-                Path = "/Estadisticas/ComparandoFondos"
-            });
+                Path = "/Estadisticas/ComparandoFondos",
+				Secure = true
+			});
 
 			ComparandoFondosViewModel model = new() {
 				UltimaFechaAlgunValorCuota = ultimaFechaAlgunValorCuota.Value,
