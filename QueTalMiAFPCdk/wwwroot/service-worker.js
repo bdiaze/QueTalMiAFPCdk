@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'static-v1';
+﻿const CACHE_NAME = 'static-v2';
 
 const STATIC_EXTENSIONS = [
     '.css',
