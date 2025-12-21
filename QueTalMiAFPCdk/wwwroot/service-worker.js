@@ -38,6 +38,9 @@ self.addEventListener('fetch', event => {
 
     if (url.origin !== self.location.origin) return;
 
+    if (url.pathname === '/service-worker.js') return;
+    if (url.pathname === '/manifest.json') return;
+
     const isStaticAsset = STATIC_EXTENSIONS.some(ext =>
         url.pathname.toLowerCase().endsWith(ext)
     );
