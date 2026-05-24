@@ -72,25 +72,42 @@ namespace QueTalMiAFPCdk.Controllers {
 			List<DateOnly> listaFechasRentabilidades = [ultimaFechaAlgunValorCuota.Value];
 			DateOnly fechaAuxiliar = new DateOnly(listaFechasRentabilidades[0].Year, listaFechasRentabilidades[0].Month, 1).AddDays(-1);
 			foreach (int delta in new List<int> { 0, -1, -3, -6, -12, -36, -60, -120 }) {
+				DateOnly fechaDesde = fechaAuxiliar.AddMonths(delta);
+				fechaDesde = new DateOnly(fechaDesde.Year, fechaDesde.Month, 1)
+					.AddMonths(1)
+					.AddDays(-1);
+
 				model.Rentabilidades.Add(new RentabilidadPorRango {
 					TipoRango = delta == 0 ? "Mes Actual" :
 						Math.Abs(delta) == 1 ? "Mes Anterior" :
 						Math.Abs(delta) <= 12 ? $"Últimos {Math.Abs(delta)} meses" :
 						$"Últimos {Math.Abs(delta) / 12} años",
-					FechaDesde = fechaAuxiliar.AddMonths(delta),
+					FechaDesde = fechaDesde,
 					FechaHasta = delta != 0 ? fechaAuxiliar : listaFechasRentabilidades.Last(),
 				});
 
-				listaFechasRentabilidades.Add(fechaAuxiliar.AddMonths(delta));
+				listaFechasRentabilidades.Add(fechaDesde);
 			}
 
+			// Se obtienen los valores cuota de la fecha inicial, considerando el valor UF del valor cuota en cuestión (así coincide con la información de los gráficos interactivos)
+			List<SalObtenerUltimaCuota> cuotasUltimaFecha = await cuotaUfComisionDAO.ObtenerUltimaCuota(
+				"CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
+				"A,B,C,D,E",
+				listaFechasRentabilidades.First().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+				1,
+				true
+			);
+
+			// Se obtienen los valores cuota del resto de fechas, considerando el valor UF de la fecha en cuestión requerida...
 			List<SalObtenerUltimaCuota> cuotas = await cuotaUfComisionDAO.ObtenerUltimaCuota(
 				"CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
 				"A,B,C,D,E",
-				String.Join(",", listaFechasRentabilidades.Select(f => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))),
+				String.Join(",", listaFechasRentabilidades[1..].Select(f => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))),
 				1,
 				false
 			);
+			cuotas = [.. cuotasUltimaFecha, .. cuotas];
+
 			foreach (string fondo in "A,B,C,D,E".Split(',')) {
 				List<SalObtenerUltimaCuota> cuotasFondo = [.. cuotas.Where(c => c.Fondo == fondo)];
 				foreach (string afp in "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO".Split(',')) {
@@ -179,26 +196,43 @@ namespace QueTalMiAFPCdk.Controllers {
 			List<DateOnly> listaFechasRentabilidades = [ ultimaFechaAlgunValorCuota.Value ];
             DateOnly fechaAuxiliar = new DateOnly(listaFechasRentabilidades[0].Year, listaFechasRentabilidades[0].Month, 1).AddDays(-1);
             foreach (int delta in new List<int> { 0, -1, -3, -6, -12, -36, -60, -120 }) {
-                model.Rentabilidades.Add(new RentabilidadPorRango { 
+				DateOnly fechaDesde = fechaAuxiliar.AddMonths(delta);
+				fechaDesde = new DateOnly(fechaDesde.Year, fechaDesde.Month, 1)
+					.AddMonths(1)
+					.AddDays(-1);
+
+				model.Rentabilidades.Add(new RentabilidadPorRango { 
                     TipoRango =  delta == 0 ? "Mes Actual" : 
                         Math.Abs(delta) == 1 ? "Mes Anterior" : 
                         Math.Abs(delta) <= 12 ? $"Últimos {Math.Abs(delta)} meses" : 
                         $"Últimos {Math.Abs(delta) / 12} años",
-                    FechaDesde = fechaAuxiliar.AddMonths(delta),
+                    FechaDesde = fechaDesde,
                     FechaHasta = delta != 0 ? fechaAuxiliar : listaFechasRentabilidades.Last(),                
                 });
 
-				listaFechasRentabilidades.Add(fechaAuxiliar.AddMonths(delta));
+				listaFechasRentabilidades.Add(fechaDesde);
 			}
 
-            List<SalObtenerUltimaCuota> cuotas = await cuotaUfComisionDAO.ObtenerUltimaCuota(
+			// Se obtienen los valores cuota de la fecha inicial, considerando el valor UF del valor cuota en cuestión (así coincide con la información de los gráficos interactivos)
+			List<SalObtenerUltimaCuota> cuotasUltimaFecha = await cuotaUfComisionDAO.ObtenerUltimaCuota(
 				"CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
 				"A,B,C,D,E",
-				String.Join(",", listaFechasRentabilidades.Select(f => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))),
+				listaFechasRentabilidades.First().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+				1,
+				true
+			);
+
+			// Se obtienen los valores cuota del resto de fechas, considerando el valor UF de la fecha en cuestión requerida...
+			List<SalObtenerUltimaCuota> cuotas = await cuotaUfComisionDAO.ObtenerUltimaCuota(
+				"CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO",
+				"A,B,C,D,E",
+				String.Join(",", listaFechasRentabilidades[1..].Select(f => f.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))),
 				1,
                 false
 			);
-            foreach (string afp in "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO".Split(',')) {
+			cuotas = [.. cuotasUltimaFecha, .. cuotas];
+
+			foreach (string afp in "CAPITAL,CUPRUM,HABITAT,MODELO,PLANVITAL,PROVIDA,UNO".Split(',')) {
                 List<SalObtenerUltimaCuota> cuotasAfp = [.. cuotas.Where(c => c.Afp == afp)];
                 foreach (string fondo in "A,B,C,D,E".Split(',')) {
                     List<SalObtenerUltimaCuota> cuotasAfpFondo = [.. cuotasAfp.Where(c => c.Fondo == fondo)];
