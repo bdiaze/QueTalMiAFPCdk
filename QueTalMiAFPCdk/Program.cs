@@ -115,6 +115,11 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
+builder.Logging.AddSimpleConsole(options => {
+	options.TimestampFormat = "[yyyy-MM-ddTHH:mm:ss.fffZ] ";
+	options.UseUtcTimestamp = true;
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
