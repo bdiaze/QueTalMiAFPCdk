@@ -115,7 +115,6 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 if (builder.Environment.IsDevelopment()) {
     builder.Logging.AddDebug();
