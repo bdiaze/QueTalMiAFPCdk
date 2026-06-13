@@ -115,12 +115,6 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-builder.Logging.AddConsole();
-if (builder.Environment.IsDevelopment()) {
-    builder.Logging.AddDebug();
-}
-builder.Logging.SetMinimumLevel(LogLevel.Information);
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
