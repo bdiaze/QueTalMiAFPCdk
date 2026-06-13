@@ -1,22 +1,19 @@
-﻿using Amazon.APIGateway.Model;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using QueTalMiAFPCdk.Models.Entities;
 using QueTalMiAFPCdk.Models.Others;
 using QueTalMiAFPCdk.Models.ViewModels;
 using QueTalMiAFPCdk.Repositories;
 using QueTalMiAFPCdk.Services;
-using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace QueTalMiAFPCdk.Controllers {
 	public class MensajesController(ILogger<MensajesController> logger, ParameterStoreHelper parameterStore, MensajeDAO mensajeDAO, EnvioCorreo envioCorreo) : Controller {
-        private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
-
-        public async Task<IActionResult> Index() {
+		private readonly string _reCaptchaClientKey = parameterStore.ObtenerParametro("/QueTalMiAFP/GoogleRecaptcha/ClientKey").Result;
+				
+		public async Task<IActionResult> Index() {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             ViewBag.TiposMensaje = await mensajeDAO.ObtenerTiposVigentes();
@@ -44,6 +41,11 @@ namespace QueTalMiAFPCdk.Controllers {
 					.SelectMany(v => v.Errors)
 					.Select(e => e.ErrorMessage)
 					.First());
+			}
+
+			// Se valida que el formato del correo sea válido...
+			if (!Regex.IsMatch(model.Correo, @"^[a-zA-Z0-9.+\-_']+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", RegexOptions.IgnoreCase | RegexOptions.NonBacktracking)) {
+				throw new ExceptionQueTalMiAFP("El correo electrónico ingresado es inválido.");
 			}
 
             MensajeUsuario? mensajeResultado = await mensajeDAO.IngresarMensaje(model.IdTipoMensaje, model.Nombre, model.Correo, model.Mensaje);
