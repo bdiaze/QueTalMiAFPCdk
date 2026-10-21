@@ -67,9 +67,15 @@ namespace QueTalMiAFPCdk.Services {
             byte[] salt = new byte[16];
             Array.Copy(hashedLlaveBytes, 0, salt, 0, 16);
 
-            Rfc2898DeriveBytes pbkdf2 = new(llaveExtraccion, salt, 100000, HashAlgorithmName.SHA1);
-            byte[] hash = pbkdf2.GetBytes(20);
-            byte[] hashBytes = new byte[36];
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+			    llaveExtraccion,
+				salt,
+				100000,
+				HashAlgorithmName.SHA1,
+                20
+			);
+
+			byte[] hashBytes = new byte[36];
             Array.Copy(salt, 0, hashBytes, 0, 16);
             Array.Copy(hash, 0, hashBytes, 16, 20);
             string strLlaveExtraccion = Convert.ToBase64String(hashBytes);
